@@ -1,13 +1,13 @@
 package space.tests;
 
 import java.util.Random;
+
 import net.phys2d.math.ROVector2f;
 import net.phys2d.math.Vector2f;
 import net.phys2d.raw.Body;
-import net.phys2d.raw.StaticBody;
 import net.phys2d.raw.World;
-import net.phys2d.raw.shapes.Box;
 import net.phys2d.raw.shapes.Circle;
+
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.Color;
@@ -16,7 +16,7 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.SpriteSheet;
+import org.newdawn.slick.Sound;
 import org.newdawn.slick.opengl.InternalTextureLoader;
 import org.newdawn.slick.opengl.Texture;
 
@@ -80,7 +80,6 @@ public class PhysTest extends BasicGame {
     //your shield is down == super vulnerable - crashing into an object with >X velocity will destroy you
     //getting hit with shields down == huge damage
     
-    
     public void init(GameContainer container) throws SlickException {
         this.container = container;
         //container.setSmoothDeltas(true);
@@ -116,7 +115,6 @@ public class PhysTest extends BasicGame {
         ship.setPosition(50, 50);
         
         ship.setMaxVelocity(25f, 25f);
-        
         
         world.add(ship);
         updateVector();
