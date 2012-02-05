@@ -13,7 +13,7 @@
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="SpaceGame/native/macosx"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/slick.jar"/>
+	<classpathentry kind="lib" path="lib/slick.jar" sourcepath="/Users/Matt/Documents/Programming/Java/Slick/trunk/Slick/src"/>
 	<classpathentry kind="lib" path="lib/tinylinepp.jar"/>
 	<classpathentry kind="lib" path="lib/phys2d-060408.jar"/>
 	<classpathentry kind="output" path="bin"/>
