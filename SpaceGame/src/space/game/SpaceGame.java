@@ -1,43 +1,69 @@
 package space.game;
 
 import java.io.IOException;
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.prefs.Preferences;
 
 import javax.swing.JOptionPane;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
+import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.AppGameContainer;
+import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.opengl.Texture;
+import org.newdawn.slick.opengl.InternalTextureLoader;
+import org.newdawn.slick.opengl.pbuffer.GraphicsFactory;
+import org.newdawn.slick.opengl.renderer.SGL;
 import org.newdawn.slick.state.StateBasedGame;
+import org.newdawn.slick.util.Log;
 
+import space.tests.AbstractMenuState;
 import space.util.GameText;
-import space.util.Images;
+import space.util.NullTexture;
+import space.util.Resources;
 import space.util.Utils;
 
 import com.eekboom.utils.Strings;
 
 public class SpaceGame extends StateBasedGame implements GameContext {
 
+	public static final int OFFSCREEN_TEXTURES = 1;
+	public static final int OFFSCREEN_TEXSIZE = 1024;
+	
 	private GameContainer container;
 	
-	private MainMenuState menuState;
+	private MainMenu menuState;
+	private GameExample gameState;
 	
-	private Graphics offscreenGraphics;
-	private Image offscreen;
+	private Graphics[] offscreenGraphics = new Graphics[OFFSCREEN_TEXTURES];
+	private Image[] offscreen = new Image[OFFSCREEN_TEXTURES];
 	
 	private SpaceGameState currentState;
+	public static int detailLevel = DETAIL_HIGH;
+	private static Preferences prefs = Preferences.userNodeForPackage(SpaceGame.class);
+
+	String[] detailStr = new String[] { "lowest", "low", "medium", "highest" };
+	
+	public static Preferences getPrefs() {
+		return prefs;
+	}
 	
 	public SpaceGame(String title) {
 		super(title);
+	}
+	
+	public GameContainer getContainer() {
+		return container;
 	}
 	
 	public int getWidth() {
@@ -48,7 +74,17 @@ public class SpaceGame extends StateBasedGame implements GameContext {
 		return container.getHeight();
 	}
 	
-	public void enterGame() {}
+	public int getDetailLevel() {
+		return detailLevel;
+	}
+	
+	public SpaceGameState getCurrentState() {
+		return currentState;
+	}
+	
+	public void enterGame() {
+		enterState(gameState);
+	}
 	
 	public void enterMainMenu() {
 		enterState(menuState);
@@ -66,12 +102,40 @@ public class SpaceGame extends StateBasedGame implements GameContext {
 		old.left();
 	}
 	
-	public Image getOffscreenImage() {
+	
+	private Image createImageGraphics(int ptr) throws SlickException {
+		Image offscreen = new Image(new NullTexture(OFFSCREEN_TEXSIZE, OFFSCREEN_TEXSIZE));
+		Graphics offscreenGraphics = offscreen.getGraphics();
+		this.offscreen[ptr] = offscreen;
+		this.offscreenGraphics[ptr] = offscreenGraphics;
 		return offscreen;
 	}
 	
-	public Graphics getOffscreenGraphics() {
-		return offscreenGraphics;
+	/**
+	 * Called to release the offscreen image texture; attempts to later
+	 * retrieve the image at this pointer will throw a null pointer.
+	 * 
+	 * @param ptr the index of the image 
+	 * @throws SlickException if we couldn't release the image
+	 */
+	public void releaseOffscreenImage(int ptr) throws SlickException {
+		if (offscreen[ptr]!=null) {
+			offscreen[ptr].destroy();
+			offscreenGraphics[ptr] = null;
+			offscreen[ptr] = null;
+		}
+	}
+	
+	public int getOffscreenImageCount() {
+		return OFFSCREEN_TEXTURES;
+	}
+	
+	public Image getOffscreenImage(int ptr) {
+		return offscreen[ptr];
+	}
+	
+	public Graphics getOffscreenGraphics(int ptr) {
+		return offscreenGraphics[ptr];
 	}
 	
 	/**
@@ -79,19 +143,59 @@ public class SpaceGame extends StateBasedGame implements GameContext {
 	 */
 	public void initStatesList(GameContainer c) throws SlickException {
 		this.container = c;
+		//container.setSmoothDeltas(true);
 		
-		Images.create(); //create the images, which may each be deferred
+		//checks capabilities
+		if (notPlayable()) {
+			Log.error("System requirements do not meet those needed to run this game");
+			c.exit();
+		}
+		
+		Resources.create(this); //create the images, which may each be deferred
 		
 		//imagine each image is loaded individually in a progress state
 		
-		Images.initSprites(); //fill the map
+		Resources.initSprites(this); //fill the map
 		
-		offscreen = new Image(1024, 1024);
-		Texture old = offscreen.getTexture();
-		offscreenGraphics = offscreen.getGraphics();
-		old.release(); //bug with slick: ensure that we release unused texture
+		//would be done in pre-loading
+		for (int i=0; i<SpaceGame.OFFSCREEN_TEXTURES; i++)
+			createImageGraphics(i);
 		
-		addState(menuState = new MainMenuState(this));
+		addState(menuState = new MainMenu(this));
+		addState(gameState = new GameExample(this));
+		currentState = menuState;
+	}
+	
+	private boolean notPlayable() throws SlickException {
+		IntBuffer buffer = BufferUtils.createIntBuffer(16);
+		GL11.glGetInteger(SGL.GL_MAX_TEXTURE_SIZE, buffer);
+		//fatal error
+		if (buffer.get(0)<OFFSCREEN_TEXSIZE) {
+			Utils.error("Your system does not support textures\ngreater than "+OFFSCREEN_TEXSIZE+
+					"x"+OFFSCREEN_TEXSIZE+", which is required for this game.\n" +
+					"Try updating your drivers or installing a newer graphics card.");
+			return true;
+		}
+		//not a fatal error
+		if (!GraphicsFactory.usingFBO()) {
+			//TODO: place this on in-game menu with 'do not show again'
+			boolean b = prefs.getBoolean("fbo.err.show", true);
+			if (b) {
+				Utils.error("Your system does not support FBO rendering,\nwhich means some" +
+					"of the graphics and effects may\nnot display corerctly.\n");
+				prefs.putBoolean("fbo.err.show", false);
+			}
+		}
+		return false;
+	}
+	
+	public boolean ingame() {
+		return currentState==gameState;
+	}
+	
+	public boolean closeRequested() {
+		prefs.putInt("spacegame.detail", detailLevel);
+		return true;
 	}
 	
 	public void update(GameContainer c) throws SlickException {
@@ -99,10 +203,36 @@ public class SpaceGame extends StateBasedGame implements GameContext {
 	}
 	
 	public void keyPressed(int k, char c) {
-		if (k == Input.KEY_ESCAPE)
-			container.exit();
+		if (k == Input.KEY_ESCAPE) {
+			if (ingame())
+				enterMainMenu();
+			else
+				container.exit();
+		}
+		
+		//DEBUG: change detail with 1-4
+		else if (k == Input.KEY_1) {
+			detailLevel = GameContext.DETAIL_LOWEST;
+			currentState.detailLevelChanged();
+		} else if (k == Input.KEY_2) {
+			detailLevel = GameContext.DETAIL_LOW;
+			currentState.detailLevelChanged();
+		} else if (k == Input.KEY_3) {
+			detailLevel = GameContext.DETAIL_MEDIUM;
+			currentState.detailLevelChanged();
+		} else if (k == Input.KEY_4){
+			detailLevel = GameContext.DETAIL_HIGH;
+			currentState.detailLevelChanged();
+		}
 	}
 	
+	public void postRenderState(GameContainer c, Graphics g) throws SlickException {
+		
+		
+		g.setColor(Color.white);
+		g.drawString("Total textures: "+InternalTextureLoader.totalTextures, 10, 25);
+		g.drawString("Detail Level: "+detailStr[detailLevel], 10, 40);
+	}
 	
 	
 	/**
@@ -122,6 +252,9 @@ public class SpaceGame extends StateBasedGame implements GameContext {
 		int height = 600;
 		boolean fullscreen = false;
 		
+		detailLevel = prefs.getInt("spacegame.detail", GameContext.DETAIL_HIGH);
+		System.out.println("detail"+detailLevel);
+		
 		try {
 			DisplayMode[] ds = Display.getAvailableDisplayModes();
 			List<String> s = new ArrayList<String>(ds.length);
@@ -136,12 +269,14 @@ public class SpaceGame extends StateBasedGame implements GameContext {
 			Collections.sort(s, Strings.getNaturalComparator());
 			String[] a = s.toArray(new String[s.size()]);
 			String best = a[a.length>2 ? a.length-2 : 0];
+			best = prefs.get("spacegame.display", best);
 			Object res = JOptionPane.showInputDialog(null, "Choose your display size:", "Display", 
 					JOptionPane.INFORMATION_MESSAGE, 
 					null, a, best);
 			if (res==null)
 				return;
 			String display = res.toString();
+			prefs.put("spacegame.display", display);
 			String[] split = display.split("x");
 			int i = split[1].indexOf(' ');
 			if (i!=-1) {

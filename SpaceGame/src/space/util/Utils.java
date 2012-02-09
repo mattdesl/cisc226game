@@ -88,7 +88,10 @@ public class Utils {
     	//e.g. 32 / 256
     	for (int r=0; r<width/tilew; r++) {
     		for (int c=0; c<height/tileh; c++) {
-    			image.drawEmbedded(x+r*tilew, y+c*tileh, tilew, tileh);
+    			image.drawEmbedded(x+r*tilew, y+c*tileh,
+    						tilew, tileh);
+    				//image.drawEmbedded(x+r*tilew, y+c*tileh, tilew, tileh);
+    			
     		}
     	}
     }

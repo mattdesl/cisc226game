@@ -1,8 +1,6 @@
-package space.game;
+package space.tests;
 
-import org.newdawn.slick.AngelCodeFont;
 import org.newdawn.slick.Color;
-import org.newdawn.slick.Font;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -11,39 +9,52 @@ import org.newdawn.slick.state.StateBasedGame;
 
 import space.easing.Easing;
 import space.easing.SimpleFX;
-import space.util.Images;
+import space.game.GameContext;
+import space.game.SpaceGameState;
+import space.util.Resources;
 import space.util.Utils;
 
-public class MainMenuState extends SpaceGameState {
+public class AbstractMenuState extends SpaceGameState {
 	
 	static final int ID = 1;
 	
 	
-	public MainMenuState(GameContext context) {
+	public AbstractMenuState(GameContext context) {
 		super(context, ID);
 	}
 	
 	Image bg, paper, alphaMap;
 	
-	private static final int FLICKER_DELAY_LOW = 20;
-	private static final int FLICKER_DELAY_HIGH = 110;
-	private static final float FLICKER_ADJUSTMENT = 0.002f;
-	private static final float FLICKER_ALPHA_LOW = 0.8f;
-	private static final float FLICKER_ALPHA_HIGH = 1f;
+	//Constants for the background flicker
+	protected static final int FLICKER_DELAY_LOW = 20;
+	protected static final int FLICKER_DELAY_HIGH = 110;
+	protected static final float FLICKER_ADJUSTMENT = 0.002f;
+	protected static final float FLICKER_ALPHA_LOW = 0.8f;
+	protected static final float FLICKER_ALPHA_HIGH = 1f;
 	
-	private static final float SCALE_LOW = 0.84f;
-	private static final float SCALE_HIGH = 0.93f;
-	private static final float SCALE_DURATION = 1800f;
-	private static final Easing SCALE_EASING = Easing.QUAD_IN_OUT;
-
-	private SimpleFX lightScale = new SimpleFX(SCALE_LOW, SCALE_HIGH, SCALE_DURATION, SCALE_EASING);
-
-	private static final float PAPER_ROT_START = -1;
-	private static final float PAPER_ROT_END = 1f;
-	private static final float PAPER_ROT_DURATION = 4000;
-	private static final Easing PAPER_ROT_EASING = Easing.EXPO_OUT;
+	//Constants for scaling the background in/out
+	protected static final float SCALE_LOW = 0.87f;
+	protected static final float SCALE_HIGH = 0.95f;
+	protected static final float SCALE_DURATION = 1800f;
+	protected static final Easing SCALE_EASING = Easing.QUAD_IN_OUT;
 	
-	private SimpleFX paperRot, paperAlpha;
+	//an fx for scaling the background
+	protected SimpleFX lightScale = new SimpleFX(SCALE_LOW, SCALE_HIGH, SCALE_DURATION, SCALE_EASING);
+	
+	//Constants for the spinning effect
+	protected static final float PAPER_SPIN_LOW = -1f;
+	protected static final float PAPER_SPIN_HIGH = 1f;
+	protected static final float PAPER_SPIN_DURATION = 2500;
+	protected static final Easing PAPER_SPIN_EASING = Easing.EXPO_OUT;
+	
+	//Constants for the fade-in effect on the paper
+	protected static final float PAPER_FADE_START = 0.5f;
+	protected static final float PAPER_FADE_DURATION = 550f;
+	protected static final Easing PAPER_FADE_EASING = Easing.QUAD_OUT;
+	
+	//some fx for the paper spinning/fading values
+	private SimpleFX paperSpin, paperAlpha;
+	
 	private Color paperFilter = new Color(1f,1f,1f,1f);
 	
 	private int flickerTime;
@@ -57,25 +68,32 @@ public class MainMenuState extends SpaceGameState {
 	
 	private boolean hidePaper = false;
 	
-	private Font font;
+	private float textScale;
+	private float paperWidth, paperHeight;
+	
+	private final Color BG_COLOR = new Color(0f,0f,0f,0f);
 	
 	/**
 	 * @see org.newdawn.slick.state.BasicGameState#init(org.newdawn.slick.GameContainer, org.newdawn.slick.state.StateBasedGame)
 	 */
 	public void init(GameContainer container, StateBasedGame game) throws SlickException {
-		bg = Images.get("menu.bg");
-		paper = Images.get("menu.paper");
-		alphaMap = Images.get("menu.alphaMap");
-		atmos = Images.get("atmosphere");
+		bg = Resources.getImage("menu.bg");
+		paper = Resources.getImage("menu.paper");
+		alphaMap = Resources.getImage("menu.alphaMap");
+		atmos = Resources.getImage("atmosphere");
 		
-		float s1 = Utils.rnd(PAPER_ROT_START, PAPER_ROT_END);
-		float s2 = Utils.rnd(PAPER_ROT_START, PAPER_ROT_END);
-		paperRot = new SimpleFX(s1, PAPER_ROT_END, PAPER_ROT_DURATION, PAPER_ROT_EASING);
-		paperAlpha = new SimpleFX(0.5f, 1f, 550f, Easing.QUAD_OUT);
+		float s1 = Utils.rnd(PAPER_SPIN_LOW, PAPER_SPIN_HIGH);
+		paperSpin = new SimpleFX(s1, 0, PAPER_SPIN_DURATION, PAPER_SPIN_EASING);
+		paperAlpha = new SimpleFX(PAPER_FADE_START, 1f, PAPER_FADE_DURATION, PAPER_FADE_EASING);
+		
+		container.setDefaultFont(Resources.getFont());
+		
+		//g.setAntiAlias(true);
 		
 		updateOffscreen();
 	}
 
+    
 	public void keyReleased(int k, char c) {
 		if (paperAlpha.finished()) {
 			hidePaper = !hidePaper;
@@ -87,10 +105,12 @@ public class MainMenuState extends SpaceGameState {
 	}
 	
 	private void updateOffscreen() {
-		Graphics g = context.getOffscreenGraphics();
+		if (context.getDetailLevel()==0)
+			return;
+		Graphics g = context.getOffscreenGraphics(0);
 		Graphics.setCurrent(g);
 		g.clear();
-		Image off = context.getOffscreenImage();
+		Image off = context.getOffscreenImage(0);
 		float w = off.getWidth();
 		float h = off.getHeight();
 		Utils.texture(bg, 0, 0, w, h);
@@ -99,13 +119,14 @@ public class MainMenuState extends SpaceGameState {
 	
 	
 	public void entering() {
-		float s1 = Utils.rnd(PAPER_ROT_START, PAPER_ROT_END);
-		float s2 = Utils.rnd(PAPER_ROT_START, PAPER_ROT_END);
-		paperRot.setStart(s1);
-		paperRot.setEnd(s2);
+		float s1 = Utils.rnd(PAPER_SPIN_LOW, PAPER_SPIN_HIGH);
+		float s2 = Utils.rnd(PAPER_SPIN_LOW, PAPER_SPIN_HIGH);
+		paperSpin.setStart(s1);
+		//paperRot.setEnd(s2);
 		paperAlpha.restart();
-		paperRot.restart();
+		paperSpin.restart();
 		//lightScale.restart();
+		context.getContainer().getGraphics().setBackground(BG_COLOR);
 		updateOffscreen();
 		flickerTime = 0;
 		nextFlickerTime = Utils.rnd(FLICKER_DELAY_LOW, FLICKER_DELAY_HIGH);
@@ -130,29 +151,30 @@ public class MainMenuState extends SpaceGameState {
 	 */
 	public void render(GameContainer container, StateBasedGame game, Graphics g) {
 		Graphics.setCurrent(g);
-
-		
+		container.getGraphics().setFont(container.getDefaultFont());
+	
 		float sw = container.getWidth(), sh = container.getHeight();
-		float IMGSIZE = Math.min(sh, 1024);
-		
-		////// ALPHA MAP RENDERING
-		// If the height is < 1024, shrink to fit
-		// Otherwise render fully
-		
-		float ls = lightScale.getValue();
-		float w = IMGSIZE*ls, h = IMGSIZE*ls;
-		
-		g.setDrawMode(Graphics.MODE_ALPHA_MAP);
-		alphaMap.draw(sw/2f-w/2f, sh/2f-h/2f, w, h, lighting);
-		
-		g.setDrawMode(Graphics.MODE_ALPHA_BLEND);
-		context.getOffscreenImage().draw(sw/2f-IMGSIZE/2f, sh/2f-IMGSIZE/2f);
-		
-		g.setDrawMode(Graphics.MODE_NORMAL);
+		if (context.getDetailLevel()>GameContext.DETAIL_LOWEST) {
+			float IMGSIZE = Math.min(sh, 1024);
+			
+			////// ALPHA MAP RENDERING
+			// If the height is < 1024, shrink to fit
+			// Otherwise render fully
+			
+			float ls = lightScale.getValue();
+			float w = IMGSIZE*ls, h = IMGSIZE*ls*.9f;
+			
+			g.setDrawMode(Graphics.MODE_ALPHA_MAP);
+			alphaMap.draw(sw/2f-w/2f, sh/2f-h/2f, w, h, lighting);
+			
+			g.setDrawMode(Graphics.MODE_ALPHA_BLEND);
+			context.getOffscreenImage(0).draw(sw/2f-IMGSIZE/2f, sh/2f-IMGSIZE/2f);
+			g.setDrawMode(Graphics.MODE_NORMAL);
+		}
 		
 		////// PAPER RENDERING
 		// If height is < 1024, shrink to fit
-		float ang = paperRot.getValue();
+		float ang = paperSpin.getValue();
 		float pw = paper.getWidth();
 		float ph = paper.getHeight();
 		float s = 1f;
@@ -166,7 +188,6 @@ public class MainMenuState extends SpaceGameState {
 		
 		paperFilter.a = paperAlpha.getValue();
 		paper.draw(0, 0, pw, ph, paperFilter);
-		g.setAntiAlias(false);
 		float textScale = 1f;
 		if (s<1f)
 			textScale = Math.min(1f, s*2);
@@ -175,49 +196,8 @@ public class MainMenuState extends SpaceGameState {
 				"Best viewed in 1920x1080");
 		
 		g.resetTransform();
-		atmos.draw(0, 0, sw, sh, atmosFilter);
-		
-//		float px = paperX.getValue()+sw/2f-paper.getWidth()/2f;
-//		float py = paperY.getValue()+sh/2f-paper.getHeight()/2f;
-//		float cx = paper.getWidth()/2f;
-//		float cy = paper.getHeight()/2f;
-//		float ang = paperRot.getValue();
-//		
-//		g.translate(px, py);
-//		g.rotate(cx, cy, ang);
-//		
-//		paper.draw(0, 0);
-//		g.setColor(Color.black);
-//		g.drawString("This wuold be a menu page", paper.getWidth()/2f, 50);
-//		
-//		if (container.getHeight() > IMGSIZE) {
-//			float amt = container.getHeight()/(float)IMGSIZE;
-//			
-//			IMGSIZE = container.getHeight();
-//			
-//		}
-		
-//		float sw = container.getWidth(), sh = container.getHeight();
-//		float ls = lightScale.getValue();
-//		float w=IMGSIZE*ls, h=IMGSIZE*ls;
-//		
-//		g.translate(sw/2f-w/2f, sh/2f-h/2f);
-//		
-//		g.setDrawMode(Graphics.MODE_ALPHA_MAP);
-//		alphaMap.draw(0f, 0f, w, h, lighting);
-//		g.resetTransform();
-//		
-//		g.setDrawMode(Graphics.MODE_ALPHA_BLEND);
-//		context.getOffscreenImage().draw(sw/2f-IMGSIZE/2f, sh/2f-IMGSIZE/2f);
-//		
-//		
-//		g.setDrawMode(Graphics.MODE_NORMAL);
-//		
-		
-//		
-//		g.resetTransform();
-//		
-//		atmos.draw(0, 0, sw, sh, atmosFilter);
+//		if (context.getDetailLevel()>=GameContext.DETAIL_MEDIUM)
+//			atmos.draw(0, 0, sw, sh, atmosFilter);
 	}
 	
 	
@@ -241,13 +221,14 @@ public class MainMenuState extends SpaceGameState {
 			lighting.a = Math.min(lighting.a + FLICKER_ADJUSTMENT * delta, nextFlickerAlpha);
 		}
 		
-		paperRot.update(delta);
-		paperAlpha.update(delta);
 		lightScale.update(delta);
 		if (lightScale.finished()) {
 			lightScale.flip();
 			lightScale.restart();
 		}
+		
+		paperSpin.update(delta);
+		paperAlpha.update(delta);
 	}
 
 }

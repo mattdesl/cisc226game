@@ -28,6 +28,9 @@ public class SpaceGameState extends BasicGameState {
 	public void leaving() {}
 	public void left() {}
 	
+	public void detailLevelChanged() {
+	}
+	
 	public GameContext getContext() {
 		return context;
 	}
@@ -41,12 +44,12 @@ public class SpaceGameState extends BasicGameState {
 	/**
 	 * @see org.newdawn.slick.state.BasicGameState#render(org.newdawn.slick.GameContainer, org.newdawn.slick.state.StateBasedGame, org.newdawn.slick.Graphics)
 	 */
-	public void render(GameContainer container, StateBasedGame game, Graphics g) {
+	public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
 	}
 
 	/**
 	 * @see org.newdawn.slick.state.BasicGameState#update(org.newdawn.slick.GameContainer, org.newdawn.slick.state.StateBasedGame, int)
 	 */
-	public void update(GameContainer container, StateBasedGame game, int delta) {
+	public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
 	}
 }
