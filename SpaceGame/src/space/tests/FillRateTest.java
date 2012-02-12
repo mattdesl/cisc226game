@@ -16,8 +16,7 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.opengl.renderer.Renderer;
-import org.newdawn.slick.opengl.renderer.SGL;
+import org.newdawn.slick.opengl.Texture;
 
 import space.util.Utils;
 
@@ -36,10 +35,11 @@ public class FillRateTest extends BasicGame {
     final int COUNT = 17000;
     private ArrayList<Vector2f> particles = new ArrayList<Vector2f>(COUNT);
     Image clouds, alpha;
+    Texture texture;
     
 	public void init(GameContainer container) throws SlickException {
 		tile = new Image("res/tex/tile.png");
-		clouds = new Image("res/clouds.jpg");
+		clouds = new Image("res/menu.png");
 		alpha = new Image("res/alpha.png");
 		FloatBuffer b = BufferUtils.createFloatBuffer(16);
 		GL11.glGetFloat(GL12.GL_SMOOTH_POINT_SIZE_RANGE, b);
@@ -49,6 +49,8 @@ public class FillRateTest extends BasicGame {
 		for (int i=0; i<COUNT; i++) {
 			particles.add(new Vector2f(Utils.rnd(0f, -container.getWidth()-TILESIZE/2f), Utils.rnd(0f, -container.getHeight()-TILESIZE/2f)));
 		}
+		
+		texture = clouds.getTexture();
 	}
 	
 	
@@ -56,12 +58,46 @@ public class FillRateTest extends BasicGame {
 	public void render(GameContainer container, Graphics g)
 			throws SlickException {
 		
-		SGL GL = Renderer.get();
+		//image size, e.g. 550x200
+		float width = texture.getImageWidth(); 
+		float height = texture.getImageHeight();
+		//the physical width of the texture which will be used in glTexCoord (generally a float between 0 and 1)
+		float textureWidth = texture.getWidth();
+		float textureHeight = texture.getHeight();
+		//texture offsets, for texture atlas purposes. leave at 0 for full image
+		float textureOffsetX = 0;
+		float textureOffsetY = 0;
+		//where on screen to draw the image
+		float x = 0;
+		float y = 0;
+		
+		Color.white.bind();
+		clouds.bind();
+//		GL11.glBegin(GL11.GL_QUADS);
+//			GL11.glTexCoord2f(textureOffsetX, textureOffsetY);
+//			GL11.glVertex3f(x, y, 0);
+//			GL11.glTexCoord2f(textureOffsetX, textureOffsetY + textureHeight);
+//			GL11.glVertex3f(x, y + height, 0);
+//			GL11.glTexCoord2f(textureOffsetX + textureWidth, textureOffsetY
+//					+ textureHeight);
+//			GL11.glVertex3f(x + width, y + height, 0);
+//			GL11.glTexCoord2f(textureOffsetX + textureWidth, textureOffsetY);
+//			GL11.glVertex3f(x + width, y, 0);
+//		GL11.glEnd();
+		
+        GL11.glBegin(GL11.GL_QUADS);
+	        GL11.glTexCoord2f(0,0);GL11.glVertex2f(100,100);
+	        GL11.glTexCoord2f(1,0);GL11.glVertex2f(100+texture.getTextureWidth(),100);
+	        GL11.glTexCoord2f(1,1);GL11.glVertex2f(100+texture.getTextureWidth(),100+texture.getTextureHeight());
+	        GL11.glTexCoord2f(0,1);GL11.glVertex2f(100,100+texture.getTextureHeight());
+	     GL11.glEnd();
+		
+		/*SGL GL = Renderer.get();
 		int size = Math.min((int)PSIZE, TILESIZE);
 		float hs = size/2f;
 		//GLContext.getCapabilities().OpenGL20;
 		//GLContext.getCapabilities().GL_ARB_point_sprite
-		/*
+		
 		int count = 100;
 		if (points) {
 			tile.bind();
@@ -83,7 +119,7 @@ public class FillRateTest extends BasicGame {
 			}
 			tile.endUse();
 		}
-		g.drawString(COUNT+" sprites with point mode? "+points, 10, 25);*/
+		g.drawString(COUNT+" sprites with point mode? "+points, 10, 25);
 		
 		g.setColor(Color.white);
 		g.fillRect(50, 50, 250, 250);
@@ -94,7 +130,7 @@ public class FillRateTest extends BasicGame {
 		g.setDrawMode(Graphics.MODE_ALPHA_BLEND);
 		clouds.draw(50, 50, 500, 500, new Color(0f,1f,0f,.25f));
 		
-		g.setDrawMode(Graphics.MODE_NORMAL);
+		g.setDrawMode(Graphics.MODE_NORMAL);*/
 	}
 
 

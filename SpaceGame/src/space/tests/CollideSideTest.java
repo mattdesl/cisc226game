@@ -24,7 +24,7 @@ import org.newdawn.slick.geom.Rectangle;
  * @author Matt
  */
 public class CollideSideTest extends BasicGame {
-    CollideSideTest() { super(""); }
+    CollideSideTest() { super("asdgs"); }
     public static void main(String[] args) throws SlickException {
         new AppGameContainer(new CollideSideTest(), 800, 600, false).start();
     }
@@ -157,27 +157,8 @@ public class CollideSideTest extends BasicGame {
     private float r = 0;
 
     public void render(GameContainer container, Graphics g) throws SlickException {
-//        for (int i=0; i<entities.size(); i++)
-//            entities.get(i).draw(g);
-        float x=400, y=400;
-        new Color(1f,1f,1f,0.5f).bind();
-        ui.draw(x, y, null);
-        
-        g.setDrawMode(Graphics.MODE_SCREEN);
-        g.setColor(Color.red);
-        g.fillOval(50, 50, 50, 50);
-        g.setColor(Color.blue);
-        g.fillOval(25, 75, 50, 50);
-        g.setColor(Color.green);
-        g.fillOval(75, 75, 50, 50);
-        
-        //g.setBackground(new Color(0f, 0f, 0f, .1f));
-        
-        new Color(1f,1f,1f,0.0f).bind();
-        ui.draw(x, y, null);
-        
-        g.setDrawMode(Graphics.MODE_NORMAL);
-        ui.draw(x+50, y);
+        for (int i=0; i<entities.size(); i++)
+            entities.get(i).draw(g);
     }
     
     
