@@ -33,21 +33,24 @@ public class CollideSideTest extends BasicGame {
     List<Sprite> entities; 
     final int TILESIZE = 32;
     
-    World world = new World(new Vector2f(0, 5f), 10);
+    World world = new World(new Vector2f(0, 8f), 10);
     int worldUpdateInterval = 5;
     int counter = 0;
     
     class Player extends Sprite {
         
         private final float SPEED = .05f;
-        
+        private boolean jumped = false; //have we jumped?
         
         Player(World world, Image img, float x, float y) {
             super(world, img, x, y);
         }
         
         protected Body createBody(float w, float h) {
-            return new Body(new Box(w, h), 10f);
+        	Body retVal = new Body(new Box(w, h), 10f);
+        	retVal.setMaxVelocity(20,35);
+            return retVal;
+            		
         }
         
         
@@ -61,9 +64,11 @@ public class CollideSideTest extends BasicGame {
                     body.adjustVelocity(new Vector2f(SPEED*delta, 0f));
                     
                 } 
-                if (c.getInput().isKeyDown(Input.KEY_SPACE)) {
+
+                if (c.getInput().isKeyDown(Input.KEY_SPACE) && vy == 0) {
                     //if (vy < 10)
-                        body.adjustVelocity(new Vector2f(0f, -SPEED*2*delta));
+                        body.adjustVelocity(new Vector2f(0f, -35f));
+
                 }
                 
                 //System.out.println(body.getVelocity().getY());
@@ -118,7 +123,7 @@ public class CollideSideTest extends BasicGame {
     
     public void init(GameContainer container) throws SlickException {
         //container.getGraphics().setBackground(Color.lightGray);
-        container.setSmoothDeltas(true);
+        //container.setSmoothDeltas(true);
         
         //world.enableRestingBodyDetection(0.01f, 0.000001f, 0.01f);
         
@@ -154,7 +159,6 @@ public class CollideSideTest extends BasicGame {
             counter -= worldUpdateInterval;
         }
     }
-    private float r = 0;
 
     public void render(GameContainer container, Graphics g) throws SlickException {
         for (int i=0; i<entities.size(); i++)

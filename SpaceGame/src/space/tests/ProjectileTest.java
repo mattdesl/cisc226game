@@ -35,7 +35,7 @@ public class ProjectileTest extends BasicGame {
 
 		public Body createBody(float width, float height){
 			Body retVal =  new Body(new Box(width,height),10f);
-			retVal.setMaxVelocity(20,20);
+			retVal.setMaxVelocity(20,35);
 			return retVal;
 		}
 
@@ -66,8 +66,8 @@ public class ProjectileTest extends BasicGame {
 				else if (container.getInput().isKeyDown(Input.KEY_D)){
 					body.adjustVelocity(new Vector2f(SPEED*delta, 0f));
 				}
-				if (container.getInput().isKeyDown(Input.KEY_SPACE)){
-					body.adjustVelocity(new Vector2f(0f, -SPEED*2*delta));
+				if (container.getInput().isKeyDown(Input.KEY_SPACE) && vectorY == 0){
+					body.adjustVelocity(new Vector2f(0f, -35f));
 				}
 			}
 		}
