@@ -82,7 +82,8 @@ public class ProjectileTest extends BasicGame {
 			body = new Body (new Box(width, height),.5f);
 			body.setPosition(x, y);
 			body.setMaxVelocity(70,70);
-			body.adjustVelocity(new Vector2f(70f,70f));
+			body.adjustVelocity(new Vector2f(70f,0));
+			body.setGravityEffected(false);
 			world.add(body);
 		}
 
