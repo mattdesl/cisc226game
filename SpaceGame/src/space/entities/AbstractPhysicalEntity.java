@@ -15,6 +15,10 @@ public abstract class AbstractPhysicalEntity implements PhysicalEntity {
     	this.body = body;
     }
     
+    protected AbstractPhysicalEntity(){
+    	this.body = null;
+    }
+    
     public void setPosition(float x, float y) {
     	getBody().setPosition(x, y);
     }
@@ -57,6 +61,10 @@ public abstract class AbstractPhysicalEntity implements PhysicalEntity {
     
     public Body getBody() {
         return body;
+    }
+    
+    public void setBody(Body body){
+    	this.body = body;    	
     }
     
     public abstract PhysicalEntity copy();
