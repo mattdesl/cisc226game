@@ -10,25 +10,12 @@ import java.util.Random;
 import net.phys2d.math.ROVector2f;
 
 import org.lwjgl.Sys;
-import org.newdawn.slick.Image;
 import org.newdawn.slick.util.Log;
 
-import space.game.GameContext;
-
 public class Utils {
-	public static final File ROOT = new File(".");
-	
-    private static File createFile(String ref) {
-        File file = new File(ROOT, ref);
-        if (!file.exists()) {
-            file = new File(ref);
-        }
-        
-        return file;
-    }
-    
-
-    private static final Random RND = new Random();
+	public static final long DEFAULT_SEED = 1331106565117L;
+	private static final Random RND = new Random();
+    private static ResourceLoader resourceLocator = new DefaultResourceLoader();
     
     public static int rnd() {
     	return RND.nextInt();
@@ -60,48 +47,6 @@ public class Utils {
         return (float)Math.sqrt( dx*dx + dy*dy );
     }
     
-    public static void drawCentered(Image img, GameContext screen) {
-        drawCentered(img, screen, 0, 0);
-    }
-    
-    public static void drawCentered(Image img, GameContext screen, float x, float y) {
-        drawCentered(img, screen.getWidth(), screen.getHeight(), x, y);
-    }
-    
-    public static void drawCentered(Image img, float parentWidth, float parentHeight, float x, float y) {
-        img.draw(x + parentWidth/2f-img.getWidth()/2f, y + parentHeight/2f-img.getHeight()/2f);
-    }
-    
-    /** 
-     * Tiles an image across a rectangular area.
-     * 
-     * @param image
-     * @param x
-     * @param y
-     * @param width
-     * @param height
-     */
-    public static void textureInUse(Image image, float x, float y, float width, float height) {
-    	float tilew = image.getWidth();
-    	float tileh = image.getHeight();
-    	
-    	//e.g. 32 / 256
-    	for (int r=0; r<width/tilew; r++) {
-    		for (int c=0; c<height/tileh; c++) {
-    			image.drawEmbedded(x+r*tilew, y+c*tileh,
-    						tilew, tileh);
-    				//image.drawEmbedded(x+r*tilew, y+c*tileh, tilew, tileh);
-    			
-    		}
-    	}
-    }
-    
-    public static void texture(Image image, float x, float y, float width, float height) {
-    	image.startUse();
-    	textureInUse(image, x, y, width, height);
-    	image.endUse();
-    }
-    
     public static void error(String msg) {
     	error(msg, null);
     }
@@ -112,26 +57,65 @@ public class Utils {
     	else Log.error(msg);
     }
     
-    public static InputStream getResourceAsStream(String ref) {
-        String cpRef = ref.replace('\\', '/');
-        InputStream in = Utils.class.getClassLoader().getResourceAsStream(cpRef);
-        if (in==null) { // try file system
-            try { return new FileInputStream(createFile(ref)); }
-            catch (IOException e) {}
-        }
-        return in;
+    public static URL getResource(String str) {
+    	return resourceLocator.getResource(str);
     }
     
-    public static URL getResource(String ref) {
-        String cpRef = ref.replace('\\', '/');
-        URL url = Utils.class.getClassLoader().getResource(cpRef);
-        if (url==null) {
-            try { 
-                File f = createFile(ref);
-                if (f.exists())
-                    return f.toURI().toURL();
-            } catch (IOException e) {}
+    public static InputStream getResourceAsStream(String str) {
+    	return resourceLocator.getResourceAsStream(str);
+    }
+    
+    public static void setResourceLocator(ResourceLoader r) {
+    	resourceLocator = r;
+    }
+    
+    public static ResourceLoader getResourceLocator() {
+    	return resourceLocator;
+    }
+	
+    public static final class DefaultResourceLoader implements ResourceLoader {
+
+    	public static final File ROOT = new File(".");
+    	
+        private static File createFile(String ref) {
+            File file = new File(ROOT, ref);
+            if (!file.exists()) {
+                file = new File(ref);
+            }
+            
+            return file;
         }
-        return url;
+        
+	    public InputStream getResourceAsStream(String ref) {
+	        String cpRef = ref.replace('\\', '/');
+	        InputStream in = Utils.class.getClassLoader().getResourceAsStream(cpRef);
+	        if (in==null) { // try file system
+	            try { return new FileInputStream(createFile(ref)); }
+	            catch (IOException e) {}
+	        }
+	        if (in==null)
+	        	Log.warn("could not find resource "+ref);
+	        return in;
+	    }
+	    
+	    public URL getResource(String ref) {
+	        String cpRef = ref.replace('\\', '/');
+	        URL url = Utils.class.getClassLoader().getResource(cpRef);
+	        if (url==null) {
+	            try { 
+	                File f = createFile(ref);
+	                if (f.exists())
+	                    return f.toURI().toURL();
+	            } catch (IOException e) {}
+	        }
+	        if (url==null)
+	        	Log.warn("could not find resource "+ref);
+	        return url;
+	    }
+    }
+    
+    public static interface ResourceLoader {
+    	public URL getResource(String str);
+    	public InputStream getResourceAsStream(String str);
     }
 }

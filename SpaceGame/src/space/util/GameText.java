@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import org.newdawn.slick.util.ResourceLoader;
 
 public class GameText {
 	

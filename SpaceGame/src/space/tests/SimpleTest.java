@@ -166,7 +166,7 @@ public class SimpleTest extends BasicGame {
         g.resetTransform();
         ship.draw(cx, cy);
         
-        g.drawString("Total textures: "+InternalTextureLoader.totalTextures, x, y);
+        g.drawString("Total textures: "+InternalTextureLoader.get().getTextureCount(), x, y);
         
         //drawImage3D(container, hud, 0f, 0f, -4f, 1f, 1f, 1f, 0, rot, 0, null);
         

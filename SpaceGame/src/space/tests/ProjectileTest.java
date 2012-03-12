@@ -192,9 +192,7 @@ public class ProjectileTest extends BasicGame {
 		new AppGameContainer(new ProjectileTest(), 800, 600, false).start();
 	}
 
-	@Override
-	public void render(GameContainer container, Graphics g)
-			throws SlickException {
+	public void render(GameContainer container, Graphics g) throws SlickException {
 		for (int i =0; i<entities.size(); i++){
 			entities.get(i).draw(g);
 		}

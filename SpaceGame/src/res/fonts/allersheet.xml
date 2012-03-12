@@ -1,6 +1,0 @@
-<sheet>
-	<sprite name="header" x="0" y="0" width="256" height="128" />
-	<sprite name="italic" x="256" y="0" width="256" height="128" />
-	<sprite name="bold" x="0" y="128" width="256" height="64" />
-	<sprite name="normal" x="256" y="128" width="256" height="64" />
-</sheet>
