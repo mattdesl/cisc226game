@@ -1,4 +1,4 @@
-package space.tests;
+package space.engine.test;
 
 import java.util.Random;
 
@@ -320,7 +320,7 @@ public class PhysTest extends BasicGame {
 		g.setColor(Color.white);
 		g.drawString("Velocity: "+(int)ship.getVelX()+" "+(int)ship.getVelY(), 10, 25);
 		g.drawString("Angle: "+ang, 10, 60);
-		g.drawString("Total Textures: "+InternalTextureLoader.totalTextures, 10, 40);
+		g.drawString("Total Textures: "+InternalTextureLoader.getTextureCount(), 10, 40);
 		g.drawString("Camera damp: "+(int)camDampX+" "+(int)camDampY, 10, 80);
 
 		//        g.resetTransform();
