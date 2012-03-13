@@ -23,10 +23,12 @@ public abstract class AbstractPhysicalEntity implements PhysicalEntity {
     	getBody().setPosition(x, y);
     }
     
+    // returns the X position of the body 
     public float getX() {
         return getBody().getPosition().getX();
     }
 
+    // returns the Y position of the body
     public float getY() {
         return getBody().getPosition().getY();
     }
@@ -51,10 +53,12 @@ public abstract class AbstractPhysicalEntity implements PhysicalEntity {
     	getBody().adjustVelocity(new Vector2f(x, y));
     }
 
+    // gets the X Velocity of the Body
     public float getVelX() {
     	return getBody().getVelocity().getX();
     }
     
+    // gets the Y velocity of the body
     public float getVelY() {
     	return getBody().getVelocity().getY();
     }

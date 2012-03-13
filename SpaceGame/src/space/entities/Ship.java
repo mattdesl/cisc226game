@@ -15,7 +15,8 @@ public class Ship extends AbstractPhysicalEntity implements RenderableEntity {
 	private Image currentImage;
 	private Color tint = new Color(1f,1f,1f,1f); //we can adjust alpha value of ship here
 	private final int textureWidth = 38; // height of a single sprite on the spritesheet
-	private final int textureHeight = 48; 
+	private final int textureHeight = 48;
+	private int shipWidth, shipHeight;
 	private float dirX, dirY; // direction the ship is currently facing
 	private boolean shipMoving; // are we moving?
 	
@@ -42,6 +43,8 @@ public class Ship extends AbstractPhysicalEntity implements RenderableEntity {
 		shipThrust = shipSheet.getSubImage(0, textureHeight, textureWidth, textureHeight);
 		shipStrafeRight2 = shipSheet.getSubImage(textureWidth, textureHeight, textureWidth, textureHeight);
 		shipStrafeLeft2 = shipSheet.getSubImage(textureWidth*2, textureHeight, textureWidth, textureHeight);
+		this.shipWidth = shipIdle.getWidth()/2;
+		this.shipHeight = shipIdle.getHeight()/2;
 		currentImage = shipIdle;
 	}
 	
@@ -49,9 +52,11 @@ public class Ship extends AbstractPhysicalEntity implements RenderableEntity {
 	public void draw(Graphics g) {
 		draw(g, 0f, 0f, 1f);
 	}
-	
+	// draw offset by shipwidth, because the body getPosition vector reports the position of the upperleft bounding box; 
+	// therefore we draw the image on an offset. 
+	// TODO: collision will probably be very off because of this
 	public void draw(Graphics g, float xOff, float yOff, float scale) {
-		currentImage.draw(getX()+xOff, getY()+yOff, scale, tint); 
+		currentImage.draw(getX()-shipWidth+xOff, getY()-shipWidth+yOff, scale, tint); 
 	}
 	
 	public Ship copy() {
@@ -117,5 +122,18 @@ public class Ship extends AbstractPhysicalEntity implements RenderableEntity {
 	public int getHeight(){
 		return currentImage.getHeight();
 	}
+	//dirty
+/*	public void setPosition(float x, float y){
+		super.setPosition(x-19, y-19);
+	}*/
+	
+/*	public float getX(){
+		return super.getX() + 19;
+	}
+	
+	public float getY(){
+		return super.getY() + 19;
+	}*/
+	
 	
 }
