@@ -40,11 +40,9 @@ public class PhysTest extends BasicGame {
 	World world = new World(new Vector2f(0, 0), 10);
 
 	private float dirX, dirY, ang;
+	private float mouseX, mouseY;
 	//private final float MOVE_SPEED = 0.015f;
-	private final float MOVE_SPEED = 3f;
 	private final float TURN_SPEED = 0.25f;
-	private final float STRAFE_SPEED = 4f;
-	private final float MAX_SPEED = Float.MAX_VALUE;
 
 	private Image atmos;
 	private float atmosRot;
@@ -118,10 +116,10 @@ public class PhysTest extends BasicGame {
 		shipStrafeLeft2 = shipSheet.getSubImage(tw*2, th, tw, th);*/
 
 		//ship = new Body(new Circle(shipImg.getWidth()/2f), 10f);
-		ship.setPosition(50, 50);
+		ship.setPosition(400, 300);
 
 /*		ship.setMaxVelocity(25f, 25f);*/
-
+		//world.setGravity(0, 0);
 		world.add(ship.getBody());
 		updateVector();
 	}
@@ -170,10 +168,12 @@ public class PhysTest extends BasicGame {
 	public void mouseMoved(int oldx, int oldy, int x, int y) {
 		if (!mouseDir)
 			return;
+		mouseX = x;
+		mouseY = y;
 		float cx = container.getWidth()/2f;
 		float cy = container.getHeight()/2f;
 
-		ang = -(float)Math.toDegrees( Math.atan2( cx-x, cy-y ) );
+		ang = -(float)Math.toDegrees( Math.atan2( ship.getX()-x, ship.getY()-y ) );
 
 		//ang = 360 * (x/(float)container.getWidth()) - 180;
 		updateVector();
@@ -242,7 +242,7 @@ public class PhysTest extends BasicGame {
 		//float x=ship.getPosition().getX(), y=ship.getPosition().getY();
 		//float cx = x+shipImg.getWidth()/2f, cy = y+shipImg.getHeight()/2f;
 
-		float sx = ship.getX(), sy = ship.getY();
+		float sx = container.getWidth()-ship.getX()/2, sy = ship.getY();
 
 		star1.draw(-sx*.10f, -sy*.10f, .75f);
 
@@ -290,16 +290,18 @@ public class PhysTest extends BasicGame {
 
 		float scaleAmt = Math.min(CAM_ZOOM, zoomOut);
 		float scale = 1f-scaleAmt;
-		float rx = cx-ship.getWidth()*scale/2f;
-		float ry = cy-ship.getHeight()*scale/2f;
+		float xOff = vx/2.5f;
+		float yOff = vy/2.5f;
+//		float rx = cx-ship.getWidth()*scale/2f;
+//		float ry = cy-ship.getHeight()*scale/2f;
 		//g.scale(scale, scale);
 
-		g.translate(vx*.8f, vy*.8f);
+//		g.translate(vx*.8f, vy*.8f);
 
-		g.rotate(cx, cy, (float)Math.toDegrees(ship.getRotation()));
+		g.rotate(ship.getX(), ship.getY(), (float)Math.toDegrees(ship.getRotation()));
 
 		g.setAntiAlias(true);
-		ship.draw(g, rx, ry, scale);
+		ship.draw(g, xOff, yOff, scale);
 		g.setAntiAlias(false);
 		//        g.rotate(cx, cy, -(float)Math.toDegrees(ship.getRotation()));
 		//        
@@ -319,9 +321,11 @@ public class PhysTest extends BasicGame {
 
 		g.setColor(Color.white);
 		g.drawString("Velocity: "+(int)ship.getVelX()+" "+(int)ship.getVelY(), 10, 25);
-		g.drawString("Angle: "+ang, 10, 60);
-		g.drawString("Total Textures: "+InternalTextureLoader.getTextureCount(), 10, 40);
-		g.drawString("Camera damp: "+(int)camDampX+" "+(int)camDampY, 10, 80);
+		g.drawString("Angle: "+ang, 10, 40);
+		g.drawString("Mouse Location: X: "+ mouseX + " Y: "+ mouseY, 10, 60);
+		g.drawString("Ship position: X: " + ship.getX() + " Y: "+ ship.getY(), 10, 80);
+		g.drawString("Total Textures: "+InternalTextureLoader.getTextureCount(), 10, 100);
+		g.drawString("Camera damp: "+(int)camDampX+" "+(int)camDampY, 10, 120);
 
 		//        g.resetTransform();
 
