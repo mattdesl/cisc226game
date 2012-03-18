@@ -11,8 +11,8 @@ import net.phys2d.raw.StaticBody;
 import net.phys2d.raw.World;
 import net.phys2d.raw.shapes.Box;
 
+import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 
@@ -122,6 +122,8 @@ public class InGameState extends AbstractState implements CollisionListener {
 		
 		//render our foreground elements that don't need to be clamped to the screen size
 		starfield.drawStars(context, batch, g);
+		
+		batch.setColor(Color.white);
 		
 		for (Entity e : entities) {
 			e.draw(context, batch, g);
