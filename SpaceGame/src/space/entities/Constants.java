@@ -12,4 +12,6 @@ public class Constants {
 	
 	public static final int BIT_PLAYER_GROUP = 2;
 	public static final int BIT_ENEMY_GROUP = 4;
+	// enemy constants
+	public static final float ENEMY_KAMIKAZE_SPEED = 30f; 
 }
