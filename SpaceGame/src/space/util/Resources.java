@@ -12,7 +12,7 @@ public class Resources {
 	private static SpriteFont font1, font2, font3, font4;
 	
 	public static void create() throws SlickException {
-		Image img = new Image("res/sprites.png", false, Image.FILTER_NEAREST);
+		Image img = new Image("res/sprites.png", false, Image.FILTER_LINEAR);
 		sheet1 = new SimpleSpriteSheet("res/sprites.sheet", img);
 		font1 = new SpriteFont("res/fonts/square.fnt", getSprite("font.square"), SpriteFont.CASE_INSENSITIVE);
 		font2 = new SpriteFont("res/fonts/small.fnt", getSprite("font.small"), SpriteFont.CASE_INSENSITIVE);

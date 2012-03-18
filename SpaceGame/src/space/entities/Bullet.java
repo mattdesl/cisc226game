@@ -1,29 +1,33 @@
 package space.entities;
 
-import net.phys2d.math.Vector2f;
 import net.phys2d.raw.Body;
 import net.phys2d.raw.shapes.Circle;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
 
 import space.GameContext;
 import space.engine.SpriteBatch;
+import space.util.Resources;
 
 public class Bullet extends AbstractEntity {
 	
 	private float dirX, dirY;
-	private final float RADIUS = 10f;
+	private final float RADIUS = 4f;
 	
 	private int damage = 50;
 	
 	private int time = 0;
 	private int life = 2500;
+	private Image image;
+	private float angle = 0;
 	
-	
-	public Bullet(float x, float y, float dirX, float dirY, boolean playerBullet) {
+	public Bullet(float x, float y, float dirX, float dirY, float angle, boolean playerBullet) {
 		this.dirX = dirX;
 		this.dirY = dirY;
+		this.angle = angle;
+		image = Resources.getSprite("bullet");
 		body = new Body(new Circle(RADIUS),1f);
 		body.setMaxVelocity(Constants.PLAYER_BLASTER_SPEED, Constants.PLAYER_BLASTER_SPEED);
 		body.setPosition(x, y);
@@ -62,8 +66,9 @@ public class Bullet extends AbstractEntity {
 	}
 	
 	public void draw(GameContext context, SpriteBatch batch, Graphics g) {
-		batch.flush();
-		g.setColor(Color.red);
-		g.fillOval(getX()-RADIUS, getY()-RADIUS, RADIUS*2f, RADIUS*2f);
+		batch.drawImage(image, getX()-image.getWidth()/2f, getY()-image.getHeight()/2f, angle);
+		//batch.flush();
+		//g.setColor(Color.red);
+		//g.fillOval(getX()-RADIUS, getY()-RADIUS, RADIUS*2f, RADIUS*2f);
 	}
 }
