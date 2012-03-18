@@ -81,7 +81,7 @@ public class InGameState extends AbstractState implements CollisionListener {
 		world.addListener(this);
 		
 		
-		player = new Ship(new Image("res/ship.png"), 10f);
+		player = new Ship(10f);
 		player.setPosition(context.getWidth()/2f, context.getHeight()/2f);
 		world.add(player.getBody());
 		player.player = true;

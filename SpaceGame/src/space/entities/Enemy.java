@@ -25,7 +25,9 @@ public abstract class Enemy extends AbstractEntity {
 	// private Image enemyThrust, enemyExplosion, enemyExplosion2
 	
 	// enemy strength based upon wave
-	public Enemy(){}
+	public Enemy(Image image) {
+		this.enemyImage = image;
+	}
 	
 	public Body createBody(){
 		Body body = new Body(new Circle(enemyImage.getWidth()/2f), 10f);

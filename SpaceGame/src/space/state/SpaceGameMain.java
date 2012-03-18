@@ -281,7 +281,7 @@ public class SpaceGameMain extends StateBasedGame implements GameContext {
 			Utils.error("Game text file at '"+GameText.TEXT_PATH+"' could not be loaded", e);
 		}
 
-		int width = 600;
+		int width = 800;
 		int height = 600;
 		boolean fullscreen = false;
 		

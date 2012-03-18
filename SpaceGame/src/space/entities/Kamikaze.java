@@ -3,18 +3,17 @@ package space.entities;
 import org.newdawn.slick.Image;
 
 import space.GameContext;
+import space.util.Resources;
 
 public class Kamikaze extends Enemy {
 	
 	// a Kamikaze enemy
 
 	public Kamikaze(int wave){
+		super(Resources.getSprite("kamikaze"));
 		setHealth(100 + (wave*10));
 		setWeaponDamage(0); // kamikazes don't deal weapon damage
 		setCollisionDamage(80 + (wave*20)); // quickly become very powerful
-		try{
-			setImage(new Image("res/kamikaze.png"));
-		}catch (Exception e){}
 		setBody(createBody());		
 		body.setMaxVelocity(Constants.ENEMY_KAMIKAZE_SPEED, Constants.ENEMY_KAMIKAZE_SPEED);
 		enemyWidth = enemyImage.getWidth()/2;

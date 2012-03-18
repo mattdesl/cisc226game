@@ -11,6 +11,7 @@ import org.newdawn.slick.Input;
 
 import space.GameContext;
 import space.engine.SpriteBatch;
+import space.util.Resources;
 
 public class Ship extends AbstractEntity {
 
@@ -39,8 +40,7 @@ public class Ship extends AbstractEntity {
 	private int shootingInterval = 200; //ms
 	private int shootingTime = shootingInterval;
 	
-	public Ship(Image image, float radius) {// create a body with the size of the image divided by 2
-		this.shipSheet = image;
+	public Ship(float radius) {// create a body with the size of the image divided by 2
 		this.radius = radius;
 		init();
 		setBody(createBody());
@@ -71,12 +71,16 @@ public class Ship extends AbstractEntity {
 	
 	// cut the image we're provided with into the needed dimensions
 	private void init(){
-		shipIdle = shipSheet.getSubImage(0, 0, textureWidth, textureHeight);
-		shipStrafeRight = shipSheet.getSubImage(textureWidth, 0, textureWidth, textureHeight);
-		shipStrafeLeft = shipSheet.getSubImage(textureWidth*2, 0, textureWidth, textureHeight);
-		shipThrust = shipSheet.getSubImage(0, textureHeight, textureWidth, textureHeight);
-		shipStrafeRight2 = shipSheet.getSubImage(textureWidth, textureHeight, textureWidth, textureHeight);
-		shipStrafeLeft2 = shipSheet.getSubImage(textureWidth*2, textureHeight, textureWidth, textureHeight);
+//		shipIdle = shipSheet.getSubImage(0, 0, textureWidth, textureHeight);
+//		shipStrafeRight = shipSheet.getSubImage(textureWidth, 0, textureWidth, textureHeight);
+//		shipStrafeLeft = shipSheet.getSubImage(textureWidth*2, 0, textureWidth, textureHeight);
+//		shipThrust = shipSheet.getSubImage(0, textureHeight, textureWidth, textureHeight);
+//		shipStrafeRight2 = shipSheet.getSubImage(textureWidth, textureHeight, textureWidth, textureHeight);
+//		shipStrafeLeft2 = shipSheet.getSubImage(textureWidth*2, textureHeight, textureWidth, textureHeight);
+		
+		shipIdle = Resources.getSprite("player");
+		shipStrafeRight = shipStrafeLeft = shipThrust = shipStrafeRight2 = shipStrafeLeft2 = shipIdle;
+		
 		this.shipWidth = shipIdle.getWidth()/2;
 		this.shipHeight = shipIdle.getHeight()/2;
 		currentImage = shipIdle;
