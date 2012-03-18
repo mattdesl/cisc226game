@@ -200,15 +200,17 @@ public class SpaceGameMain extends StateBasedGame implements GameContext {
 		super.keyPressed(k, c);
 	}
 	
-
-	public void mousePressed(int button, int x, int y) {
+	public InGameState getInGameState() {
+		return gameState;
+	}
+	
+	public void createShockwave(int x, int y) {
 		boom = true;
 		cx = x;
 		cy = y;
 		elapsed = 0;
 		gameState.shakeCamera(this);
 	}
-
 	
 	public void preRenderState(GameContainer c, Graphics g) throws SlickException {
 		if (doSceneEffect()) {

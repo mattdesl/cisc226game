@@ -6,10 +6,12 @@ import net.phys2d.raw.shapes.Circle;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
+import org.newdawn.slick.Input;
 
+import space.GameContext;
 import space.engine.SpriteBatch;
 
-public class Ship extends AbstractPhysicalEntity implements RenderableEntity {
+public class Ship extends AbstractEntity {
 
 	private float radius;
 	private Image shipSheet;
@@ -27,19 +29,23 @@ public class Ship extends AbstractPhysicalEntity implements RenderableEntity {
 	private final int structureMax = 30; // the amount of damage the ship can take when shields are 0.
 	private int structure = structureMax;
 	private int upgradesPurchase;
-//	private ArrayList<Blast> blasts;
 	private double angle; // angle in radians to the mouse pointer
+	
+	private boolean shooting = false;
+	private int shootingInterval = 1500; //ms
+	private int shootingTime = shootingInterval;
 	
 	public Ship(Image image, float radius) {// create a body with the size of the image divided by 2
 		this.shipSheet = image;
 		this.radius = radius;
-//		this.blasts = new ArrayList<Blast>(3);
 		init();
-		this.body = createBody();
+		body = createBody();
+		body.addBit(Constants.BIT_PLAYER_GROUP);
 		this.shipMoving = false; //we aren't moving if we were just created
+		setRotation(0);
 	}
 
-	private Body createBody(){
+	protected Body createBody(){
 		Body body = new Body(new Circle(shipIdle.getWidth()/2f),10f);
 		body.setMaxVelocity(Constants.PLAYER_MAX_SPEED, Constants.PLAYER_MAX_SPEED);
 		return body;		
@@ -59,29 +65,68 @@ public class Ship extends AbstractPhysicalEntity implements RenderableEntity {
 	}
 	
 	/** Draw the ship at its current location. */
-	public void draw(SpriteBatch b, Graphics g) {
-		draw(b, g, 0f, 0f, 1f);
-	}
-	
-	// draw offset by shipwidth, because the body getPosition vector reports the position of the upperleft bounding box; 
-	// therefore we draw the image on an offset. 
-	// TODO: collision will probably be very off because of this
-	public void draw(SpriteBatch batch, Graphics g, float xOff, float yOff, float scale) {
-		float newX = getX() - shipWidth + xOff;
-		float newY = getY() - shipWidth + yOff;
+	public void draw(GameContext context, SpriteBatch batch, Graphics g) {
+		float newX = getX() - shipWidth;
+		float newY = getY() - shipWidth;
 		//set new filter which will be used to draw the image
 		batch.setColor(tint);
-		batch.drawImage(currentImage, newX, newY, (float)Math.toDegrees(angle));
-		
-//		drawBlasts(g, newX, newY, scale, tint); // if we have bullets, we draw them
+		batch.drawImage(currentImage, newX, newY, getRotation());
 	}
 	
-	public Ship copy() {
-		Ship s = new Ship(this.shipSheet, this.radius);
-		s.tint = new Color(tint);
-		s.angle = this.angle;
-		s.setPosition(getX(), getY());
-		return s;
+	public void ensureWithinBounds(int width, int height) {
+		if (getX() < -getWidth()) 
+			setPosition(width, getY());
+		else if (getX() > width+getWidth())
+			setPosition(-getWidth(), getY());
+		
+		if (getY() < -getHeight()) 
+			setPosition(getX(), height);
+		else if (getY() > height+getHeight())
+			setPosition(getX(), -getHeight());
+	}
+	
+	public void update(GameContext context, int delta) {
+		Input input = context.getInput();
+		
+//		float mx = context.getInput().getMouseX(), my = context.getInput().getMouseY();
+//		player.setHeading(mx, my);
+		
+		//player controls
+		
+		
+		shootingTime += delta;
+		
+		if (input.isKeyDown(Input.KEY_W)){
+			thrustStraight(delta);
+		}
+		else {
+			idling();
+		}
+		if (input.isKeyDown(Input.KEY_A)){
+			rotate(delta * -Constants.PLAYER_TURN_SPEED);
+			
+		}
+		else if (input.isKeyDown(Input.KEY_D)){
+			rotate(delta * Constants.PLAYER_TURN_SPEED);
+		}
+		if (input.isKeyDown(Input.KEY_SPACE)) {
+			if (shootingTime > shootingInterval) {
+				shootingTime = 0;
+				context.getInGameState().addEntity(new Bullet(getX(), getY(), dirX, dirY, true));
+			}
+		}
+		
+		
+		
+		
+		//ignore strafe for now...
+//		if (input.isKeyDown(Input.KEY_LEFT)) {
+//			player.strafeLeft(delta);
+//		} 
+//		else if (input.isKeyDown(Input.KEY_RIGHT)) {
+//			player.strafeRight(delta);
+//		}
+		
 	}
 	
 	// rename for clarity	
@@ -94,7 +139,7 @@ public class Ship extends AbstractPhysicalEntity implements RenderableEntity {
 	}
 	
 	public void strafeLeft(int delta){	
-		double r = angle - Math.PI/4;
+		double r = angle - Math.PI/2;
 		float dirX = (float)Math.sin(r);
 		float dirY = (float)-Math.cos(r);
 		addForce(dirX * delta * Constants.PLAYER_STRAFE_SPEED, dirY * delta * Constants.PLAYER_STRAFE_SPEED);
@@ -103,7 +148,7 @@ public class Ship extends AbstractPhysicalEntity implements RenderableEntity {
 	}
 	
 	public void strafeRight(int delta){
-		double r = angle + Math.PI/4;
+		double r = angle + Math.PI/2;
 		float dirX = (float)Math.sin(r);
 		float dirY = (float)-Math.cos(r);
 		addForce(dirX * delta * Constants.PLAYER_STRAFE_SPEED, dirY * delta * Constants.PLAYER_STRAFE_SPEED);
@@ -125,6 +170,23 @@ public class Ship extends AbstractPhysicalEntity implements RenderableEntity {
 		return this.shipMoving;
 	}
 	
+	/** Rotates the ship image and direction by the given degrees amount. */
+	public void rotate(float degAmt) {
+		setRotation(getRotation() + degAmt);
+	}
+	
+	public float getRotation() {
+		return (float)Math.toDegrees(this.angle);
+	}
+	
+	public void setRotation(float deg) {
+		double a = Math.toRadians(deg);
+		this.dirX = (float)Math.sin(a);
+		this.dirY = (float)-Math.cos(a);
+		this.angle = a;
+	}
+	
+	//deprecated
 	public void setHeading(float mouseX, float mouseY){
 		double r = -Math.atan2((getX()-mouseX), (getY()-mouseY));	
 		this.dirX = (float) Math.sin(r);
@@ -139,6 +201,7 @@ public class Ship extends AbstractPhysicalEntity implements RenderableEntity {
 	public int getHeight(){
 		return currentImage.getHeight();
 	}
+	
 	// upgrades the blaster's damage by an amount relevant to the wave the user is on.
 	// and how many upgrades are already purchased
 	public void upgradeBlaster(int wave){
@@ -168,17 +231,7 @@ public class Ship extends AbstractPhysicalEntity implements RenderableEntity {
 			//this.die
 		}
 	}
+
 	
-	public void drawBlasts(Graphics g, float x, float y, float scale, Color tint){
-//		for (Blast b : blasts){
-//			b.draw(g);
-//		}
-	}
-	
-	public void fireBlaster(){
-//		Blast blast = new Blast();
-//		blast.addForce(this.dirX*100f, this.dirY*100f);
-//		this.blasts.add(blast);
-	}
 	
 }

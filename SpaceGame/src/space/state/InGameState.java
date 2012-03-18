@@ -1,5 +1,8 @@
 package space.state;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.phys2d.math.Vector2f;
 import net.phys2d.raw.World;
 
@@ -12,6 +15,8 @@ import space.GameContext;
 import space.engine.SpriteBatch;
 import space.engine.easing.Easing;
 import space.engine.easing.SimpleFX;
+import space.entities.Constants;
+import space.entities.Entity;
 import space.entities.Ship;
 import space.sprite.StarfieldSprite;
 import space.util.Utils;
@@ -32,6 +37,9 @@ public class InGameState extends AbstractState {
 	private float shakeXAmt = 0f, shakeYAmt = 0f;
 	private int shakeDelay = 0, shakeDelayMax = 30;
 	
+	private List<Entity> entities = new ArrayList<Entity>(1000);
+	private List<Entity> entitiesBuffer = new ArrayList<Entity>(1000);
+	
 	public void keyPressed(int k, char c) {
 		if (c=='1') {
 			starfield.GRID_SIZE--;
@@ -51,6 +59,8 @@ public class InGameState extends AbstractState {
 		} else if (c=='6') {
 			starfield.MEDIUM_STAR_CHANCE++;
 			starfield.randomize(context);
+		} else if (k==Input.KEY_RETURN){
+			context.createShockwave((int)player.getX(), (int)player.getY());
 		}
 	}
 	
@@ -79,13 +89,19 @@ public class InGameState extends AbstractState {
 		//render our foreground elements that don't need to be clamped to the screen size
 		starfield.drawStars(context, batch, g);
 		
+		for (Entity e : entities) {
+			e.draw(context, batch, g);
+		}
 		
-	// this isn't what i want. i want to just rotate the ship, but it rotates the entire background too.
-    // how can we avoid this?
-	//	g.rotate(player.getX(), player.getY(), (float)Math.toDegrees(player.getRotation())); 
-//		g.setAntiAlias(true); //necessary?
-		player.draw(batch, g, 0, 0, 1f);
-//		g.setAntiAlias(false);
+		if (!shake)
+			player.draw(context, batch, g);
+	}
+	
+	public void addEntity(Entity e) {
+		entities.add(e);
+		if (e.getBody()!=null) {
+			world.add(e.getBody());
+		}
 	}
 	
 	
@@ -109,22 +125,26 @@ public class InGameState extends AbstractState {
 		}
 		
 		
-		float mx = context.getInput().getMouseX(), my = context.getInput().getMouseY();
-		player.setHeading(mx, my);
+		for (Entity e : entities) {
+			e.update(context, delta);
+		}
 		
-		//player controls
-		if (context.getContainer().getInput().isKeyDown(Input.KEY_W)){
-			player.thrustStraight(delta);
-		}
-		else {
-			player.idling();
-		}
-		if (context.getContainer().getInput().isKeyDown(Input.KEY_A)){
-			player.strafeLeft(delta);
-		}
-		else if (context.getContainer().getInput().isKeyDown(Input.KEY_D)){
-			player.strafeRight(delta);
-		}
+//		for (int i=0; i<entities.size(); i++) {
+//			Entity e = entities.get(i);
+//			if (e.isActive()) {
+//				e.update(context, delta);
+//				if (e.isActive()) //check again incase it died
+//					entitiesBuffer.add(e);
+//			}
+//		}
+//		
+//		//flip the buffer
+//		List<Entity> temp = entities;
+//		entities = entitiesBuffer;
+//		entitiesBuffer = entities;
+//		entitiesBuffer.clear();
+		
+		player.update(context, delta);
 		
 		//step the world so that the physics are updated
 		counter += delta;
@@ -133,15 +153,9 @@ public class InGameState extends AbstractState {
 			counter -= worldUpdateInterval;
 		}
 		
-		if (player.getX() < -player.getWidth()) 
-			player.setPosition(context.getWidth(), player.getY());
-		else if (player.getX() > context.getWidth()+player.getWidth())
-			player.setPosition(-player.getWidth(), player.getY());
-		
-		if (player.getY() < -player.getHeight()) 
-			player.setPosition(player.getX(), context.getHeight());
-		else if (player.getY() > context.getHeight()+player.getHeight())
-			player.setPosition(player.getX(), -player.getHeight());
+		//bounds checking -- keep player within container
+		//we do this after stepping the world
+		player.ensureWithinBounds(context.getWidth(), context.getHeight());
 	}
 	
 	public void shakeCamera(GameContext context) {

@@ -5,6 +5,7 @@ import org.newdawn.slick.Input;
 
 import space.engine.SpriteBatch;
 import space.engine.SpriteFont;
+import space.state.InGameState;
 
 /**
  * Holds some info about the game and its main states.
@@ -29,6 +30,10 @@ public interface GameContext {
 	public Input getInput();
 	
 	public SpriteBatch getSpriteBatch();
+	
+	public void createShockwave(int x, int y);
+	
+	public InGameState getInGameState();
 	
 	public void enterGame();
 	public void enterMenu(); //TODO

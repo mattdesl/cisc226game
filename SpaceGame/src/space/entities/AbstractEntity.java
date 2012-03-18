@@ -3,20 +3,20 @@ package space.entities;
 import net.phys2d.math.Vector2f;
 import net.phys2d.raw.Body;
 
+import org.newdawn.slick.Graphics;
+
+import space.GameContext;
+import space.engine.SpriteBatch;
+
 /**
  * A new class
  * @author Matt
  */
-public abstract class AbstractPhysicalEntity implements PhysicalEntity {
+public abstract class AbstractEntity implements Entity {
 
     protected Body body;
     
-    protected AbstractPhysicalEntity(Body body) {
-    	this.body = body;
-    }
-    
-    protected AbstractPhysicalEntity(){
-    	this.body = null;
+    protected AbstractEntity(){
     }
     
     public void setPosition(float x, float y) {
@@ -35,18 +35,6 @@ public abstract class AbstractPhysicalEntity implements PhysicalEntity {
     
     public void addForce(float x, float y) {
         getBody().addForce(new Vector2f(x, y));
-    }
-    
-    public void adjustRotation(float angle) {
-    	getBody().adjustRotation(angle);
-    }
-    
-    public void setRotation(float angle) {
-    	getBody().setRotation(angle);
-    }
-    
-    public float getRotation() {
-    	return getBody().getRotation();
     }
     
     public void adjustVelocity(float x, float y) {
@@ -71,5 +59,15 @@ public abstract class AbstractPhysicalEntity implements PhysicalEntity {
     	this.body = body;    	
     }
     
-    public abstract PhysicalEntity copy();
+    public boolean isActive() {
+    	return true;
+    }
+    
+	public void draw(GameContext context, SpriteBatch b, Graphics g) {
+		
+	}
+	
+	public void update(GameContext context, int delta) {
+		
+	}
 }
