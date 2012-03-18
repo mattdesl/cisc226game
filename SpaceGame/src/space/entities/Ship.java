@@ -54,6 +54,10 @@ public class Ship extends AbstractEntity {
 			takeDamage(bullet.getDamage());
 			bullet.kill();
 		}
+		if (other instanceof Kamikaze){
+			Kamikaze kami = (Kamikaze)other;
+			takeDamage(kami.getDamage());
+		}
 	}
 	
 	protected Body createBody(){
