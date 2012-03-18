@@ -8,8 +8,8 @@ public class Constants {
 	public static final float PLAYER_BLASTER_SPEED = 1000f;
 	public static final float CAM_ZOOM = .08f;
 	public static final float DECAY_SPEED = .010f;
-	
-	
+
+
 	public static final int BIT_PLAYER = 2;
 	public static final int BIT_ENEMY = 4;
 	public static final int BIT_BULLET = 8;

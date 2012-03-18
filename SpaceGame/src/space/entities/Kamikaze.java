@@ -30,7 +30,6 @@ public class Kamikaze extends Enemy {
 		thrust(delta);
 	}
 
-	@Override
 	public void collide(Entity other) {
 		if (other instanceof Bullet){
 			Bullet bullet = (Bullet)other;
