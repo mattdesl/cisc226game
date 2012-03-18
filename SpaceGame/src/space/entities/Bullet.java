@@ -14,7 +14,12 @@ public class Bullet extends AbstractEntity {
 	
 	private float dirX, dirY;
 	private final float RADIUS = 10f;
-	private boolean alive = true;
+	
+	private int damage = 50;
+	
+	private int time = 0;
+	private int life = 2500;
+	
 	
 	public Bullet(float x, float y, float dirX, float dirY, boolean playerBullet) {
 		this.dirX = dirX;
@@ -23,8 +28,17 @@ public class Bullet extends AbstractEntity {
 		body.setMaxVelocity(Constants.PLAYER_BLASTER_SPEED, Constants.PLAYER_BLASTER_SPEED);
 		body.setPosition(x, y);
 		body.addBit(playerBullet ? Constants.BIT_PLAYER_GROUP : Constants.BIT_ENEMY_GROUP);
+		body.setUserData(this);
 		
 		addForce(dirX * Constants.PLAYER_BLASTER_SPEED, dirY * Constants.PLAYER_BLASTER_SPEED);
+	}
+	
+	public int getDamage() {
+		return damage;
+	}
+	
+	public void collide(Entity e) {
+		//ignore...
 	}
 	
 	public float getWidth() {
@@ -40,11 +54,11 @@ public class Bullet extends AbstractEntity {
 		int height = context.getHeight();
 		if (getX() < -getWidth() || getX() > width+getWidth()
 				|| getY() < -getHeight() || getY() > height+getHeight())
-			alive = false;
-	}
-	
-	public boolean isActive() {
-		return alive;
+			active = false;
+		time += delta;
+		if (time > life) {
+			active = false;
+		}
 	}
 	
 	public void draw(GameContext context, SpriteBatch batch, Graphics g) {

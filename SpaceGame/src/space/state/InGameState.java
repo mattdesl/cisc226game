@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.phys2d.math.Vector2f;
+import net.phys2d.raw.CollisionEvent;
+import net.phys2d.raw.CollisionListener;
 import net.phys2d.raw.World;
 
 import org.newdawn.slick.Graphics;
@@ -15,13 +17,14 @@ import space.GameContext;
 import space.engine.SpriteBatch;
 import space.engine.easing.Easing;
 import space.engine.easing.SimpleFX;
+import space.entities.Bullet;
 import space.entities.Constants;
 import space.entities.Entity;
 import space.entities.Ship;
 import space.sprite.StarfieldSprite;
 import space.util.Utils;
 
-public class InGameState extends AbstractState {
+public class InGameState extends AbstractState implements CollisionListener {
 
 	public InGameState(GameContext context) {
 		super(context, 1);
@@ -39,6 +42,8 @@ public class InGameState extends AbstractState {
 	
 	private List<Entity> entities = new ArrayList<Entity>(1000);
 	private List<Entity> entitiesBuffer = new ArrayList<Entity>(1000);
+	
+	private Ship enemy;
 	
 	public void keyPressed(int k, char c) {
 		if (c=='1') {
@@ -69,9 +74,18 @@ public class InGameState extends AbstractState {
 		starfield = new StarfieldSprite();
 		starfield.randomize(context);
 		world = new World(new Vector2f(0,0), 10);
+		world.addListener(this);
+		
+		
 		player = new Ship(new Image("res/ship.png"), 10f);
-		player.setPosition(400,300);
+		player.setPosition(context.getWidth()/2f, context.getHeight()/2f);
 		world.add(player.getBody());
+		player.player = true;
+		
+		enemy = new Ship(new Image("res/ship.png"), 10f);
+		enemy.setPosition(200, 200);
+		enemy.getBody().setBitmask(Constants.BIT_ENEMY_GROUP);
+		addEntity(enemy);
 		
 		//context.getContainer().setMouseGrabbed(true);
 	}
@@ -99,6 +113,14 @@ public class InGameState extends AbstractState {
 			player.draw(context, batch, g);
 	}
 	
+
+	public void collisionOccured(CollisionEvent evt) {
+		Entity e1 = (Entity)(evt.getBodyA().getUserData());
+		Entity e2 = (Entity)(evt.getBodyB().getUserData());
+		e1.collide(e2);
+		e2.collide(e1);
+	}
+	
 	public void addEntity(Entity e) {
 		entities.add(e);
 		if (e.getBody()!=null) {
@@ -106,6 +128,10 @@ public class InGameState extends AbstractState {
 		}
 	}
 	
+	private void handleEntityDeath(Entity e) {
+		if (e.getBody()!=null)
+			world.remove(e.getBody());
+	}
 	
 	@Override
 	public void update(GameContext context, int delta) throws SlickException {
@@ -126,19 +152,18 @@ public class InGameState extends AbstractState {
 				shake = false;
 		}
 		
-//		
-//		for (Entity e : entities) {
-//			e.update(context, delta);
-//		}
-//		
+		//use a "double buffered" list so that we are only updating entities that are active
 		for (int i=0; i<entities.size(); i++) {
 			Entity e = entities.get(i);
-			if (e.isActive()) {
+			if (e.isActive()) { //if the enemy is active
 				e.update(context, delta);
-				if (e.isActive()) { //check again incase it died
+				if (e.isActive()) {
 					entitiesBuffer.add(e);
-					
+				} else { //the enemy died as a result of updating it
+					handleEntityDeath(e);
 				}
+			} else { //it is "dead" and will no longer be part of entities list
+				handleEntityDeath(e);
 			}
 		}
 		
@@ -171,5 +196,6 @@ public class InGameState extends AbstractState {
 		return "Entities: "+entities.size();
 		
 	}
+
 	
 }

@@ -13,6 +13,9 @@ import space.engine.SpriteBatch;
 
 public class Ship extends AbstractEntity {
 
+	
+	public boolean player = false;
+	
 	private float radius;
 	private Image shipSheet;
 	private Image shipIdle, shipStrafeLeft, shipStrafeLeft2, shipStrafeRight, shipStrafeRight2, shipThrust;
@@ -45,9 +48,18 @@ public class Ship extends AbstractEntity {
 		setRotation(0);
 	}
 
+	public void collide(Entity other) {
+		if (other instanceof Bullet) {
+			Bullet bullet = ((Bullet)other);
+			takeDamage(bullet.getDamage());
+			bullet.kill();
+		}
+	}
+	
 	protected Body createBody(){
-		Body body = new Body(new Circle(shipIdle.getWidth()/2f),10f);
+		Body body = new Body(new Circle(shipIdle.getWidth()/2f),1000f);
 		body.setMaxVelocity(Constants.PLAYER_MAX_SPEED, Constants.PLAYER_MAX_SPEED);
+		body.setUserData(this);
 		return body;		
 	}
 	
@@ -86,6 +98,9 @@ public class Ship extends AbstractEntity {
 	}
 	
 	public void update(GameContext context, int delta) {
+		if (!player)
+			return;
+		
 		Input input = context.getInput();
 		
 		float mx = context.getInput().getMouseX(), my = context.getInput().getMouseY();
@@ -226,9 +241,14 @@ public class Ship extends AbstractEntity {
 			this.structure+=newShields; // structure takes damage = amount through shields (will be negative, hence +=)
 		}
 		
+		
 		// after these calcs, we check if we're alive
-		if (this.structure == 0){ // we're dead
-			//this.die
+		if (this.structure <= 0){ // we're dead
+			this.structure = 0;
+			kill();
+			System.out.println("Dead.");
+		} else {
+			System.out.println("Taking dmg - shield: "+shields+" struc: "+structure);
 		}
 	}
 

@@ -28,4 +28,7 @@ public interface Entity {
 	public void update(GameContext context, int delta);
 	
 	public boolean isActive();
+	
+	public void kill();
+	public void collide(Entity e);
 }
