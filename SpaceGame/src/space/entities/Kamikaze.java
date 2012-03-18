@@ -10,7 +10,8 @@ public class Kamikaze extends Enemy {
 
 	public Kamikaze(int wave){
 		setHealth(100 + (wave*10));
-		setDamage(80 + (wave*20)); // quickly become very powerful
+		setWeaponDamage(0); // kamikazes don't deal weapon damage
+		setCollisionDamage(80 + (wave*20)); // quickly become very powerful
 		try{
 			setImage(new Image("res/kamikaze.png"));
 		}catch (Exception e){}
