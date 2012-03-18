@@ -72,6 +72,7 @@ public class InGameState extends AbstractState implements CollisionListener {
 	
 	@Override
 	public void init(GameContext context) throws SlickException {
+		context.getContainer().setMouseGrabbed(true);
 		starfield = new StarfieldSprite();
 		starfield.randomize(context);
 		world = new World(new Vector2f(0,0), 10);

@@ -3,6 +3,7 @@ package space.entities;
 import net.phys2d.raw.Body;
 import net.phys2d.raw.shapes.Circle;
 
+import org.lwjgl.input.Mouse;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -108,7 +109,10 @@ public class Ship extends AbstractEntity {
 		Input input = context.getInput();
 		
 		float mx = context.getInput().getMouseX(), my = context.getInput().getMouseY();
-		setHeading(mx, my);
+		float dx = Mouse.getDX();
+		rotate(dx * Constants.PLAYER_TURN_SPEED);
+		
+		//setHeading(mx, my);
 		
 		//player controls
 		
