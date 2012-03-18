@@ -44,6 +44,7 @@ public class Ship extends AbstractEntity {
 		this.radius = radius;
 		init();
 		setBody(createBody());
+		body.setRestitution(0.5f);
 		body.addBit(Constants.BIT_PLAYER);
 		this.shipMoving = false; //we aren't moving if we were just created
 		setRotation(0);
@@ -125,11 +126,11 @@ public class Ship extends AbstractEntity {
 		else {
 			idling();
 		}
-		if (input.isKeyDown(Input.KEY_A)){
+		if (input.isKeyDown(Input.KEY_LEFT)){
 			rotate(delta * -Constants.PLAYER_TURN_SPEED);
 			
 		}
-		else if (input.isKeyDown(Input.KEY_D)){
+		else if (input.isKeyDown(Input.KEY_RIGHT)){
 			rotate(delta * Constants.PLAYER_TURN_SPEED);
 		}
 		if (input.isKeyDown(Input.KEY_SPACE)) {
@@ -142,13 +143,12 @@ public class Ship extends AbstractEntity {
 		
 		
 		
-		//ignore strafe for now...
-//		if (input.isKeyDown(Input.KEY_LEFT)) {
-//			player.strafeLeft(delta);
-//		} 
-//		else if (input.isKeyDown(Input.KEY_RIGHT)) {
-//			player.strafeRight(delta);
-//		}
+		if (input.isKeyDown(Input.KEY_D)) {
+			strafeLeft(delta);
+		} 
+		else if (input.isKeyDown(Input.KEY_A)) {
+			strafeRight(delta);
+		}
 		
 	}
 	
@@ -162,7 +162,7 @@ public class Ship extends AbstractEntity {
 	}
 	
 	public void strafeLeft(int delta){	
-		double r = angle - Math.PI/2;
+		double r = angle - Math.PI/4;
 		float dirX = (float)Math.sin(r);
 		float dirY = (float)-Math.cos(r);
 		addForce(dirX * delta * Constants.PLAYER_STRAFE_SPEED, dirY * delta * Constants.PLAYER_STRAFE_SPEED);
@@ -171,7 +171,7 @@ public class Ship extends AbstractEntity {
 	}
 	
 	public void strafeRight(int delta){
-		double r = angle + Math.PI/2;
+		double r = angle + Math.PI/4;
 		float dirX = (float)Math.sin(r);
 		float dirY = (float)-Math.cos(r);
 		addForce(dirX * delta * Constants.PLAYER_STRAFE_SPEED, dirY * delta * Constants.PLAYER_STRAFE_SPEED);

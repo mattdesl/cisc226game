@@ -91,14 +91,21 @@ public class InGameState extends AbstractState implements CollisionListener {
 		enemy.getBody().setBitmask(Constants.BIT_ENEMY);
 		addEntity(enemy);
 		
-		Body walltop = new StaticBody(new Box(context.getWidth(), 10f));
-		walltop.setPosition(context.getWidth()/2f, -20);
-		walltop.setBitmask(Constants.BIT_ENEMY | Constants.BIT_BULLET);
+		final int WALL_SIZE = 10;
+		world.add(createWall(0, -WALL_SIZE*2, context.getWidth(), WALL_SIZE));
+		world.add(createWall(0, context.getHeight(), context.getWidth(), WALL_SIZE));
+		world.add(createWall(-WALL_SIZE*2, 0, WALL_SIZE, context.getHeight()));
+		world.add(createWall(context.getWidth(), 0, WALL_SIZE, context.getHeight()));
 		
-		player.getBody().setRestitution(1f);
-		walltop.setRestitution(0.5f);
-		world.add(walltop);
 		//context.getContainer().setMouseGrabbed(true);
+	}
+	
+	private Body createWall(float x, float y, float width, float height) {
+		Body walltop = new StaticBody(new Box(width, height));
+		walltop.setRestitution(0.5f);
+		walltop.setPosition(x+width/2f, y+height/2f);
+		walltop.setBitmask(Constants.BITMASK_WALL);
+		return walltop;
 	}
 	
 	@Override
