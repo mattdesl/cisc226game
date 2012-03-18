@@ -1,11 +1,14 @@
 package space.entities;
 
+import java.util.ArrayList;
+
 import net.phys2d.raw.Body;
 import net.phys2d.raw.shapes.Circle;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
+import org.newdawn.slick.geom.Vector2f;
 
 public class Ship extends AbstractPhysicalEntity implements RenderableEntity {
 
@@ -19,11 +22,19 @@ public class Ship extends AbstractPhysicalEntity implements RenderableEntity {
 	private int shipWidth, shipHeight;
 	private float dirX, dirY; // direction the ship is currently facing
 	private boolean shipMoving; // are we moving?
-	
+	private int blasterDamage = 50; // amount of hitpoint damage the blaster will deal
+	private int shieldMax = 200; // the amount of damage the ship can take before taking damage on structure shields regenerate
+	private int shields = shieldMax; // the current amound of shields
+	private final int structureMax = 30; // the amount of damage the ship can take when shields are 0.
+	private int structure = structureMax;
+	private int upgradesPurchase;
+	private ArrayList<Blast> blasts;
+	private double angle; // angle in radians to the mouse pointer
 	
 	public Ship(Image image, float radius) {// create a body with the size of the image divided by 2
 		this.shipSheet = image;
 		this.radius = radius;
+		this.blasts = new ArrayList<Blast>(3);
 		init();
 		this.body = createBody();
 		this.shipMoving = false; //we aren't moving if we were just created
@@ -56,7 +67,10 @@ public class Ship extends AbstractPhysicalEntity implements RenderableEntity {
 	// therefore we draw the image on an offset. 
 	// TODO: collision will probably be very off because of this
 	public void draw(Graphics g, float xOff, float yOff, float scale) {
-		currentImage.draw(getX()-shipWidth+xOff, getY()-shipWidth+yOff, scale, tint); 
+		float newX = getX() - shipWidth + xOff;
+		float newY = getY() - shipWidth + yOff;
+		currentImage.draw(newX, newY, scale, tint);
+		drawBlasts(g, newX, newY, scale, tint); // if we have bullets, we draw them
 	}
 	
 	public Ship copy() {
@@ -76,8 +90,8 @@ public class Ship extends AbstractPhysicalEntity implements RenderableEntity {
 		currentImage = shipThrust;
 	}
 	
-	public void strafeLeft(float ang, int delta){	
-		double r = Math.toRadians(ang - 45);
+	public void strafeLeft(int delta){	
+		double r = angle - Math.PI/4;
 		float dirX = (float)Math.sin(r);
 		float dirY = (float)-Math.cos(r);
 		addForce(dirX * delta * Constants.PLAYER_STRAFE_SPEED, dirY * delta * Constants.PLAYER_STRAFE_SPEED);
@@ -85,8 +99,8 @@ public class Ship extends AbstractPhysicalEntity implements RenderableEntity {
 		currentImage = shipStrafeLeft;
 	}
 	
-	public void strafeRight(float ang, int delta){
-		double r = Math.toRadians(ang + 45);
+	public void strafeRight(int delta){
+		double r = angle + Math.PI/4;
 		float dirX = (float)Math.sin(r);
 		float dirY = (float)-Math.cos(r);
 		addForce(dirX * delta * Constants.PLAYER_STRAFE_SPEED, dirY * delta * Constants.PLAYER_STRAFE_SPEED);
@@ -108,11 +122,12 @@ public class Ship extends AbstractPhysicalEntity implements RenderableEntity {
 		return this.shipMoving;
 	}
 	
-	public void setHeading(double r){
+	public void setHeading(float mouseX, float mouseY){
+		double r = -Math.atan2((getX()-mouseX), (getY()-mouseY));	
 		this.dirX = (float) Math.sin(r);
 		this.dirY = (float) -Math.cos(r); 
 		setRotation((float)r);
-		
+		this.angle = r;
 	}
 	
 	public int getWidth(){
@@ -122,18 +137,46 @@ public class Ship extends AbstractPhysicalEntity implements RenderableEntity {
 	public int getHeight(){
 		return currentImage.getHeight();
 	}
-	//dirty
-/*	public void setPosition(float x, float y){
-		super.setPosition(x-19, y-19);
-	}*/
-	
-/*	public float getX(){
-		return super.getX() + 19;
+	// upgrades the blaster's damage by an amount relevant to the wave the user is on.
+	// and how many upgrades are already purchased
+	public void upgradeBlaster(int wave){
+		int upgradeAmount = 25 + (wave * 5);
+		this.blasterDamage+=upgradeAmount;
 	}
 	
-	public float getY(){
-		return super.getY() + 19;
-	}*/
+	// upgrades shields based upon the wave
+	public void upgradeShields(int wave){
+		int upgradeAmount = 50 + (wave * 10);
+		this.shieldMax+=upgradeAmount;
+	}
 	
+	// deals damage to the player
+	public void takeDamage(int damage){
+		int newShields = this.shields - damage;
+		if (newShields >= 0) { // our shields took all of the damage.
+			this.shields = newShields;
+		} 
+		else { // we're taking structure damage
+			this.shields = 0;
+			this.structure+=newShields; // structure takes damage = amount through shields (will be negative, hence +=)
+		}
+		
+		// after these calcs, we check if we're alive
+		if (this.structure == 0){ // we're dead
+			//this.die
+		}
+	}
+	
+	public void drawBlasts(Graphics g, float x, float y, float scale, Color tint){
+		for (Blast b : blasts){
+			b.draw(g);
+		}
+	}
+	
+	public void fireBlaster(){
+		Blast blast = new Blast();
+		blast.addForce(this.dirX*100f, this.dirY*100f);
+		this.blasts.add(blast);
+	}
 	
 }

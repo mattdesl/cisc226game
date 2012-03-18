@@ -157,9 +157,9 @@ public class PhysTest extends BasicGame {
 	}
 
 	private void updateVector() {
-		double r = Math.toRadians(ang);
+		/*double r = Math.toRadians(ang);
 		ship.setHeading(r);
-
+*/
 	}
 
 	public void keyPressed(int k, char c) {
@@ -174,6 +174,7 @@ public class PhysTest extends BasicGame {
 		float cy = container.getHeight()/2f;
 
 		ang = -(float)Math.toDegrees( Math.atan2( ship.getX()-x, ship.getY()-y ) );
+		ship.setHeading(mouseX, mouseY);
 
 		//ang = 360 * (x/(float)container.getWidth()) - 180;
 		updateVector();
@@ -198,11 +199,11 @@ public class PhysTest extends BasicGame {
        
 		if (container.getInput().isKeyDown(Input.KEY_A)) {
 			strafe = -1;
-			ship.strafeLeft(ang, delta);
+			ship.strafeLeft(delta);
 		}
 		else if (container.getInput().isKeyDown(Input.KEY_D)) {
 			strafe = 1;
-			ship.strafeRight(ang, delta);
+			ship.strafeRight(delta);
 
 		} else {
 			strafe = 0;
@@ -259,44 +260,10 @@ public class PhysTest extends BasicGame {
 
 		float shipSpeed = Math.max(Math.abs(vx), Math.abs(vy));
 
-		//camXOff += vx;
-		//        cx += camDampX;
-		//        cy += camDampY;
-
-
-		//damp += 0.5f;
-
-		//        if (camMoving)
-		//            camXOff -= 0.03f*vx;
-		////        else
-		////            camXOff += vx;
-		//        
-		//        cx += camXOff;
-
-		//if (Math.max(Math.abs(vx), Math.abs(vy)))
-
-
-
-		//float x = container.getWidth()/2f-shipImg.getWidth()/2f;
-		//float y = container.getHeight()/2f-shipImg.getHeight()/2f;
-/*		Image shipImg = this.shipImg;
-		if (strafe<0)
-			shipImg = dir==1 ? shipStrafeLeft2 : shipStrafeLeft;
-		else if (strafe>0)
-			shipImg = dir==1 ? shipStrafeRight2 : shipStrafeRight;
-		else if (dir==1) {
-			shipImg = shipImg2;
-		}*/
-
 		float scaleAmt = Math.min(CAM_ZOOM, zoomOut);
 		float scale = 1f-scaleAmt;
 		float xOff = vx/2.5f;
 		float yOff = vy/2.5f;
-//		float rx = cx-ship.getWidth()*scale/2f;
-//		float ry = cy-ship.getHeight()*scale/2f;
-		//g.scale(scale, scale);
-
-//		g.translate(vx*.8f, vy*.8f);
 
 		g.rotate(ship.getX(), ship.getY(), (float)Math.toDegrees(ship.getRotation()));
 
