@@ -20,6 +20,7 @@ import space.engine.easing.SimpleFX;
 import space.entities.Bullet;
 import space.entities.Constants;
 import space.entities.Entity;
+import space.entities.Kamikaze;
 import space.entities.Ship;
 import space.sprite.StarfieldSprite;
 import space.util.Utils;
@@ -43,7 +44,7 @@ public class InGameState extends AbstractState implements CollisionListener {
 	private List<Entity> entities = new ArrayList<Entity>(1000);
 	private List<Entity> entitiesBuffer = new ArrayList<Entity>(1000);
 	
-	private Ship enemy;
+	private Kamikaze enemy;
 	
 	public void keyPressed(int k, char c) {
 		if (c=='1') {
@@ -82,8 +83,8 @@ public class InGameState extends AbstractState implements CollisionListener {
 		world.add(player.getBody());
 		player.player = true;
 		
-		enemy = new Ship(new Image("res/ship.png"), 10f);
-		enemy.setPosition(200, 200);
+		enemy = new Kamikaze(1);
+		enemy.setPosition(0, 0);
 		enemy.getBody().setBitmask(Constants.BIT_ENEMY_GROUP);
 		addEntity(enemy);
 		
@@ -195,6 +196,10 @@ public class InGameState extends AbstractState implements CollisionListener {
 	public String getDebugText() {
 		return "Entities: "+entities.size();
 		
+	}
+	
+	public Ship getPlayer(){
+		return player;
 	}
 
 	
