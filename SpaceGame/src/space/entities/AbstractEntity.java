@@ -15,10 +15,15 @@ import space.engine.SpriteBatch;
 public abstract class AbstractEntity implements Entity {
 
     protected Body body;
+    protected boolean active = true;
     
     protected AbstractEntity(){
     }
     
+	public boolean isActive() {
+		return active;
+	}
+	
     public void setPosition(float x, float y) {
     	getBody().setPosition(x, y);
     }
@@ -58,9 +63,9 @@ public abstract class AbstractEntity implements Entity {
     public void setBody(Body body){
     	this.body = body;    	
     }
-    
-    public boolean isActive() {
-    	return true;
+  
+    public void kill() {
+    	active = false;
     }
     
 	public void draw(GameContext context, SpriteBatch b, Graphics g) {
