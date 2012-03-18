@@ -3,6 +3,7 @@ package space.engine.test;
 import java.util.Random;
 
 import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GLContext;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.Color;
@@ -36,22 +37,28 @@ public class SpriteTest extends BasicGame {
     Image image;
 	boolean batching = true;
 	boolean renderInUse = true;
-	int batchSize = 5000;
+	int batchSize =  5000;
 	int numberOfBalls = 2000;
 	Ball[] balls = new Ball[100000];
 	int collisionDelay = 30, collisionTIme;
 	boolean vsync = false;
 	GameContainer container;
-	
+	private boolean vbo = false;
 	
 	
 	public void init(GameContainer c) throws SlickException {
 		this.container = c;
+		
+		System.out.println(GLContext.getCapabilities().GL_EXT_gpu_shader4);
+		System.out.println(GLContext.getCapabilities().GL_EXT_draw_instanced );
+		System.out.println(GLContext.getCapabilities().GL_ARB_draw_instanced );
+		System.out.println(GLContext.getCapabilities().GL_ARB_instanced_arrays );
+		
 		c.setShowFPS(false);
 		c.getGraphics().setBackground(Color.white);
 		c.setClearEachFrame(false);
-		
-		batch = new SpriteBatch(batchSize);
+		//19,200
+		batch = new SpriteBatch(batchSize, vbo ? SpriteBatch.STRATEGY_VBO : SpriteBatch.STRATEGY_VBO);
 		image = new Image("res/small.png");
 		
 		// initilise balls
@@ -90,7 +97,12 @@ public class SpriteTest extends BasicGame {
 							? " (vsync)"
 							:""
 					)
+				+	(vbo 
+							? " (vbo)"
+							:""
+					)
 		);
+		
 	}
 	
 	public void update(GameContainer c, int delta) throws SlickException {
@@ -119,9 +131,18 @@ public class SpriteTest extends BasicGame {
         	case 13: numberOfBalls += 100; break;
         	case Input.KEY_W: batchSize += 500; break;
         	case Input.KEY_Q: batchSize = Math.max(0, batchSize-500); break;
-        	case Input.KEY_B: batch.flush(); batch = new SpriteBatch(batchSize); break; //press B to update with new batch size 
+        	case Input.KEY_O: 
+        		vbo = !vbo;
+        		batch.flush(); 
+        		batch = new SpriteBatch(batchSize, 
+    				vbo ? SpriteBatch.STRATEGY_VBO : SpriteBatch.STRATEGY_VBO);
+        		break;
+        	case Input.KEY_B: batch.flush(); batch = new SpriteBatch(batchSize, 
+        				vbo ? SpriteBatch.STRATEGY_VBO : SpriteBatch.STRATEGY_VBO); 
+        		break; //press B to update with new batch size 
         	case Input.KEY_V: vsync = !vsync;
         					  container.setVSync(vsync);break;
+        	
 		}
 		
 		// cap at max balls
@@ -131,8 +152,8 @@ public class SpriteTest extends BasicGame {
 	
 	
 	public static class Ball {
-		float x, y;
-		float dy, dx;
+		public float x, y;
+		public float dy, dx;
 		
 		public Ball(int x, int y) {
 			this.x = x;

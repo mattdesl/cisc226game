@@ -6,10 +6,10 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GLContext;
-import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.opengl.ImageData;
 import org.newdawn.slick.opengl.InternalTextureLoader;
+import org.newdawn.slick.opengl.LoadableImageData;
 import org.newdawn.slick.opengl.TextureImpl;
 import org.newdawn.slick.opengl.renderer.Renderer;
 import org.newdawn.slick.opengl.renderer.SGL;
@@ -23,11 +23,31 @@ public class TextureUtils {
     public static boolean isPowerOfTwo(int n) {
         return (n & -n) == n;
     }
-    
+
+	/**
+	 * Returns true if non-power-of-two textures are supported in hardware via the
+	 * GL_ARB_texture_non_power_of_two extension.
+	 * 
+	 * @return true if the extension is listed
+	 */
 	public static boolean isNPOTSupported() {
-		return GLContext.getCapabilities().GL_ARB_texture_non_power_of_two 
-				|| GLContext.getCapabilities().OpenGL20;
+		//don't check GL20, nvidia/ATI usually don't advertise this extension
+		//if it means requiring software fallback
+		return GLContext.getCapabilities().GL_ARB_texture_non_power_of_two;
 	}
+	
+	/**
+	 * Slick uses GL30.glGenerateMipmap() or GL14.GL_GENERATE_MIPMAP to automatically
+	 * build mipmaps (for advanced users). If neither of these versions are supported,
+	 * this method returns false.
+	 *  
+	 * @return whether the version is >= 1.4
+	 */
+	public static boolean isGenerateMipmapSupported() {
+		return GLContext.getCapabilities().OpenGL14;
+	}
+	
+
 	
 	public static TextureImpl createEmptyTexture(int width, int height) throws SlickException {
 		return createEmptyTexture(width, height, ImageData.Format.RGBA);
@@ -94,5 +114,4 @@ public class TextureUtils {
                       buf);
         return texture;
     }
-	
 }

@@ -1,14 +1,13 @@
 package space.entities;
 
-import java.util.ArrayList;
-
 import net.phys2d.raw.Body;
 import net.phys2d.raw.shapes.Circle;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
-import org.newdawn.slick.geom.Vector2f;
+
+import space.engine.SpriteBatch;
 
 public class Ship extends AbstractPhysicalEntity implements RenderableEntity {
 
@@ -28,13 +27,13 @@ public class Ship extends AbstractPhysicalEntity implements RenderableEntity {
 	private final int structureMax = 30; // the amount of damage the ship can take when shields are 0.
 	private int structure = structureMax;
 	private int upgradesPurchase;
-	private ArrayList<Blast> blasts;
+//	private ArrayList<Blast> blasts;
 	private double angle; // angle in radians to the mouse pointer
 	
 	public Ship(Image image, float radius) {// create a body with the size of the image divided by 2
 		this.shipSheet = image;
 		this.radius = radius;
-		this.blasts = new ArrayList<Blast>(3);
+//		this.blasts = new ArrayList<Blast>(3);
 		init();
 		this.body = createBody();
 		this.shipMoving = false; //we aren't moving if we were just created
@@ -60,24 +59,28 @@ public class Ship extends AbstractPhysicalEntity implements RenderableEntity {
 	}
 	
 	/** Draw the ship at its current location. */
-	public void draw(Graphics g) {
-		draw(g, 0f, 0f, 1f);
+	public void draw(SpriteBatch b, Graphics g) {
+		draw(b, g, 0f, 0f, 1f);
 	}
+	
 	// draw offset by shipwidth, because the body getPosition vector reports the position of the upperleft bounding box; 
 	// therefore we draw the image on an offset. 
 	// TODO: collision will probably be very off because of this
-	public void draw(Graphics g, float xOff, float yOff, float scale) {
+	public void draw(SpriteBatch batch, Graphics g, float xOff, float yOff, float scale) {
 		float newX = getX() - shipWidth + xOff;
 		float newY = getY() - shipWidth + yOff;
-		currentImage.draw(newX, newY, scale, tint);
-		drawBlasts(g, newX, newY, scale, tint); // if we have bullets, we draw them
+		//set new filter which will be used to draw the image
+		batch.setColor(tint);
+		batch.drawImage(currentImage, newX, newY, (float)Math.toDegrees(angle));
+		
+//		drawBlasts(g, newX, newY, scale, tint); // if we have bullets, we draw them
 	}
 	
 	public Ship copy() {
 		Ship s = new Ship(this.shipSheet, this.radius);
 		s.tint = new Color(tint);
+		s.angle = this.angle;
 		s.setPosition(getX(), getY());
-		s.setRotation(getRotation());
 		return s;
 	}
 	
@@ -85,7 +88,7 @@ public class Ship extends AbstractPhysicalEntity implements RenderableEntity {
 	public void thrustStraight(int delta){
 		float dirXAmt = dirX * delta * Constants.PLAYER_MOVE_SPEED;
 		float dirYAmt = dirY * delta * Constants.PLAYER_MOVE_SPEED;
-		addForce(dirXAmt, dirYAmt);		
+		addForce(dirXAmt, dirYAmt);
 		this.shipMoving = true;
 		currentImage = shipThrust;
 	}
@@ -126,7 +129,6 @@ public class Ship extends AbstractPhysicalEntity implements RenderableEntity {
 		double r = -Math.atan2((getX()-mouseX), (getY()-mouseY));	
 		this.dirX = (float) Math.sin(r);
 		this.dirY = (float) -Math.cos(r); 
-		setRotation((float)r);
 		this.angle = r;
 	}
 	
@@ -168,15 +170,15 @@ public class Ship extends AbstractPhysicalEntity implements RenderableEntity {
 	}
 	
 	public void drawBlasts(Graphics g, float x, float y, float scale, Color tint){
-		for (Blast b : blasts){
-			b.draw(g);
-		}
+//		for (Blast b : blasts){
+//			b.draw(g);
+//		}
 	}
 	
 	public void fireBlaster(){
-		Blast blast = new Blast();
-		blast.addForce(this.dirX*100f, this.dirY*100f);
-		this.blasts.add(blast);
+//		Blast blast = new Blast();
+//		blast.addForce(this.dirX*100f, this.dirY*100f);
+//		this.blasts.add(blast);
 	}
 	
 }

@@ -1,24 +1,10 @@
 package space.state;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.prefs.Preferences;
 
-import javax.swing.JOptionPane;
-
-import org.lwjgl.BufferUtils;
-import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.ContextCapabilities;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GLContext;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.Color;
@@ -28,7 +14,6 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.opengl.InternalTextureLoader;
-import org.newdawn.slick.opengl.TextureImpl;
 import org.newdawn.slick.opengl.pbuffer.GraphicsFactory;
 import org.newdawn.slick.state.StateBasedGame;
 import org.newdawn.slick.util.Log;
@@ -40,7 +25,6 @@ import space.engine.SpriteBatch;
 import space.engine.SpriteFont;
 import space.util.GameText;
 import space.util.Resources;
-import space.util.Strings;
 import space.util.Utils;
 
 
@@ -68,6 +52,7 @@ public class SpaceGameMain extends StateBasedGame implements GameContext {
 	private int elapsed, elapsed_max = 1000;
 	private ShaderProgram shockShader;
 	private float cx, cy;
+
 	
 	public static Preferences getPrefs() {
 		return prefs;
@@ -127,24 +112,14 @@ public class SpaceGameMain extends StateBasedGame implements GameContext {
 		if (old!=null)
 			old.left();
 	}
-
-    private String source(String str) throws SlickException{
-    	try {
-	    	BufferedReader br = new BufferedReader(new InputStreamReader(Utils.getResourceAsStream(str)));
-	    	String line = "";
-	    	String txt = "";
-	    	while ((line=br.readLine()) != null)
-	    		txt += line + "\n";
-	    	br.close();
-	    	return txt.trim();
-    	} catch (IOException e) {
-    		throw new SlickException("error loading source");
-    	}
-    }
     
+    public Input getInput() {
+    	return container.getInput();
+    }
 	
     public void preUpdateState(GameContainer c, int delta) throws SlickException {
-		elapsed += delta;	
+		//used by our shockwave shader
+    	elapsed += delta;
     }
 	
 	/**

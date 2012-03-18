@@ -4,6 +4,8 @@ import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.GL31;
 import org.lwjgl.opengl.GLContext;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Image;
@@ -16,18 +18,16 @@ import org.newdawn.slick.util.FastTrig;
  */
 public class SpriteBatch {
 
-	public static final int STRATEGY_VERTEX_ARRAYS = 2;
+	public static final int STRATEGY_DEFAULT = 2;
 	public static final int STRATEGY_VBO = 4;
-	public static final int STRATEGY_VBO_MAPPED = 8;
-	//something like new SpriteBatch(
-	
-	public static boolean isVBOSupported() {
-		return GLContext.getCapabilities().GL_ARB_vertex_buffer_object;
-	}
 	
 	public static final int ALIGN_LEFT = 0;
 	public static final int ALIGN_CENTER = 1;
 	public static final int ALIGN_RIGHT = 2;
+	 
+	public static boolean isVBOSupported() {
+		return GLContext.getCapabilities().GL_ARB_vertex_buffer_object;
+	}
 	
 	/**
 	 * Whether to send the image data as GL_TRIANGLES
@@ -60,7 +60,8 @@ public class SpriteBatch {
 	private int maxVerts;
 	private Color currentColor = Color.white;
 	
-	private int vboID = 0;
+	private int vboID, cboID, tboID;
+	private int strategy = STRATEGY_DEFAULT;
 	
 	private float translateX, translateY;
 	
@@ -69,30 +70,39 @@ public class SpriteBatch {
 	}
 	
 	public SpriteBatch(int size) {
+		this(size, STRATEGY_DEFAULT);
+	}
+	
+	public SpriteBatch(int size, int strategy) {
 		if (size<=0)
 			throw new IllegalArgumentException("batch size must be larger than 0");
+		this.strategy = strategy;
 		this.maxVerts = size;
-		int len = size * 8;
-		vertices = BufferUtils.createFloatBuffer(len);
-		colors = BufferUtils.createFloatBuffer(len);
-		texcoords = BufferUtils.createFloatBuffer(len);
+		vertices = BufferUtils.createFloatBuffer(size * 2);
+		colors = BufferUtils.createFloatBuffer(size * 4);
+		texcoords = BufferUtils.createFloatBuffer(size * 2);
+//		
 		GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
         GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
         GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
 
     	// TODO: add VBO support
-//        if (strategy==STRATEGY_VBO) {
-//        	if (!isVBOSupported())
-//        		throw new UnsupportedOperationException("trying to use VBO with SpriteBatch when it's not supported");
-//        	vboID = GL15.glGenBuffers();
-//        	
-//        	GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboID);
-//        	GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertices, GL15.GL_STATIC_DRAW);
-//        	GL15.
-//        }
+        if (strategy==STRATEGY_VBO) {
+        	if (!isVBOSupported())
+        		throw new UnsupportedOperationException("trying to use VBO with SpriteBatch when it's not supported");
+        	vboID = GL15.glGenBuffers();
+        	cboID = GL15.glGenBuffers();
+        	tboID = GL15.glGenBuffers();
+        	
+        	GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboID);
+        	GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertices, GL15.GL_STREAM_DRAW);
+        	GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, cboID);
+        	GL15.glBufferData(GL15.GL_ARRAY_BUFFER, colors, GL15.GL_STREAM_DRAW);
+        	GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, tboID);
+        	GL15.glBufferData(GL15.GL_ARRAY_BUFFER, texcoords, GL15.GL_STREAM_DRAW);
+        }
         
 	}
-	
 	
 	/**
 	 * Returns the size of this ImageBatch as given in construction (default 1000).
@@ -136,6 +146,7 @@ public class SpriteBatch {
 			render();
 		idx = 0;
 		texture = null;
+		
 		vertices.clear();
 		texcoords.clear();
 		colors.clear();
@@ -154,12 +165,40 @@ public class SpriteBatch {
 		vertices.flip();
 		colors.flip();
 		texcoords.flip();
+
+//
+//	    vertices.rewind();
+//	    colors.rewind();
+//	    texcoords.rewind();
+//	    
 		
-	    GL11.glVertexPointer(2, 0, vertices);     
-	    GL11.glColorPointer(4, 0, colors);     
-	    GL11.glTexCoordPointer(2, 0, texcoords);     
-	    
+		if (strategy == STRATEGY_VBO) {
+			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboID);
+        	GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertices, GL15.GL_STREAM_DRAW);
+        	GL11.glVertexPointer(2, GL11.GL_FLOAT, 0, 0L);
+        	
+        	GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, cboID);
+        	GL15.glBufferData(GL15.GL_ARRAY_BUFFER, colors, GL15.GL_STREAM_DRAW);
+			GL11.glColorPointer(4, GL11.GL_FLOAT, 0, 0L);
+        	
+        	GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, tboID);
+        	GL15.glBufferData(GL15.GL_ARRAY_BUFFER, texcoords, GL15.GL_STREAM_DRAW);
+			GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 0, 0L);
+		} else {
+			GL11.glVertexPointer(2, 0, vertices);
+			GL11.glColorPointer(4, 0, colors);     
+		    GL11.glTexCoordPointer(2, 0, texcoords);
+		}
+		
 	    GL11.glDrawArrays(mode, 0, idx);
+	    
+	    if (strategy == STRATEGY_VBO)
+	    	GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+		
+		//GL31.glDrawArraysInstanced(mode, 0, idx, 1);
+		
+	    //texcoords2.clear();
+//	    
 	    vertices.clear();
 	    colors.clear();
 	    texcoords.clear();
@@ -420,7 +459,7 @@ public class SpriteBatch {
 			//apply the last texture
 			render();
 			texture = image.getTexture();
-		} else if (idx >= maxVerts - TOLERANCE) 
+		} else if (idx >= maxVerts - 4) 
 			render();
 	}
 	
@@ -481,5 +520,3 @@ public class SpriteBatch {
 		}
 	}
 }
-
-

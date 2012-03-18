@@ -22,6 +22,9 @@ public class InGameState extends AbstractState {
 		super(context, 1);
 	}
 	private World world; // the world!
+	private int worldUpdateInterval = 5;
+	private int counter = 0;
+	
 	private Ship player;
 	private StarfieldSprite starfield;
 	private SimpleFX shakeFade = new SimpleFX(1f, 0f, 1000, Easing.QUAD_OUT);
@@ -51,10 +54,6 @@ public class InGameState extends AbstractState {
 		}
 	}
 	
-	public void mouseMoved(int oldx, int oldy, int x, int y){
-		player.setHeading(x, y);
-	}
-	
 	@Override
 	public void init(GameContext context) throws SlickException {
 		starfield = new StarfieldSprite();
@@ -79,19 +78,22 @@ public class InGameState extends AbstractState {
 		
 		//render our foreground elements that don't need to be clamped to the screen size
 		starfield.drawStars(context, batch, g);
-		float xOff = player.getVelX()/2.5f;
-		float yOff = player.getVelY()/2.5f;
+		
+		
 	// this isn't what i want. i want to just rotate the ship, but it rotates the entire background too.
     // how can we avoid this?
 	//	g.rotate(player.getX(), player.getY(), (float)Math.toDegrees(player.getRotation())); 
-		g.setAntiAlias(true); //necessary?
-		player.draw(g, xOff, yOff, 1f);
-		g.setAntiAlias(false);
+//		g.setAntiAlias(true); //necessary?
+		player.draw(batch, g, 0, 0, 1f);
+//		g.setAntiAlias(false);
 	}
 	
 	
 	@Override
 	public void update(GameContext context, int delta) throws SlickException {
+		//occasionally delta might be really huge, to be safe let's just cap it to 10 ms
+		delta = Math.min(delta, 10);
+		
 		starfield.update(context, delta);
 		if (shake) {
 			shakeDelay += delta;
@@ -106,6 +108,10 @@ public class InGameState extends AbstractState {
 				shake = false;
 		}
 		
+		
+		float mx = context.getInput().getMouseX(), my = context.getInput().getMouseY();
+		player.setHeading(mx, my);
+		
 		//player controls
 		if (context.getContainer().getInput().isKeyDown(Input.KEY_W)){
 			player.thrustStraight(delta);
@@ -119,6 +125,23 @@ public class InGameState extends AbstractState {
 		else if (context.getContainer().getInput().isKeyDown(Input.KEY_D)){
 			player.strafeRight(delta);
 		}
+		
+		//step the world so that the physics are updated
+		counter += delta;
+		while (counter > worldUpdateInterval) {
+			world.step(worldUpdateInterval * 0.01f);
+			counter -= worldUpdateInterval;
+		}
+		
+		if (player.getX() < -player.getWidth()) 
+			player.setPosition(context.getWidth(), player.getY());
+		else if (player.getX() > context.getWidth()+player.getWidth())
+			player.setPosition(-player.getWidth(), player.getY());
+		
+		if (player.getY() < -player.getHeight()) 
+			player.setPosition(player.getX(), context.getHeight());
+		else if (player.getY() > context.getHeight()+player.getHeight())
+			player.setPosition(player.getX(), -player.getHeight());
 	}
 	
 	public void shakeCamera(GameContext context) {

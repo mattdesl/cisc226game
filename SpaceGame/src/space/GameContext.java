@@ -1,6 +1,7 @@
 package space;
 
 import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.Input;
 
 import space.engine.SpriteBatch;
 import space.engine.SpriteFont;
@@ -24,6 +25,8 @@ public interface GameContext {
 	public boolean isDebugEnabled();
 	
 	public SpriteFont getDefaultFont();
+	
+	public Input getInput();
 	
 	public SpriteBatch getSpriteBatch();
 	
