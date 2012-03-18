@@ -144,10 +144,10 @@ public class Ship extends AbstractEntity {
 		
 		
 		if (input.isKeyDown(Input.KEY_D)) {
-			strafeLeft(delta);
+			strafeRight(delta);
 		} 
 		else if (input.isKeyDown(Input.KEY_A)) {
-			strafeRight(delta);
+			strafeLeft(delta);
 		}
 		
 	}
