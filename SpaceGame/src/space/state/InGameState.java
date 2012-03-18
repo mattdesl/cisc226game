@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.phys2d.math.Vector2f;
+import net.phys2d.raw.Body;
 import net.phys2d.raw.CollisionEvent;
 import net.phys2d.raw.CollisionListener;
+import net.phys2d.raw.StaticBody;
 import net.phys2d.raw.World;
+import net.phys2d.raw.shapes.Box;
 
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -17,7 +20,6 @@ import space.GameContext;
 import space.engine.SpriteBatch;
 import space.engine.easing.Easing;
 import space.engine.easing.SimpleFX;
-import space.entities.Bullet;
 import space.entities.Constants;
 import space.entities.Entity;
 import space.entities.Kamikaze;
@@ -72,7 +74,7 @@ public class InGameState extends AbstractState implements CollisionListener {
 	
 	@Override
 	public void init(GameContext context) throws SlickException {
-		context.getContainer().setMouseGrabbed(true);
+//		context.getContainer().setMouseGrabbed(true);
 		starfield = new StarfieldSprite();
 		starfield.randomize(context);
 		world = new World(new Vector2f(0,0), 10);
@@ -89,6 +91,13 @@ public class InGameState extends AbstractState implements CollisionListener {
 		enemy.getBody().setBitmask(Constants.BIT_ENEMY);
 		addEntity(enemy);
 		
+		Body walltop = new StaticBody(new Box(context.getWidth(), 10f));
+		walltop.setPosition(context.getWidth()/2f, -20);
+		walltop.setBitmask(Constants.BIT_ENEMY | Constants.BIT_BULLET);
+		
+		player.getBody().setRestitution(1f);
+		walltop.setRestitution(0.5f);
+		world.add(walltop);
 		//context.getContainer().setMouseGrabbed(true);
 	}
 	
@@ -117,11 +126,15 @@ public class InGameState extends AbstractState implements CollisionListener {
 	
 
 	public void collisionOccured(CollisionEvent evt) {
-		Entity e1 = (Entity)(evt.getBodyA().getUserData());
-		Entity e2 = (Entity)(evt.getBodyB().getUserData());
-		System.out.println("Collision event "+e1+" "+e2);
-		e1.collide(e2);
-		e2.collide(e1);
+		Object obj1 = evt.getBodyA().getUserData();
+		Object obj2 = evt.getBodyB().getUserData();
+		if (obj1 instanceof Entity && obj2 instanceof Entity) {
+			Entity e1 = (Entity)obj1;
+			Entity e2 = (Entity)obj2;
+			System.out.println("Collision event "+e1+" "+e2);
+			e1.collide(e2);
+			e2.collide(e1);
+		}
 	}
 	
 	public void addEntity(Entity e) {

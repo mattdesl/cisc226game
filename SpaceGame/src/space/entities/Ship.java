@@ -110,9 +110,9 @@ public class Ship extends AbstractEntity {
 		
 		float mx = context.getInput().getMouseX(), my = context.getInput().getMouseY();
 		float dx = Mouse.getDX();
-		rotate(dx * Constants.PLAYER_TURN_SPEED);
+//		rotate(dx * Constants.PLAYER_TURN_SPEED);
 		
-		//setHeading(mx, my);
+		setHeading(mx, my);
 		
 		//player controls
 		
