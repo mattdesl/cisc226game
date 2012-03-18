@@ -43,7 +43,7 @@ public class Ship extends AbstractEntity {
 		this.radius = radius;
 		init();
 		setBody(createBody());
-		body.addBit(Constants.BIT_PLAYER_GROUP);
+		body.addBit(Constants.BIT_PLAYER);
 		this.shipMoving = false; //we aren't moving if we were just created
 		setRotation(0);
 	}

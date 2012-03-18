@@ -27,7 +27,7 @@ public class Bullet extends AbstractEntity {
 		body = new Body(new Circle(RADIUS),1f);
 		body.setMaxVelocity(Constants.PLAYER_BLASTER_SPEED, Constants.PLAYER_BLASTER_SPEED);
 		body.setPosition(x, y);
-		body.addBit(playerBullet ? Constants.BIT_PLAYER_GROUP : Constants.BIT_ENEMY_GROUP);
+		body.addBit((playerBullet ? Constants.BIT_PLAYER : Constants.BIT_ENEMY) | Constants.BIT_BULLET);
 		body.setUserData(this);
 		
 		addForce(dirX * Constants.PLAYER_BLASTER_SPEED, dirY * Constants.PLAYER_BLASTER_SPEED);

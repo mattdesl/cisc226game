@@ -118,6 +118,7 @@ public class InGameState extends AbstractState implements CollisionListener {
 	public void collisionOccured(CollisionEvent evt) {
 		Entity e1 = (Entity)(evt.getBodyA().getUserData());
 		Entity e2 = (Entity)(evt.getBodyB().getUserData());
+		System.out.println("Collision event "+e1+" "+e2);
 		e1.collide(e2);
 		e2.collide(e1);
 	}
