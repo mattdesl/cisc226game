@@ -25,7 +25,8 @@ public class Ship extends AbstractEntity {
 	private Color tint = new Color(1f,1f,1f,1f); //we can adjust alpha value of ship here
 	private final int textureWidth = 38; // height of a single sprite on the spritesheet
 	private final int textureHeight = 48;
-	private int shipWidth, shipHeight;
+
+	
 	private float dirX, dirY; // direction the ship is currently facing
 	private boolean shipMoving; // are we moving?
 	private int blasterDamage = 50; // amount of hitpoint damage the blaster will deal
@@ -81,15 +82,13 @@ public class Ship extends AbstractEntity {
 		shipIdle = Resources.getSprite("player");
 		shipStrafeRight = shipStrafeLeft = shipThrust = shipStrafeRight2 = shipStrafeLeft2 = shipIdle;
 		
-		this.shipWidth = shipIdle.getWidth()/2;
-		this.shipHeight = shipIdle.getHeight()/2;
 		currentImage = shipIdle;
 	}
 	
 	/** Draw the ship at its current location. */
 	public void draw(GameContext context, SpriteBatch batch, Graphics g) {
-		float newX = getX() - shipWidth;
-		float newY = getY() - shipWidth;
+		float newX = getX() - currentImage.getWidth()/2f;
+		float newY = getY() - currentImage.getHeight()/2f;
 		//set new filter which will be used to draw the image
 		batch.setColor(tint);
 		batch.drawImage(currentImage, newX, newY, getRotation());
@@ -137,10 +136,13 @@ public class Ship extends AbstractEntity {
 		else if (input.isKeyDown(Input.KEY_RIGHT)){
 			rotate(delta * Constants.PLAYER_TURN_SPEED);
 		}
-		if (input.isKeyDown(Input.KEY_SPACE)) {
+		if (input.isKeyDown(Input.KEY_SPACE) || input.isMouseButtonDown(0)) {
 			if (shootingTime > shootingInterval) {
 				shootingTime = 0;
-				context.getInGameState().addEntity(new Bullet(getX(), getY(), dirX, dirY, true));
+				float x = getX();
+				float y = getY();
+				
+				context.getInGameState().addEntity(new Bullet(x, y, dirX, dirY, getRotation(), true));
 			}
 		}
 		
