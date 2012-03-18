@@ -14,7 +14,8 @@ public abstract class Enemy extends AbstractEntity {
 	// only thing unique to enemies is the behaviour of their movement (update) and the 
 	// graphic
 	protected int health;
-	protected int damage; 
+	protected int weaponDamage; 
+	protected int collisionDamage;
 	protected Image enemyImage;
 	protected int enemyWidth;
 	protected int enemyHeight;
@@ -52,12 +53,20 @@ public abstract class Enemy extends AbstractEntity {
 		return this.health;
 	}
 	
-	public void setDamage(int damage){
-		this.damage = damage;
+	public void setWeaponDamage(int damage){
+		this.weaponDamage = damage;
 	}
 	
-	public int getDamage(){
-		return this.damage;
+	public int getWeaponDamage(){
+		return this.weaponDamage;
+	}
+	
+	public void setCollisionDamage(int damage){
+		this.collisionDamage = damage;
+	}
+	
+	public int getCollisionDamage(){
+		return this.collisionDamage;
 	}
 		
 	public float getRotation(){
