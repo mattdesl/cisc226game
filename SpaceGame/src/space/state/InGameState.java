@@ -85,7 +85,7 @@ public class InGameState extends AbstractState implements CollisionListener {
 		
 		enemy = new Kamikaze(1);
 		enemy.setPosition(0, 0);
-		enemy.getBody().setBitmask(Constants.BIT_ENEMY_GROUP);
+		enemy.getBody().setBitmask(Constants.BIT_ENEMY);
 		addEntity(enemy);
 		
 		//context.getContainer().setMouseGrabbed(true);
