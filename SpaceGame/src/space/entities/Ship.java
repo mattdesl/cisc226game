@@ -74,9 +74,9 @@ public class Ship extends AbstractEntity {
 	}
 	
 	public void ensureWithinBounds(int width, int height) {
-		if (getX() < -getWidth()) 
+		if (getX() < -getWidth()) {
 			setPosition(width, getY());
-		else if (getX() > width+getWidth())
+		} else if (getX() > width+getWidth())
 			setPosition(-getWidth(), getY());
 		
 		if (getY() < -getHeight()) 
@@ -88,8 +88,8 @@ public class Ship extends AbstractEntity {
 	public void update(GameContext context, int delta) {
 		Input input = context.getInput();
 		
-//		float mx = context.getInput().getMouseX(), my = context.getInput().getMouseY();
-//		player.setHeading(mx, my);
+		float mx = context.getInput().getMouseX(), my = context.getInput().getMouseY();
+		setHeading(mx, my);
 		
 		//player controls
 		
