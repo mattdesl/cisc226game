@@ -32,7 +32,7 @@ public class Ship extends AbstractEntity {
 	private double angle; // angle in radians to the mouse pointer
 	
 	private boolean shooting = false;
-	private int shootingInterval = 1500; //ms
+	private int shootingInterval = 200; //ms
 	private int shootingTime = shootingInterval;
 	
 	public Ship(Image image, float radius) {// create a body with the size of the image divided by 2

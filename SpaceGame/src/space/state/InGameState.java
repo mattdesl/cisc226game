@@ -72,6 +72,8 @@ public class InGameState extends AbstractState {
 		player = new Ship(new Image("res/ship.png"), 10f);
 		player.setPosition(400,300);
 		world.add(player.getBody());
+		
+		//context.getContainer().setMouseGrabbed(true);
 	}
 	
 	@Override
@@ -124,25 +126,27 @@ public class InGameState extends AbstractState {
 				shake = false;
 		}
 		
-		
-		for (Entity e : entities) {
-			e.update(context, delta);
-		}
-		
-//		for (int i=0; i<entities.size(); i++) {
-//			Entity e = entities.get(i);
-//			if (e.isActive()) {
-//				e.update(context, delta);
-//				if (e.isActive()) //check again incase it died
-//					entitiesBuffer.add(e);
-//			}
+//		
+//		for (Entity e : entities) {
+//			e.update(context, delta);
 //		}
 //		
-//		//flip the buffer
-//		List<Entity> temp = entities;
-//		entities = entitiesBuffer;
-//		entitiesBuffer = entities;
-//		entitiesBuffer.clear();
+		for (int i=0; i<entities.size(); i++) {
+			Entity e = entities.get(i);
+			if (e.isActive()) {
+				e.update(context, delta);
+				if (e.isActive()) { //check again incase it died
+					entitiesBuffer.add(e);
+					
+				}
+			}
+		}
+		
+		//flip the buffer
+		List<Entity> temp = entities;
+		entities = entitiesBuffer;
+		entitiesBuffer = temp;
+		entitiesBuffer.clear();
 		
 		player.update(context, delta);
 		
@@ -164,10 +168,7 @@ public class InGameState extends AbstractState {
 	}
 	
 	public String getDebugText() {
-		return "\nStars: "+starfield.size()+"\n" +
-				"Starfield Tiles: "+starfield.GRID_SIZE+" (use 1 and 2 keys to change)\n"+
-				"Big star chance: "+starfield.BIG_STAR_CHANCE+" (3 and 4 to change)\n"+
-				"Medium star chance: "+starfield.MEDIUM_STAR_CHANCE+" (5 and 6 to change)";
+		return "Entities: "+entities.size();
 		
 	}
 	
