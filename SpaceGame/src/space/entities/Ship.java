@@ -26,12 +26,12 @@ public class Ship extends AbstractEntity {
 	private final int textureWidth = 38; // height of a single sprite on the spritesheet
 	private final int textureHeight = 48;
 
-	
 	private float dirX, dirY; // direction the ship is currently facing
 	private boolean shipMoving; // are we moving?
-	private int blasterDamage = 50; // amount of hitpoint damage the blaster will deal
-	private int shieldMax = 200; // the amount of damage the ship can take before taking damage on structure shields regenerate
-	private int shields = shieldMax; // the current amound of shields
+	private int blasterDamage = 50; // initial amount of hitpoint damage the blaster will deal
+	private int collisionDamage = 50; // amount of damage enemies take when colliding with the ship
+	private double shieldMax = 200; // the amount of damage the ship can take before taking damage on structure shields regenerate
+	private double shields = shieldMax; // the current amound of shields
 	private final int structureMax = 30; // the amount of damage the ship can take when shields are 0.
 	private int structure = structureMax;
 	private int upgradesPurchase;
@@ -40,33 +40,42 @@ public class Ship extends AbstractEntity {
 	private boolean shooting = false;
 	private int shootingInterval = 200; //ms
 	private int shootingTime = shootingInterval;
+	private int shieldRegenInterval = 2000; // after 2 seconds, shields begen regeneration
+	private int hitTime = shieldRegenInterval;
 	
 	public Ship(float radius) {// create a body with the size of the image divided by 2
 		this.radius = radius;
 		init();
 		setBody(createBody());
-		body.setRestitution(0.5f);
-		body.addBit(Constants.BIT_PLAYER);
 		this.shipMoving = false; //we aren't moving if we were just created
 		setRotation(0);
 	}
-
+	
 	public void collide(Entity other) {
+		// we got shot! take damage equal to the bullet's damage attribute
+		hitTime = 0; // set the hit time to 0, since we got hit
 		if (other instanceof Bullet) {
 			Bullet bullet = ((Bullet)other);
 			takeDamage(bullet.getDamage());
 			bullet.kill();
 		}
+		// if we collide with an enemy, we take their collision damage
 		if (other instanceof Enemy){
-			Enemy kami = (Enemy)other;
-			takeDamage(kami.getCollisionDamage());
+			Enemy enemy = (Enemy)other;
+			takeDamage(enemy.getCollisionDamage());
 		}
+	}
+	
+	public int getCollisionDamage(){
+		return this.collisionDamage;
 	}
 	
 	protected Body createBody(){
 		Body body = new Body(new Circle(shipIdle.getWidth()/2f),1000f);
 		body.setMaxVelocity(Constants.PLAYER_MAX_SPEED, Constants.PLAYER_MAX_SPEED);
 		body.setUserData(this);
+		body.setRestitution(0.5f);
+		body.addBit(Constants.BIT_PLAYER);
 		return body;		
 	}
 	
@@ -94,6 +103,7 @@ public class Ship extends AbstractEntity {
 		batch.drawImage(currentImage, newX, newY, getRotation());
 	}
 	
+	// deprecated
 	public void ensureWithinBounds(int width, int height) {
 		if (getX() < -getWidth()) {
 			setPosition(width, getY());
@@ -122,6 +132,16 @@ public class Ship extends AbstractEntity {
 		
 		
 		shootingTime += delta;
+		hitTime += delta; // time since we were last hit.
+		
+		if (hitTime > shieldRegenInterval){ // if it's been 1500 ms since we were hit
+			if (shields < shieldMax){ // if our shields are below maximum
+				shields+=.04; // increase shields by .04 (5 seconds to be full health from 0 shields.
+				if (shields > shieldMax) 
+					shields=shieldMax;	// make sure we can't regenerate past max shields			
+				System.out.println("Shields: "+shields); // logging for now
+			}
+		}
 		
 		if (input.isKeyDown(Input.KEY_W)){
 			thrustStraight(delta);
@@ -141,13 +161,9 @@ public class Ship extends AbstractEntity {
 				shootingTime = 0;
 				float x = getX();
 				float y = getY();
-				
-				context.getInGameState().addEntity(new Bullet(x, y, dirX, dirY, getRotation(), true));
+				context.getInGameState().addEntity(new Bullet(x, y, dirX, dirY, getRotation(), blasterDamage, true));
 			}
 		}
-		
-		
-		
 		
 		if (input.isKeyDown(Input.KEY_D)) {
 			strafeRight(delta);
@@ -234,19 +250,19 @@ public class Ship extends AbstractEntity {
 	// upgrades the blaster's damage by an amount relevant to the wave the user is on.
 	// and how many upgrades are already purchased
 	public void upgradeBlaster(int wave){
-		int upgradeAmount = 25 + (wave * 5);
+		int upgradeAmount = 20 + (wave * 10);
 		this.blasterDamage+=upgradeAmount;
 	}
 	
 	// upgrades shields based upon the wave
 	public void upgradeShields(int wave){
-		int upgradeAmount = 50 + (wave * 10);
+		int upgradeAmount = 40 + (wave * 10);
 		this.shieldMax+=upgradeAmount;
 	}
 	
 	// deals damage to the player
 	public void takeDamage(int damage){
-		int newShields = this.shields - damage;
+		double newShields = this.shields - damage;
 		if (newShields >= 0) { // our shields took all of the damage.
 			this.shields = newShields;
 		} 
