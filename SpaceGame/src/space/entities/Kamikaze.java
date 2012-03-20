@@ -11,13 +11,12 @@ public class Kamikaze extends Enemy {
 
 	public Kamikaze(int wave){
 		super(Resources.getSprite("kamikaze"));
-		setHealth(100 + (wave*10));
+		setHealth(140 + (wave*10)); // kamikazes are tough
 		setWeaponDamage(0); // kamikazes don't deal weapon damage
 		setCollisionDamage(80 + (wave*20)); // quickly become very powerful
 		setBody(createBody());		
 		body.setMaxVelocity(Constants.ENEMY_KAMIKAZE_SPEED, Constants.ENEMY_KAMIKAZE_SPEED);
-		enemyWidth = enemyImage.getWidth()/2;
-		enemyHeight = enemyImage.getHeight()/2;
+
 	}
 
 	public void update(GameContext context, int delta){
@@ -36,7 +35,7 @@ public class Kamikaze extends Enemy {
 			bullet.kill();
 		}
 		else if (other instanceof Ship){
-			kill();
+			playDeath();
 		}
 	}
 }
