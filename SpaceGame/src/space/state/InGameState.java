@@ -24,6 +24,7 @@ import space.entities.Constants;
 import space.entities.Entity;
 import space.entities.Kamikaze;
 import space.entities.Ship;
+import space.entities.Wingbat;
 import space.sprite.StarfieldSprite;
 import space.util.Utils;
 
@@ -46,7 +47,7 @@ public class InGameState extends AbstractState implements CollisionListener {
 	private List<Entity> entities = new ArrayList<Entity>(1000);
 	private List<Entity> entitiesBuffer = new ArrayList<Entity>(1000);
 	
-	private Kamikaze enemy;
+	private Wingbat enemy;
 	
 	public void keyPressed(int k, char c) {
 		if (c=='1') {
@@ -86,9 +87,8 @@ public class InGameState extends AbstractState implements CollisionListener {
 		world.add(player.getBody());
 		player.player = true;
 		
-		enemy = new Kamikaze(1);
+		enemy = new Wingbat(1);
 		enemy.setPosition(0, 0);
-		enemy.getBody().setBitmask(Constants.BIT_ENEMY);
 		addEntity(enemy);
 		
 		final int WALL_SIZE = 10;
