@@ -16,8 +16,8 @@ public class Wingbat extends Enemy {
 		super(Resources.getSprite("kamikaze"));
 		setHealth(40 + (wave*10));
 		setWeaponDamage(25 + (wave*10));
-		int test = 1550 - (wave*50); // ships will shoot faster as waves go on. 
-		shootingInterval = (test > 300) ? test : 300;
+		int adjustedInterval = Constants.ENEMY_WINGBAT_SHOOTING_COOLDOWN - (wave*50); // ships will shoot faster as waves go on. 
+		shootingInterval = (adjustedInterval > 300) ? adjustedInterval : 300; // can't shoot faster than 3x / second
 		setCollisionDamage(20); // no collision damage increase for wingbats
 		setBody(createBody());
 		body.setMaxVelocity(Constants.ENEMY_WINGBAT_SPEED, Constants.ENEMY_WINGBAT_SPEED);
@@ -35,6 +35,7 @@ public class Wingbat extends Enemy {
 
 	public void update(GameContext context, int delta){
 		// move toward a player until we're within 400 or so units. then we start orbiting the player
+		// TODO: use player velocity to predict position, aim / orbit there instead
 		Ship player = context.getInGameState().getPlayer();
 		setHeading(player.getX(), player.getY());
 		double px = player.getX();
@@ -42,10 +43,10 @@ public class Wingbat extends Enemy {
 		double distance = Math.sqrt(Math.pow(getX()-px, 2) + Math.pow(getY()-py, 2));
 		shootingTime += delta;
 		if (distance <= 200){ // we orbit
-			thrustReverse(delta);
-			thrustSide(delta, left);
+			thrustReverse(delta, Constants.ENEMY_WINGBAT_REV_SPEED);
+			thrustSide(delta, Constants.ENEMY_WINGBAT_SPEED, left);
 		} else{
-			thrust(delta); // we close the distance			
+			thrust(delta, Constants.ENEMY_WINGBAT_SPEED); // we close the distance			
 		}
 		
 		if (shootingTime > shootingInterval){
