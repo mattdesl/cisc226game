@@ -271,7 +271,6 @@ public class Ship extends AbstractEntity {
 			this.structure+=newShields; // structure takes damage = amount through shields (will be negative, hence +=)
 		}
 		
-		
 		// after these calcs, we check if we're alive
 		if (this.structure <= 0){ // we're dead
 			this.structure = 0;
