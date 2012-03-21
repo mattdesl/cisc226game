@@ -38,9 +38,9 @@ public class Ship extends AbstractEntity {
 	private double angle; // angle in radians to the mouse pointer
 	
 	private boolean shooting = false;
-	private int shootingInterval = 200; //ms
+	private int shootingInterval = Constants.PLAYER_SHOOTING_COOLDOWN; //ms
 	private int shootingTime = shootingInterval;
-	private int shieldRegenInterval = 2000; // after 2 seconds, shields begen regeneration
+	private int shieldRegenInterval = Constants.PLAYER_SHIELD_REGEN_SPEED; // after 2 seconds, shields begen regeneration
 	private int hitTime = shieldRegenInterval;
 	
 	public Ship(float radius) {// create a body with the size of the image divided by 2
@@ -136,10 +136,10 @@ public class Ship extends AbstractEntity {
 		
 		if (hitTime > shieldRegenInterval){ // if it's been 1500 ms since we were hit
 			if (shields < shieldMax){ // if our shields are below maximum
-				shields+=.04; // increase shields by .04 (5 seconds to be full health from 0 shields.
+				shields+=(delta*.04); // increase shields by .04 * delta (.04 shields / ms)
 				if (shields > shieldMax) 
 					shields=shieldMax;	// make sure we can't regenerate past max shields			
-				System.out.println("Shields: "+shields); // logging for now
+				//System.out.println("Shields: "+shields); // logging for now
 			}
 		}
 		
