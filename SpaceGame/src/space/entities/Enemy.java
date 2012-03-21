@@ -92,21 +92,21 @@ public abstract class Enemy extends AbstractEntity {
 	}
 	
 	// thrust straight ahead	
-	public void thrust(int delta){
-		float dirXAmt = dirX * delta * Constants.ENEMY_KAMIKAZE_SPEED;
-		float dirYAmt = dirY * delta * Constants.ENEMY_KAMIKAZE_SPEED;
+	public void thrust(int delta, float speed){
+		float dirXAmt = dirX * delta * speed;
+		float dirYAmt = dirY * delta * speed;
 		addForce(dirXAmt, dirYAmt);
 	}
 	
 	//reverse thrust, to keep the enemy at a more constant distance
-	public void thrustReverse(int delta){
-		float dirXAmt = -(dirX * delta * Constants.ENEMY_WINGBAT_REV_SPEED);
-		float dirYAmt = -(dirY * delta * Constants.ENEMY_WINGBAT_REV_SPEED);
+	public void thrustReverse(int delta, float speed){
+		float dirXAmt = -(dirX * delta * speed);
+		float dirYAmt = -(dirY * delta * speed);
 		addForce(dirXAmt, dirYAmt);
 	}
 	
 	// thrust sideways. the boolean indicates the heading, false for right, true for left
-	public void thrustSide(int delta, boolean left){
+	public void thrustSide(int delta, float speed, boolean left){
 		double r;
 		if (left){
 			r = angle - Math.PI/2;
@@ -115,7 +115,7 @@ public abstract class Enemy extends AbstractEntity {
 		}
 		float dirX = (float)Math.sin(r);
 		float dirY= (float)-Math.cos(r);
-		addForce(dirX * delta * Constants.ENEMY_WINGBAT_SPEED, dirY * delta * Constants.ENEMY_WINGBAT_SPEED);
+		addForce(dirX * delta * speed, dirY * delta * speed);
 	}
 	public void draw(GameContext context, SpriteBatch batch, Graphics g){
 		float newX = getX() - enemyWidth;
