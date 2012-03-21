@@ -25,7 +25,7 @@ public class Kamikaze extends Enemy {
 		Ship player = context.getInGameState().getPlayer();
 		// kamikazes rotate to face the player
 		setHeading(player.getX(), player.getY());
-		thrust(delta);
+		thrust(delta, Constants.ENEMY_KAMIKAZE_SPEED);
 	}
 
 	public void collide(Entity other) {
