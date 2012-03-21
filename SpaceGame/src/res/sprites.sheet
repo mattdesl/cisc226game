@@ -8,4 +8,7 @@ font.tiny = 260,258,128,64
 font.nice = 0,388,256,128
 player = 258,39,48,45
 kamikaze = 258,88,48,45
+wingbat = 258,199,45,50
 bullet = 276,0,19,23
+player2 = 314,6,46,58
+kamikaze2 = 258,141,45,49

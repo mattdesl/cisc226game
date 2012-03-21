@@ -10,7 +10,7 @@ public class Kamikaze extends Enemy {
 	// a Kamikaze enemy
 
 	public Kamikaze(int wave){
-		super(Resources.getSprite("kamikaze"));
+		super(Resources.getSprite("kamikaze2"));
 		setHealth(140 + (wave*10)); // kamikazes are tough
 		setWeaponDamage(0); // kamikazes don't deal weapon damage
 		setCollisionDamage(80 + (wave*20)); // quickly become very powerful

@@ -13,7 +13,7 @@ public class Wingbat extends Enemy {
 	private int shootingTime;
 	
 	public Wingbat(int wave) {
-		super(Resources.getSprite("kamikaze"));
+		super(Resources.getSprite("wingbat"));
 		setHealth(40 + (wave*10));
 		setWeaponDamage(25 + (wave*10));
 		int adjustedInterval = Constants.ENEMY_WINGBAT_SHOOTING_COOLDOWN - (wave*50); // ships will shoot faster as waves go on. 

@@ -88,7 +88,7 @@ public class Ship extends AbstractEntity {
 //		shipStrafeRight2 = shipSheet.getSubImage(textureWidth, textureHeight, textureWidth, textureHeight);
 //		shipStrafeLeft2 = shipSheet.getSubImage(textureWidth*2, textureHeight, textureWidth, textureHeight);
 		
-		shipIdle = Resources.getSprite("player");
+		shipIdle = Resources.getSprite("player2");
 		shipStrafeRight = shipStrafeLeft = shipThrust = shipStrafeRight2 = shipStrafeLeft2 = shipIdle;
 		
 		currentImage = shipIdle;
