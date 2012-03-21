@@ -23,6 +23,7 @@ public abstract class Enemy extends AbstractEntity {
 	protected double angle;
 	protected float dirX, dirY;
 	// private Image enemyThrust, enemyExplosion, enemyExplosion2
+	protected int pointValue;
 	
 	// enemy strength based upon wave
 	public Enemy(Image image) {
@@ -72,6 +73,14 @@ public abstract class Enemy extends AbstractEntity {
 	
 	public int getCollisionDamage(){
 		return this.collisionDamage;
+	}
+	
+	public void setPointValue(int pointValue){
+		this.pointValue = pointValue;
+	}
+	
+	public int getPointValue(){
+		return this.pointValue;
 	}
 		
 	public float getRotation(){

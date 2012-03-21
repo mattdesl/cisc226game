@@ -19,6 +19,7 @@ public class Wingbat extends Enemy {
 		int adjustedInterval = Constants.ENEMY_WINGBAT_SHOOTING_COOLDOWN - (wave*50); // ships will shoot faster as waves go on. 
 		shootingInterval = (adjustedInterval > 300) ? adjustedInterval : 300; // can't shoot faster than 3x / second
 		setCollisionDamage(20); // no collision damage increase for wingbats
+		setPointValue(50+(wave*50));
 		setBody(createBody());
 		body.setMaxVelocity(Constants.ENEMY_WINGBAT_SPEED, Constants.ENEMY_WINGBAT_SPEED);
 		// decide if this wingbat strafes left or right when orbiting the player,

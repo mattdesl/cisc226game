@@ -21,11 +21,13 @@ import space.engine.SpriteBatch;
 import space.engine.easing.Easing;
 import space.engine.easing.SimpleFX;
 import space.entities.Constants;
+import space.entities.Enemy;
 import space.entities.Entity;
 import space.entities.Kamikaze;
 import space.entities.Ship;
 import space.entities.Wingbat;
 import space.sprite.StarfieldSprite;
+import space.util.Resources;
 import space.util.SpawnController;
 import space.util.Utils;
 
@@ -37,6 +39,7 @@ public class InGameState extends AbstractState implements CollisionListener {
 	private World world; // the world!
 	private int worldUpdateInterval = 5;
 	private int counter = 0;
+	private int score = 0;
 	
 	private Ship player;
 	private StarfieldSprite starfield;
@@ -46,7 +49,7 @@ public class InGameState extends AbstractState implements CollisionListener {
 	private int shakeDelay = 0, shakeDelayMax = 30;
 	private SpawnController spawner;
 	private int spawnCounter = 0;
-	
+		
 	private List<Entity> entities = new ArrayList<Entity>(1000);
 	private List<Entity> entitiesBuffer = new ArrayList<Entity>(1000);
 	
@@ -124,11 +127,13 @@ public class InGameState extends AbstractState implements CollisionListener {
 				batch.translate(shakeXAmt * shakeFade.getValue(), shakeYAmt * shakeFade.getValue());
 		}
 		
+		
 		//render our foreground elements that don't need to be clamped to the screen size
 		starfield.drawStars(context, batch, g);
 		
 		batch.setColor(Color.white);
-		
+		batch.drawTextMultiLine(Resources.getMonospacedFont(), "Score: "+score, context.getContainer().getWidth()-100, 5);
+		batch.flush(); // is this necessary?
 		for (Entity e : entities) {
 			e.draw(context, batch, g);
 		}
@@ -159,6 +164,10 @@ public class InGameState extends AbstractState implements CollisionListener {
 	
 	private void handleEntityDeath(Entity e) {
 		if (e.getBody()!=null)
+			if (e instanceof Enemy){
+				Enemy enemy = (Enemy) e;
+				score += enemy.getPointValue();
+			}
 			world.remove(e.getBody());
 	}
 	
@@ -242,5 +251,8 @@ public class InGameState extends AbstractState implements CollisionListener {
 		return player;
 	}
 
+	public int getScore(){
+		return score;
+	}
 	
 }
