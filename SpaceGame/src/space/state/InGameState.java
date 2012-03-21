@@ -26,6 +26,7 @@ import space.entities.Kamikaze;
 import space.entities.Ship;
 import space.entities.Wingbat;
 import space.sprite.StarfieldSprite;
+import space.util.SpawnController;
 import space.util.Utils;
 
 public class InGameState extends AbstractState implements CollisionListener {
@@ -43,6 +44,8 @@ public class InGameState extends AbstractState implements CollisionListener {
 	private boolean shake = false;
 	private float shakeXAmt = 0f, shakeYAmt = 0f;
 	private int shakeDelay = 0, shakeDelayMax = 30;
+	private SpawnController spawner;
+	private int spawnCounter = 0;
 	
 	private List<Entity> entities = new ArrayList<Entity>(1000);
 	private List<Entity> entitiesBuffer = new ArrayList<Entity>(1000);
@@ -81,15 +84,16 @@ public class InGameState extends AbstractState implements CollisionListener {
 		world = new World(new Vector2f(0,0), 10);
 		world.addListener(this);
 		
-		
 		player = new Ship(10f);
 		player.setPosition(context.getWidth()/2f, context.getHeight()/2f);
 		world.add(player.getBody());
 		player.player = true;
 		
-		enemy = new Wingbat(1);
-		enemy.setPosition(0, 0);
-		addEntity(enemy);
+		spawner = new SpawnController();
+		spawner.spawnWave(context);
+/*		enemy = new Wingbat(1);
+		enemy.setPosition(0, 0);*/
+	//	addEntity(enemy);
 		
 		final int WALL_SIZE = 10;
 		world.add(createWall(0, -WALL_SIZE*2, context.getWidth(), WALL_SIZE));
@@ -162,7 +166,6 @@ public class InGameState extends AbstractState implements CollisionListener {
 	public void update(GameContext context, int delta) throws SlickException {
 		//occasionally delta might be really huge, to be safe let's just cap it to 10 ms
 		delta = Math.min(delta, 10);
-		
 		starfield.update(context, delta);
 		if (shake) {
 			shakeDelay += delta;
@@ -198,6 +201,18 @@ public class InGameState extends AbstractState implements CollisionListener {
 		entitiesBuffer = temp;
 		entitiesBuffer.clear();
 		
+
+		// spawn the next wave if all enemies are dead
+		// TODO: exclude bullets from this?
+		if (entities.isEmpty()){
+			spawnCounter += delta;
+			if (spawnCounter >= Constants.WAVE_REST_TIME){
+				spawner.spawnWave(context);
+				spawnCounter = 0;
+			}
+			
+		}
+		
 		player.update(context, delta);
 		
 		//step the world so that the physics are updated
@@ -206,6 +221,7 @@ public class InGameState extends AbstractState implements CollisionListener {
 			world.step(worldUpdateInterval * 0.01f);
 			counter -= worldUpdateInterval;
 		}
+		
 		
 		//bounds checking -- keep player within container
 		//we do this after stepping the world
