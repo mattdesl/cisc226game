@@ -20,7 +20,7 @@ public class Ship extends AbstractEntity {
 	
 	private float radius;
 	private Image shipSheet;
-	private Image shipIdle, shipStrafeLeft, shipStrafeLeft2, shipStrafeRight, shipStrafeRight2, shipThrust;
+	private Image shipIdle, shipDodgeLeft, shipDodgeRight, shipThrust;
 	private Image currentImage;
 	private Color tint = new Color(1f,1f,1f,1f); //we can adjust alpha value of ship here
 	private final int textureWidth = 38; // height of a single sprite on the spritesheet
@@ -36,12 +36,13 @@ public class Ship extends AbstractEntity {
 	private int structure = structureMax;
 	private int upgradesPurchase;
 	private double angle; // angle in radians to the mouse pointer
-	
 	private boolean shooting = false;
 	private int shootingInterval = Constants.PLAYER_SHOOTING_COOLDOWN; //ms
 	private int shootingTime = shootingInterval;
-	private int shieldRegenInterval = Constants.PLAYER_SHIELD_REGEN_SPEED; // after 2 seconds, shields begen regeneration
-	private int hitTime = shieldRegenInterval;
+	private int shieldRegenInterval = Constants.PLAYER_SHIELD_REGEN_COOLDOWN; // after 2 seconds, shields begen regeneration
+	private int hitTime = shieldRegenInterval; // time since we were last hit
+	private int dodgeCooldown = Constants.PLAYER_DODGE_COOLDOWN;
+	private int dodgeTime = dodgeCooldown; // time since last dodge
 	
 	public Ship(float radius) {// create a body with the size of the image divided by 2
 		this.radius = radius;
@@ -88,8 +89,10 @@ public class Ship extends AbstractEntity {
 //		shipStrafeRight2 = shipSheet.getSubImage(textureWidth, textureHeight, textureWidth, textureHeight);
 //		shipStrafeLeft2 = shipSheet.getSubImage(textureWidth*2, textureHeight, textureWidth, textureHeight);
 		
-		shipIdle = Resources.getSprite("player2");
-		shipStrafeRight = shipStrafeLeft = shipThrust = shipStrafeRight2 = shipStrafeLeft2 = shipIdle;
+		shipIdle = Resources.getSprite("playeridle");
+		shipThrust = Resources.getSprite("playerthrust");
+		shipDodgeRight = Resources.getSprite("playerdodgeright");
+		shipDodgeLeft = Resources.getSprite("playerdodgeleft");
 		
 		currentImage = shipIdle;
 	}
@@ -100,6 +103,7 @@ public class Ship extends AbstractEntity {
 		float newY = getY() - currentImage.getHeight()/2f;
 		//set new filter which will be used to draw the image
 		batch.setColor(tint);
+		// will need to fix this.
 		batch.drawImage(currentImage, newX, newY, getRotation());
 	}
 	
@@ -130,13 +134,14 @@ public class Ship extends AbstractEntity {
 		
 		//player controls
 		
-		
+		//increment time
 		shootingTime += delta;
 		hitTime += delta; // time since we were last hit.
+		dodgeTime += delta;
 		
 		if (hitTime > shieldRegenInterval){ // if it's been 1500 ms since we were hit
 			if (shields < shieldMax){ // if our shields are below maximum
-				shields+=(delta*.04); // increase shields by .04 * delta (.04 shields / ms)
+				shields+=(delta*(shieldMax/Constants.PLAYER_SHIELD_REGEN_SPEED)); // increase shields by .04 * delta (.04 shields / ms)
 				if (shields > shieldMax) 
 					shields=shieldMax;	// make sure we can't regenerate past max shields			
 				//System.out.println("Shields: "+shields); // logging for now
@@ -166,12 +171,22 @@ public class Ship extends AbstractEntity {
 		}
 		
 		if (input.isKeyDown(Input.KEY_D)) {
-			strafeRight(delta);
+			if (dodgeTime >= dodgeCooldown){
+				dodgeTime = 0;
+				body.setMaxVelocity(10000f,10000f); // modify the max speed while we dodge
+				strafeRight(delta);
+				body.setMaxVelocity(Constants.PLAYER_MAX_SPEED, Constants.PLAYER_MAX_SPEED);
+			}
 		} 
-		else if (input.isKeyDown(Input.KEY_A)) {
-			strafeLeft(delta);
-		}
 		
+		else if (input.isKeyDown(Input.KEY_A)) {
+			if (dodgeTime >= dodgeCooldown){
+				dodgeTime = 0;
+				body.setMaxVelocity(10000f,10000f); // modify the max speed while we dodge
+				strafeLeft(delta);
+				body.setMaxVelocity(Constants.PLAYER_MAX_SPEED, Constants.PLAYER_MAX_SPEED);
+			}
+		}	
 	}
 	
 	// rename for clarity	
@@ -184,21 +199,21 @@ public class Ship extends AbstractEntity {
 	}
 	
 	public void strafeLeft(int delta){	
-		double r = angle - Math.PI/4;
+		double r = angle - Math.PI/2;
 		float dirX = (float)Math.sin(r);
 		float dirY = (float)-Math.cos(r);
-		addForce(dirX * delta * Constants.PLAYER_STRAFE_SPEED, dirY * delta * Constants.PLAYER_STRAFE_SPEED);
+		addForce(dirX * delta * Constants.PLAYER_DODGE_SPEED, dirY * delta * Constants.PLAYER_DODGE_SPEED);
 		this.shipMoving = true;
-		currentImage = shipStrafeLeft;
+		currentImage = shipDodgeLeft;
 	}
 	
 	public void strafeRight(int delta){
-		double r = angle + Math.PI/4;
+		double r = angle + Math.PI/2;
 		float dirX = (float)Math.sin(r);
 		float dirY = (float)-Math.cos(r);
-		addForce(dirX * delta * Constants.PLAYER_STRAFE_SPEED, dirY * delta * Constants.PLAYER_STRAFE_SPEED);
+		addForce(dirX * delta * Constants.PLAYER_DODGE_SPEED, dirY * delta * Constants.PLAYER_DODGE_SPEED);
 		this.shipMoving = true;
-		currentImage = shipStrafeRight;
+		currentImage = shipDodgeRight;
 	}
 	
 	// no thrust being applied. 
