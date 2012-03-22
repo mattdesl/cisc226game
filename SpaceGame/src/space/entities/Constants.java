@@ -24,7 +24,7 @@ public class Constants {
 	
 	// enemy constants
 	public static final float ENEMY_KAMIKAZE_SPEED = 30f; 
-	public static final float ENEMY_WINGBAT_SPEED = 50f; // can catch the player np
+	public static final float ENEMY_WINGBAT_SPEED = 40f; // can catch the player np
 	public static final float ENEMY_WINGBAT_REV_SPEED = 10f; // reverse speed 
 	public static final int ENEMY_WINGBAT_SHOOTING_COOLDOWN = 1550; // initial wingbat shooting speed
 	public static final float ENEMY_BLASTER_SPEED = 1200f;

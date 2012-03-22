@@ -21,6 +21,7 @@ public class Label extends Widget {
 
 	private int hpad, vpad, hAlign=ALIGN_CENTER, vAlign=ALIGN_CENTER;
 	private float textWidth = 0, textHeight = 0; 
+	private float xoff, yoff;
 	
 	/**
 	 * Sets label to image size.
@@ -51,13 +52,19 @@ public class Label extends Widget {
 		this.text = text;
 		this.hpad = hpad;
 		this.vpad = vpad;
-		setSize(font.getWidth(text)+hpad*2, font.getLineHeight()+vpad*2);
 		textWidth = font.getWidth(text);
 		textHeight = font.getHeight(text);
+		setSize(textWidth+hpad*2, textHeight+vpad*2);
+		
 	}
 	
 	public Label(AngelCodeFont font, String text) {
 		this(font, text, 0, 0);
+	}
+	
+	public void setTextOffset(float xoff, float yoff) {
+		this.xoff = xoff;
+		this.yoff = yoff;
 	}
 	
 	public void setAlign(int hAlign, int vAlign) {
@@ -90,7 +97,7 @@ public class Label extends Widget {
 			else if (vAlign == ALIGN_CENTER)
 				y += getHeight()/2f - textHeight/2f;
 			b.setColor(foreground);
-			b.drawText(font, text, (int)x, (int)y);
+			b.drawText(font, text, (int)x+xoff, (int)y+yoff);
 		}
 	}
 }

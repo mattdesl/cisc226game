@@ -52,30 +52,13 @@ public class InGameState extends AbstractState implements CollisionListener {
 		
 	private List<Entity> entities = new ArrayList<Entity>(1000);
 	private List<Entity> entitiesBuffer = new ArrayList<Entity>(1000);
-	
-	private Wingbat enemy;
+	private int enemies = 0;
 	
 	public void keyPressed(int k, char c) {
-		if (c=='1') {
-			starfield.GRID_SIZE--;
-			starfield.randomize(context);
-		} else if (c=='2') {
-			starfield.GRID_SIZE++;
-			starfield.randomize(context);
-		} else if (c=='3') {
-			starfield.BIG_STAR_CHANCE--;
-			starfield.randomize(context);
-		} else if (c=='4') {
-			starfield.BIG_STAR_CHANCE++;
-			starfield.randomize(context);
-		} else if (c=='5') {
-			starfield.MEDIUM_STAR_CHANCE--;
-			starfield.randomize(context);
-		} else if (c=='6') {
-			starfield.MEDIUM_STAR_CHANCE++;
-			starfield.randomize(context);
-		} else if (k==Input.KEY_RETURN){
+		if (k==Input.KEY_RETURN){
 			context.createShockwave((int)player.getX(), (int)player.getY());
+		} else if (k==Input.KEY_ESCAPE) {
+			context.enterMenu();
 		}
 	}
 	
@@ -103,7 +86,7 @@ public class InGameState extends AbstractState implements CollisionListener {
 		world.add(createWall(0, context.getHeight(), context.getWidth(), WALL_SIZE));
 		world.add(createWall(-WALL_SIZE*2, 0, WALL_SIZE, context.getHeight()));
 		world.add(createWall(context.getWidth(), 0, WALL_SIZE, context.getHeight()));
-		
+		System.out.println("initting");
 		//context.getContainer().setMouseGrabbed(true);
 	}
 	
@@ -160,6 +143,9 @@ public class InGameState extends AbstractState implements CollisionListener {
 		if (e.getBody()!=null) {
 			world.add(e.getBody());
 		}
+		if (e instanceof Enemy) {
+			enemies++;
+		}
 	}
 	
 	private void handleEntityDeath(Entity e) {
@@ -167,6 +153,7 @@ public class InGameState extends AbstractState implements CollisionListener {
 			if (e instanceof Enemy){
 				Enemy enemy = (Enemy) e;
 				score += enemy.getPointValue();
+				enemies--;
 			}
 			world.remove(e.getBody());
 	}
@@ -213,7 +200,7 @@ public class InGameState extends AbstractState implements CollisionListener {
 
 		// spawn the next wave if all enemies are dead
 		// TODO: exclude bullets from this?
-		if (entities.isEmpty()){
+		if (enemies==0){
 			spawnCounter += delta;
 			if (spawnCounter >= Constants.WAVE_REST_TIME){
 				spawner.spawnWave(context);
@@ -243,7 +230,7 @@ public class InGameState extends AbstractState implements CollisionListener {
 	}
 	
 	public String getDebugText() {
-		return "Entities: "+entities.size();
+		return "Entities: "+entities.size()+"\nEnemies: "+enemies;
 		
 	}
 	

@@ -167,6 +167,8 @@ public class Widget {
     }
     
     protected void drawForeground(SpriteBatch batch, Graphics g, float screenX, float screenY) {
+//    	batch.flush();
+//    	g.drawRect(getAbsoluteX(), getAbsoluteY(), getWidth(), getHeight());
     }
     
     /** 

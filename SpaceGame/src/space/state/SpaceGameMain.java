@@ -194,9 +194,7 @@ public class SpaceGameMain extends StateBasedGame implements GameContext {
 	}
 	
 	public void keyPressed(int k, char c) {
-		if (k == Input.KEY_ESCAPE) {
-			container.exit();
-		} else if (k == Input.KEY_0) {
+		if (k == Input.KEY_0) {
 			showDebug = !showDebug;
 		} else if (k == Input.KEY_9) {
 			Runtime.getRuntime().gc();
