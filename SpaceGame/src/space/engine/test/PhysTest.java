@@ -199,11 +199,11 @@ public class PhysTest extends BasicGame {
        
 		if (container.getInput().isKeyDown(Input.KEY_A)) {
 			strafe = -1;
-			ship.strafeLeft(delta);
+			ship.burstLeft(delta);
 		}
 		else if (container.getInput().isKeyDown(Input.KEY_D)) {
 			strafe = 1;
-			ship.strafeRight(delta);
+			ship.burstRight(delta);
 
 		} else {
 			strafe = 0;

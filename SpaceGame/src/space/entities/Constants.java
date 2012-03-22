@@ -1,13 +1,17 @@
 package space.entities;
 
 public class Constants {
-	public static final float PLAYER_MOVE_SPEED = 1500f;
+	public static final float PLAYER_MOVE_SPEED = 3000f;
 	public static final float PLAYER_TURN_SPEED = 0.25f;
 	public static final float PLAYER_STRAFE_SPEED = 1200f;
-	public static final float PLAYER_MAX_SPEED = 40f;
+	public static final float PLAYER_MAX_SPEED = 50f;
 	public static final float PLAYER_BLASTER_SPEED = 2000f;
-	public static final int PLAYER_SHIELD_REGEN_SPEED = 2000;
+	public static final float PLAYER_BOOST_SPEED = 750000f;
+	public static final int PLAYER_BOOST_DURATION = 400; // duration of afterimages
+	public static final int PLAYER_SHIELD_REGEN_SPEED = 5000; //ms for shields to go from 0 -> max
+	public static final int PLAYER_SHIELD_REGEN_COOLDOWN = 2000;
 	public static final int PLAYER_SHOOTING_COOLDOWN = 200;
+	public static final int PLAYER_BOOST_COOLDOWN = 2000; 
 	public static final float CAM_ZOOM = .08f;
 	public static final float DECAY_SPEED = .010f;
 
