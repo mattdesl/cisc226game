@@ -24,11 +24,11 @@ public class Resources {
 		return sheet1.getSprite(key);
 	}
 	
-	public static SpriteFont getFont1() {
+	public static SpriteFont getSquareFont() {
 		return font1;
 	}
 	
-	public static SpriteFont getFont2() {
+	public static SpriteFont getSmallFont() {
 		return font2;
 	}
 	
@@ -36,7 +36,7 @@ public class Resources {
 		return font3;
 	}
 	
-	public static SpriteFont getFont4() {
+	public static SpriteFont getNiceFont() {
 		return font4;
 	}
 
