@@ -56,7 +56,6 @@ public class Wingbat extends Enemy {
 		}
 	}
 	
-	@Override
 	public void collide(Entity other) {
 		if (other instanceof Bullet){
 			Bullet bullet = (Bullet)other;

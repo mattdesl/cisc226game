@@ -29,6 +29,8 @@ import space.util.Utils;
 
 
 public class SpaceGameMain extends StateBasedGame implements GameContext {
+	public static final int MAINMENUSTATE = 0;
+	public static final int INGAMESTATE = 1;
     public static final int MINIMUM_TEXSIZE = 1024;
 	
 	private GameContainer container;
@@ -40,6 +42,7 @@ public class SpaceGameMain extends StateBasedGame implements GameContext {
 	
 	private AbstractState currentState;
 	private InGameState gameState;
+	private MainMenuState menuState;
 	private SpriteBatch spriteBatch;
 	private SpriteFont defaultFont;
 	private boolean showDebug = true;
@@ -94,7 +97,7 @@ public class SpaceGameMain extends StateBasedGame implements GameContext {
 	}
 	
 	public void enterMenu() {
-		Log.info("no menu state yet...");
+		enterState(menuState);
 	}
 	
 	boolean doSceneEffect() {
@@ -152,8 +155,10 @@ public class SpaceGameMain extends StateBasedGame implements GameContext {
 		spriteBatch = new SpriteBatch(4000);
 		
 		addState(gameState = new InGameState(this));
+		addState(menuState = new MainMenuState(this));
 		//currentState = gameState;
-		enterGame();
+		//enterGame();
+		enterMenu();
 	}
 	
 	private boolean meetsSystemRequirements() throws SlickException {
@@ -281,8 +286,8 @@ public class SpaceGameMain extends StateBasedGame implements GameContext {
 			Utils.error("Game text file at '"+GameText.TEXT_PATH+"' could not be loaded", e);
 		}
 
-		int width = 800;
-		int height = 600;
+		int width = 1024;
+		int height = 768;
 		boolean fullscreen = false;
 		
 		detailLevel = prefs.getInt("spacegame.detail", GameContext.DETAIL_HIGH);
