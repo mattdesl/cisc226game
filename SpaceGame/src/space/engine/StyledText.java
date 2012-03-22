@@ -1,8 +1,8 @@
 package space.engine;
 
 import java.util.ArrayList;
-import java.util.List;
 
+import org.newdawn.slick.AngelCodeFont;
 import org.newdawn.slick.Color;
 
 public class StyledText {
@@ -20,19 +20,19 @@ public class StyledText {
 		return groups.size();
 	}
 	
-	public Group append(CharSequence text) {
+	public Group append(String text) {
 		return append(text, null, null);
 	}
 	
-	public Group append(CharSequence text, SpriteFont font) {
+	public Group append(String text, AngelCodeFont font) {
 		return append(text, font, null);
 	}
 	
-	public Group append(CharSequence text, Color color) {
+	public Group append(String text, Color color) {
 		return append(text, null, color);
 	}
 	
-	public Group append(CharSequence text, SpriteFont font, Color color) {
+	public Group append(String text, AngelCodeFont font, Color color) {
 		Group g = new Group(text, font, color);
 		groups.add(g);
 		return g;
@@ -44,13 +44,13 @@ public class StyledText {
 	
 	public static class Group {
 		
-		public final CharSequence text;
-		private SpriteFont font;
+		public final String text;
+		private AngelCodeFont font;
 		private Color color;
 		private float yoffset, height;
 		private boolean yoffsetDirty = true, heightDirty = true;
 		
-		public Group(CharSequence text, SpriteFont font, Color color) {
+		public Group(String text, AngelCodeFont font, Color color) {
 			this.text = text;
 			this.font = font;
 			this.color = color;
@@ -84,15 +84,15 @@ public class StyledText {
 			this.color = color;
 		}
 		
-		public CharSequence getText() {
+		public String getText() {
 			return text;
 		}
 		
-		public SpriteFont getFont() {
+		public AngelCodeFont getFont() {
 			return font;
 		}
 		
-		public void setFont(SpriteFont font) {
+		public void setFont(AngelCodeFont font) {
 			if (this.font!=font)
 				yoffsetDirty = true;
 			this.font = font;

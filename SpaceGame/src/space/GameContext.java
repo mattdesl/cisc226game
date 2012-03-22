@@ -1,10 +1,10 @@
 package space;
 
+import org.newdawn.slick.AngelCodeFont;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Input;
 
 import space.engine.SpriteBatch;
-import space.engine.SpriteFont;
 import space.state.InGameState;
 
 /**
@@ -25,7 +25,7 @@ public interface GameContext {
 	public int getDetailLevel();
 	public boolean isDebugEnabled();
 
-	public SpriteFont getDefaultFont();
+	public AngelCodeFont getDefaultFont();
 
 	public Input getInput();
 

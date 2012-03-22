@@ -5,8 +5,8 @@ import java.nio.FloatBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
-import org.lwjgl.opengl.GL31;
 import org.lwjgl.opengl.GLContext;
+import org.newdawn.slick.AngelCodeFont;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.opengl.Texture;
@@ -205,9 +205,9 @@ public class SpriteBatch {
 	    idx = 0;
 	}
 	
-	public void drawText(SpriteFont defaultFont, StyledText text, float x, float y) {
-		SpriteFont.Glyph lastDef = null;
-		SpriteFont lastFont = null;
+	public void drawText(AngelCodeFont defaultFont, StyledText text, float x, float y) {
+		AngelCodeFont.Glyph lastDef = null;
+		AngelCodeFont lastFont = null;
 		Color old = currentColor;
 		
 		float maxLineHeight = defaultFont.getLineHeight();
@@ -228,9 +228,9 @@ public class SpriteBatch {
 		
 		for (int gc=0; gc<text.getGroupCount(); gc++) {
 			StyledText.Group g = text.getGroup(gc);
-			SpriteFont newFont = g.getFont()!=null ? g.getFont() : defaultFont;
+			AngelCodeFont newFont = g.getFont()!=null ? g.getFont() : defaultFont;
 			Color newColor = g.getColor()!=null ? g.getColor() : old;
-			CharSequence newStr = g.getText();
+			String newStr = g.getText();
 			//TODO: clean up this method
 			float minYOff = g.getFont()==null ? defaultFont.getYOffset(newStr) : g.getYOffset();
 			float height = g.getFont()==null ? defaultFont.getHeight(newStr) : g.getHeight();
@@ -244,7 +244,7 @@ public class SpriteBatch {
 			
 			for (int i=0; i<newStr.length(); i++) {
 				char c = newStr.charAt(i);
-				SpriteFont.Glyph def = newFont.getGlyph(c);
+				AngelCodeFont.Glyph def = newFont.getGlyph(c);
 				if (def==null)
 					continue;
 				if (lastDef!=null) 
@@ -258,9 +258,9 @@ public class SpriteBatch {
 		setColor(old);
 	}
 	
-	private void drawTextImpl(SpriteFont font, CharSequence text, float x, float y, 
+	private void drawTextImpl(AngelCodeFont font, CharSequence text, float x, float y, 
 			int startIndex, int endIndex, boolean multiLine) {
-		SpriteFont.Glyph lastDef = null;
+		AngelCodeFont.Glyph lastDef = null;
 		
 		float startX = x;
 		for (; startIndex < endIndex; startIndex++) {
@@ -269,7 +269,7 @@ public class SpriteBatch {
 				y += font.getLineHeight();
 				x = startX;
 			}
-			SpriteFont.Glyph def = font.getGlyph(c);
+			AngelCodeFont.Glyph def = font.getGlyph(c);
 			if (def==null)
 				continue;
 			if (lastDef!=null) 
@@ -280,20 +280,20 @@ public class SpriteBatch {
 		}
 	}
 	
-	public void drawTextMultiLine(SpriteFont font, CharSequence text, float x, float y) {
+	public void drawTextMultiLine(AngelCodeFont font, CharSequence text, float x, float y) {
 		drawTextImpl(font, text, x, y, 0, text.length(), true);
 	}
 	
-	public void drawTextMultiLine(SpriteFont font, CharSequence text, 
+	public void drawTextMultiLine(AngelCodeFont font, CharSequence text, 
 			float x, float y, int startIndex, int endIndex) {
 		drawTextImpl(font, text, x, y, startIndex, endIndex, true);
 	}
 	
-	public void drawText(SpriteFont font, CharSequence text, float x, float y) {
+	public void drawText(AngelCodeFont font, CharSequence text, float x, float y) {
 		drawTextImpl(font, text, x, y, 0, text.length(), false);
 	}
 	
-	public void drawText(SpriteFont font, CharSequence text, float x, float y, int startIndex, int endIndex) {
+	public void drawText(AngelCodeFont font, CharSequence text, float x, float y, int startIndex, int endIndex) {
 		drawTextImpl(font, text, x, y, startIndex, endIndex, false);
 	}
 	

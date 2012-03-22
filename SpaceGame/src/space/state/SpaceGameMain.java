@@ -6,6 +6,7 @@ import org.lwjgl.opengl.ContextCapabilities;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GLContext;
+import org.newdawn.slick.AngelCodeFont;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -16,13 +17,11 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.opengl.InternalTextureLoader;
 import org.newdawn.slick.opengl.pbuffer.GraphicsFactory;
 import org.newdawn.slick.state.StateBasedGame;
-import org.newdawn.slick.util.Log;
 
 import space.GameContext;
 import space.engine.FBO;
 import space.engine.ShaderProgram;
 import space.engine.SpriteBatch;
-import space.engine.SpriteFont;
 import space.util.GameText;
 import space.util.Resources;
 import space.util.Utils;
@@ -44,7 +43,7 @@ public class SpaceGameMain extends StateBasedGame implements GameContext {
 	private InGameState gameState;
 	private MainMenuState menuState;
 	private SpriteBatch spriteBatch;
-	private SpriteFont defaultFont;
+	private AngelCodeFont defaultFont;
 	private boolean showDebug = true;
 	
 	private boolean sceneEffectsEnabled = true;
@@ -76,7 +75,7 @@ public class SpaceGameMain extends StateBasedGame implements GameContext {
 		return spriteBatch;
 	}
 	
-	public SpriteFont getDefaultFont() {
+	public AngelCodeFont getDefaultFont() {
 		return defaultFont;
 	}
 	
@@ -153,9 +152,9 @@ public class SpaceGameMain extends StateBasedGame implements GameContext {
 		defaultFont = Resources.getMonospacedFont();
 		
 		spriteBatch = new SpriteBatch(4000);
-		
-		addState(gameState = new InGameState(this));
+
 		addState(menuState = new MainMenuState(this));
+		addState(gameState = new InGameState(this));
 		//currentState = gameState;
 		//enterGame();
 		enterMenu();
