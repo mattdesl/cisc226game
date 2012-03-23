@@ -217,11 +217,6 @@ public class InGameState extends AbstractState implements CollisionListener {
 			world.step(worldUpdateInterval * 0.01f);
 			counter -= worldUpdateInterval;
 		}
-		
-		
-		//bounds checking -- keep player within container
-		//we do this after stepping the world
-		player.ensureWithinBounds(context.getWidth(), context.getHeight());
 	}
 	
 	public void shakeCamera(GameContext context) {

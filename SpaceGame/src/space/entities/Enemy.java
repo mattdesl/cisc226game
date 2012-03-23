@@ -9,6 +9,8 @@ import org.newdawn.slick.Image;
 
 import space.GameContext;
 import space.engine.SpriteBatch;
+import space.ui.HealthBarWidget;
+import space.util.Resources;
 
 public abstract class Enemy extends AbstractEntity {
 	// only thing unique to enemies is the behaviour of their movement (update) and the 
@@ -24,18 +26,29 @@ public abstract class Enemy extends AbstractEntity {
 	protected float dirX, dirY;
 	// private Image enemyThrust, enemyExplosion, enemyExplosion2
 	protected int pointValue;
+
+
+	private HealthBarWidget healthBar;
+
 	
 	// enemy strength based upon wave
 	public Enemy(Image image) {
 		this.enemyImage = image;
 		enemyWidth = enemyImage.getWidth()/2;
 		enemyHeight = enemyImage.getHeight()/2;
+		Image bar = Resources.getSprite("healthbar");
+		Image red = Resources.getSprite("healthbar.red");
+		Image blue = Resources.getSprite("healthbar.blue");
+		healthBar = new HealthBarWidget(bar, red, Resources.HEALTH_BAR_X_OFF, Resources.HEALTH_BAR_Y_OFF);
 	}
+	
+	public abstract int getMaxHealth();
 	
 	public Body createBody(){
 		Body body = new Body(new Circle(enemyImage.getWidth()/2f), 10f);
 		body.addBit(Constants.BIT_ENEMY);
 		body.setUserData(this);
+		body.setRestitution(0.5f);
 		return body;
 	}
 	
@@ -132,6 +145,14 @@ public abstract class Enemy extends AbstractEntity {
 		
 		batch.setColor(tint);
 		batch.drawImage(enemyImage, newX, newY, getRotation());
+		
+
+		//draw shield + health bar
+		float x = getX() - (healthBar.getWidth()/2f);
+		float y = getY() + enemyImage.getHeight()/2f + 1;
+		healthBar.setPosition(x, y+healthBar.getHeight());
+		healthBar.setValue(health/(float)getMaxHealth());
+		healthBar.draw(batch, g);
 	}
 	
 	public void takeDamage(int damage){

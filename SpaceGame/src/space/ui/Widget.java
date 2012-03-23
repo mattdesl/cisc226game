@@ -26,8 +26,8 @@ public class Widget {
     
     protected Image image;
     
-    protected Color foreground = Color.white;
-
+    protected Color foreground = new Color(1f,1f,1f,1f);
+    protected Color imageFilter = new Color(1f,1f,1f,1f);
     boolean mouseInside = false;
 	
     public Widget(Image image) {
@@ -161,7 +161,7 @@ public class Widget {
      */
     protected void drawBackground(SpriteBatch batch, Graphics g, float screenX, float screenY) {
         if (image!=null) {
-        	batch.setColor(Color.white);
+        	batch.setColor(imageFilter);
             batch.drawImage(image, screenX, screenY);
         }
     }

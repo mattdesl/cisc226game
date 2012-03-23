@@ -14,6 +14,7 @@ import org.newdawn.slick.Input;
 
 import space.GameContext;
 import space.engine.SpriteBatch;
+import space.ui.HealthBarWidget;
 import space.util.Resources;
 
 public class Ship extends AbstractEntity {
@@ -38,10 +39,10 @@ public class Ship extends AbstractEntity {
 	private int shieldAnimSpeed = 250; // 250ms animation time for shield animation
 	private int shieldTime = shieldAnimSpeed/5; //time per frame
 	private int blasterDamage = 50; // initial amount of hitpoint damage the blaster will deal
-	private int collisionDamage = 50; // amount of damage enemies take when colliding with the ship
+	private int collisionDamage = 1; // amount of damage enemies take when colliding with the ship
 	private double shieldMax = 200; // the amount of damage the ship can take before taking damage on structure shields regenerate
 	private double shields = shieldMax; // the current amound of shields
-	private final int structureMax = 30; // the amount of damage the ship can take when shields are 0.
+	private final int structureMax = 330; // the amount of damage the ship can take when shields are 0.
 	private int structure = structureMax;
 	private int upgradesPurchased;
 	private double angle; // angle in radians to the mouse pointer
@@ -56,6 +57,8 @@ public class Ship extends AbstractEntity {
 	private int afterImageDuration = 30; // ms for polling the afterimage
 	private int afterImageTime = afterImageDuration;
 	private ArrayList<Position> oldPos;
+	
+	private HealthBarWidget healthBar, shieldBar;
 
 	public Ship(float radius) {// create a body with the size of the image divided by 2
 		this.radius = radius;
@@ -136,6 +139,12 @@ public class Ship extends AbstractEntity {
 		shieldAnimation = new Animation(shieldArr, 50);
 		this.oldPos = new ArrayList<Position>(3);
 		currentImage = shipIdle;
+		
+		Image bar = Resources.getSprite("healthbar");
+		Image red = Resources.getSprite("healthbar.red");
+		Image blue = Resources.getSprite("healthbar.blue");
+		healthBar = new HealthBarWidget(bar, red, Resources.HEALTH_BAR_X_OFF, Resources.HEALTH_BAR_Y_OFF);
+		shieldBar = new HealthBarWidget(bar, blue, Resources.HEALTH_BAR_X_OFF, Resources.HEALTH_BAR_Y_OFF);
 	}
 
 	/** Draw the ship at its current location. */
@@ -170,24 +179,21 @@ public class Ship extends AbstractEntity {
 				shieldCounter = 0;	
 				takingDamage = false;
 			}
-
 		}
-
+		
+		//draw shield + health bar
+		float x = getX() - (healthBar.getWidth()/2f);
+		float y = getY() + currentImage.getHeight()/2f + 1;
+		shieldBar.setPosition(x,  y);
+		healthBar.setPosition(x, y+healthBar.getHeight() - 3);
+		
+		shieldBar.setValue((float)shields/(float)shieldMax);
+		healthBar.setValue(structure/(float)structureMax);
+		shieldBar.draw(batch, g);
+		healthBar.draw(batch, g);
 	}
 
 
-	// deprecated
-	public void ensureWithinBounds(int width, int height) {
-		if (getX() < -getWidth()) {
-			setPosition(width, getY());
-		} else if (getX() > width+getWidth())
-			setPosition(-getWidth(), getY());
-
-		if (getY() < -getHeight()) 
-			setPosition(getX(), height);
-		else if (getY() > height+getHeight())
-			setPosition(getX(), -getHeight());
-	}
 
 	public void update(GameContext context, int delta) {
 		if (!player)

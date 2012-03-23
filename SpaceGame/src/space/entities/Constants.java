@@ -1,7 +1,7 @@
 package space.entities;
 
 public class Constants {
-	public static final float PLAYER_MOVE_SPEED = 3000f;
+	public static final float PLAYER_MOVE_SPEED = 2000f;
 	public static final float PLAYER_TURN_SPEED = 0.25f;
 	public static final float PLAYER_STRAFE_SPEED = 1200f;
 	public static final float PLAYER_MAX_SPEED = 50f;
@@ -24,7 +24,7 @@ public class Constants {
 	
 	// enemy constants
 	public static final float ENEMY_KAMIKAZE_SPEED = 30f; 
-	public static final float ENEMY_WINGBAT_SPEED = 40f; // can catch the player np
+	public static final float ENEMY_WINGBAT_SPEED = 10f; // can catch the player np
 	public static final float ENEMY_WINGBAT_REV_SPEED = 10f; // reverse speed 
 	public static final int ENEMY_WINGBAT_SHOOTING_COOLDOWN = 1550; // initial wingbat shooting speed
 	public static final float ENEMY_BLASTER_SPEED = 1200f;
