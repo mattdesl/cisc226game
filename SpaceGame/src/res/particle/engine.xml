@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<system additive="false" points="false">
+  <emitter imageName="engine.tga" name="Default" renderType="inherit" useAdditive="false" useOriented="true">
+    <spawnInterval enabled="true" max="30.0" min="30.0"/>
+    <spawnCount enabled="true" max="1.0" min="1.0"/>
+    <initialLife enabled="true" max="300.0" min="300.0"/>
+    <initialSize enabled="true" max="10.0" min="10.0"/>
+    <xOffset enabled="true" max="0.0" min="0.0"/>
+    <yOffset enabled="true" max="0.0" min="0.0"/>
+    <initialDistance enabled="true" max="1.0" min="0.0"/>
+    <speed enabled="true" max="100.0" min="100.0"/>
+    <length enabled="false" max="1000.0" min="1000.0"/>
+    <emitCount enabled="false" max="1000.0" min="1000.0"/>
+    <spread type="random" value="0.0"/>
+    <angularOffset type="simple" value="269.0"/>
+    <growthFactor type="simple" value="-3.0"/>
+    <gravityFactor type="simple" value="0.0"/>
+    <windFactor type="simple" value="0.0"/>
+    <startAlpha type="simple" value="255.0"/>
+    <endAlpha type="simple" value="0.0"/>
+    <alpha active="false" max="255" min="0" type="linear">
+      <point x="0.0" y="0.0"/>
+      <point x="1.0" y="255.0"/>
+    </alpha>
+    <size active="false" max="20" min="0" type="linear">
+      <point x="0.0" y="10.0"/>
+      <point x="0.87601626" y="5.0"/>
+      <point x="1.0" y="0.0"/>
+    </size>
+    <velocity active="true" max="1" min="0" type="linear">
+      <point x="0.0" y="0.32386363"/>
+      <point x="0.17886178" y="0.09659091"/>
+      <point x="1.0" y="0.09659091"/>
+    </velocity>
+    <scaleY active="false" max="1" min="0" type="linear">
+      <point x="0.0" y="0.0"/>
+      <point x="1.0" y="1.0"/>
+    </scaleY>
+    <color>
+      <step b="1.0" g="1.0" offset="0.0" r="1.0"/>
+      <step b="1.0" g="0.0" offset="0.5" r="0.0"/>
+      <step b="0.4" g="0.0" offset="1.0" r="0.0"/>
+    </color>
+  </emitter>
+</system>

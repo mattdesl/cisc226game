@@ -11,10 +11,12 @@ import net.phys2d.raw.StaticBody;
 import net.phys2d.raw.World;
 import net.phys2d.raw.shapes.Box;
 
+import org.newdawn.slick.AngelCodeFont;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.particles.ParticleSystem;
 
 import space.GameContext;
 import space.engine.SpriteBatch;
@@ -54,6 +56,13 @@ public class InGameState extends AbstractState implements CollisionListener {
 	private List<Entity> entitiesBuffer = new ArrayList<Entity>(1000);
 	private int enemies = 0;
 	
+	private int waveLevel = 0;
+	private SimpleFX waveFadeFX = new SimpleFX(1f, 0f, Constants.WAVE_REST_TIME/2f, Easing.QUAD_OUT);
+	private Color waveLevelColor = new Color(1f,1f,1f,0f);
+	private boolean showWaveLevel = false;
+	private float boomX, boomY;
+	
+	
 	public void keyPressed(int k, char c) {
 		if (k==Input.KEY_RETURN){
 			context.createShockwave((int)player.getX(), (int)player.getY());
@@ -76,7 +85,7 @@ public class InGameState extends AbstractState implements CollisionListener {
 		player.player = true;
 		
 		spawner = new SpawnController();
-		spawner.spawnWave(context);
+		
 /*		enemy = new Wingbat(1);
 		enemy.setPosition(0, 0);*/
 	//	addEntity(enemy);
@@ -116,13 +125,29 @@ public class InGameState extends AbstractState implements CollisionListener {
 		
 		batch.setColor(Color.white);
 		batch.drawTextMultiLine(Resources.getMonospacedFont(), "Score: "+score, context.getContainer().getWidth()-100, 5);
-		batch.flush(); // is this necessary?
+		
 		for (Entity e : entities) {
 			e.draw(context, batch, g);
 		}
 		
 		if (!shake)
 			player.draw(context, batch, g);
+		else {
+			ParticleSystem sys = Resources.getBoomParticle();
+			if (sys!=null) {
+				batch.flush();
+				sys.render(boomX, boomY);
+			}
+		}
+		
+		if (showWaveLevel || waveFadeFX.getValue()>0f) {
+			AngelCodeFont f = Resources.getSmallFont();
+			String str = "Wave "+waveLevel;
+			float w = f.getWidth(str);
+			waveLevelColor.a = waveFadeFX.getValue();
+			batch.setColor(waveLevelColor);
+			batch.drawText(f, str, context.getWidth()/2f-w/2f, context.getHeight()/4f);
+		}
 	}
 	
 
@@ -164,6 +189,10 @@ public class InGameState extends AbstractState implements CollisionListener {
 		delta = Math.min(delta, 10);
 		starfield.update(context, delta);
 		if (shake) {
+			ParticleSystem sys = Resources.getBoomParticle();
+			if (sys!=null) {
+				sys.update(delta);
+			}
 			shakeDelay += delta;
 			if (shakeDelay > shakeDelayMax) {
 				float amt = 5f;
@@ -197,17 +226,36 @@ public class InGameState extends AbstractState implements CollisionListener {
 		entitiesBuffer = temp;
 		entitiesBuffer.clear();
 		
-
-		// spawn the next wave if all enemies are dead
-		// TODO: exclude bullets from this?
+		
 		if (enemies==0){
+			if (!showWaveLevel) {
+				waveLevel++;
+				waveFadeFX.setStart(waveLevelColor.a);
+				waveFadeFX.setEnd(1f);
+				waveFadeFX.restart();
+				waveFadeFX.setEasing(Easing.EXPO_OUT);
+				System.out.println("fade in");
+			}
+			showWaveLevel = true;
 			spawnCounter += delta;
 			if (spawnCounter >= Constants.WAVE_REST_TIME){
+				showWaveLevel = false;
+				waveFadeFX.setStart(waveLevelColor.a);
+				waveFadeFX.setEnd(0f);
+				waveFadeFX.restart();
+				waveFadeFX.setEasing(Easing.EXPO_IN);
+				System.out.println("fade out");
 				spawner.spawnWave(context);
 				spawnCounter = 0;
 			}
-			
 		}
+		
+		waveFadeFX.update(delta);
+		
+//		if (showWaveLevel)
+//			waveLevelAlpha = Math.min(1f, waveLevelAlpha+0.03f*delta);
+//		else if (!showWaveLevel && waveLevelAlpha > 0f)
+//			waveLevelAlpha = Math.max(0f, waveLevelAlpha-0.03f*delta);
 		
 		player.update(context, delta);
 		
@@ -221,6 +269,12 @@ public class InGameState extends AbstractState implements CollisionListener {
 	
 	public void shakeCamera(GameContext context) {
 		shakeFade.restart();
+		ParticleSystem sys = Resources.getBoomParticle();
+		boomX = player.getX();
+		boomY = player.getY();
+		if (sys!=null) {
+			sys.reset();
+		}
 		shake = true;
 	}
 	

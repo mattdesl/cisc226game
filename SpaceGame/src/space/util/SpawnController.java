@@ -14,18 +14,22 @@ public class SpawnController {
 		wave = 1; 
 	}
 	
+	public int getWave() {
+		return wave;
+	}
+	
 	public void spawnWave(GameContext context){
 		InGameState igs = context.getInGameState();
 		// decide how many ships to spawn here
 		int numKami = Utils.rnd(wave-1, wave+1);
-		int numWingbat = Utils.rnd(wave-1, wave+1);
+		int numWingbat = Utils.rnd(wave, wave+1);
 		System.out.println("Wave :" + wave + "| Kamikazes = " + numKami + " | Wingbats = " + numWingbat);
 		// add kamikazes
-		for (int i = 0; i < numKami; i++){
-			Enemy newKami = new Kamikaze(wave);
-			randomizePos(newKami, context);
-			igs.addEntity(newKami);
-		}
+//		for (int i = 0; i < numKami; i++){
+//			Enemy newKami = new Kamikaze(wave);
+//			randomizePos(newKami, context);
+//			igs.addEntity(newKami);
+//		}
 		
 		for (int i = 0; i < numWingbat; i++){	
 			Enemy newWingbat = new Wingbat(wave);

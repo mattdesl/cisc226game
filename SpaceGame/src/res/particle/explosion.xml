@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<system additive="false" points="false">
+  <emitter imageName="inital-flash.tga" name="Initial Flash" renderType="inherit" useAdditive="true" useOriented="false">
+    <spawnInterval enabled="true" max="3000.0" min="3000.0"/>
+    <spawnCount enabled="true" max="1.0" min="1.0"/>
+    <initialLife enabled="false" max="1000.0" min="1000.0"/>
+    <initialSize enabled="false" max="10.0" min="10.0"/>
+    <xOffset enabled="false" max="0.0" min="0.0"/>
+    <yOffset enabled="false" max="0.0" min="0.0"/>
+    <initialDistance enabled="false" max="0.0" min="0.0"/>
+    <speed enabled="true" max="0.0" min="0.0"/>
+    <length enabled="true" max="3000.0" min="3000.0"/>
+    <emitCount enabled="false" max="1000.0" min="1000.0"/>
+    <spread type="random" value="360.0"/>
+    <angularOffset type="simple" value="0.0"/>
+    <growthFactor type="simple" value="0.0"/>
+    <gravityFactor type="simple" value="0.0"/>
+    <windFactor type="simple" value="0.0"/>
+    <startAlpha type="simple" value="255.0"/>
+    <endAlpha type="simple" value="255.0"/>
+    <alpha active="true" max="255" min="0" type="linear">
+      <point x="0.0" y="0.0"/>
+      <point x="0.048780486" y="155.02841"/>
+      <point x="0.12601626" y="78.23863"/>
+      <point x="0.50406504" y="0.0"/>
+      <point x="1.0" y="0.0"/>
+    </alpha>
+    <size active="true" max="500" min="0" type="linear">
+      <point x="0.0" y="0.0"/>
+      <point x="0.07317073" y="477.27274"/>
+      <point x="1.0" y="147.72728"/>
+    </size>
+    <velocity active="false" max="255" min="0" type="linear">
+      <point x="0.0" y="0.0"/>
+      <point x="1.0" y="255.0"/>
+    </velocity>
+    <scaleY active="false" max="1" min="0" type="linear">
+      <point x="0.0" y="0.0"/>
+      <point x="1.0" y="1.0"/>
+    </scaleY>
+    <color>
+      <step b="1.0" g="1.0" offset="0.0" r="1.0"/>
+      <step b="1.0" g="1.0" offset="1.0" r="1.0"/>
+    </color>
+  </emitter>
+  <emitter imageName="whitecore-new-2.tga" name="White Hot Inner Core" renderType="inherit" useAdditive="true" useOriented="false">
+    <spawnInterval enabled="true" max="3000.0" min="3000.0"/>
+    <spawnCount enabled="true" max="50.0" min="50.0"/>
+    <initialLife enabled="true" max="1500.0" min="500.0"/>
+    <initialSize enabled="true" max="50.0" min="50.0"/>
+    <xOffset enabled="false" max="0.0" min="0.0"/>
+    <yOffset enabled="false" max="0.0" min="0.0"/>
+    <initialDistance enabled="true" max="10.0" min="0.0"/>
+    <speed enabled="true" max="10.0" min="10.0"/>
+    <length enabled="true" max="3000.0" min="3000.0"/>
+    <emitCount enabled="false" max="1000.0" min="1000.0"/>
+    <spread type="random" value="360.0"/>
+    <angularOffset type="simple" value="0.0"/>
+    <growthFactor type="simple" value="0.0"/>
+    <gravityFactor type="simple" value="-24.0"/>
+    <windFactor type="simple" value="22.0"/>
+    <startAlpha type="simple" value="255.0"/>
+    <endAlpha type="simple" value="0.0"/>
+    <alpha active="true" max="255" min="0" type="linear">
+      <point x="0.0" y="55.056816"/>
+      <point x="0.25406504" y="130.39772"/>
+      <point x="0.41463414" y="1.4488636"/>
+      <point x="1.0" y="0.0"/>
+    </alpha>
+    <size active="false" max="255" min="0" type="linear">
+      <point x="0.0" y="0.0"/>
+      <point x="1.0" y="255.0"/>
+    </size>
+    <velocity active="true" max="1" min="0" type="linear">
+      <point x="0.0" y="0.23295455"/>
+      <point x="0.05487805" y="0.07954545"/>
+      <point x="0.12807882" y="0.021653544"/>
+      <point x="1.0" y="0.022727273"/>
+    </velocity>
+    <scaleY active="false" max="1" min="0" type="linear">
+      <point x="0.0" y="0.0"/>
+      <point x="1.0" y="1.0"/>
+    </scaleY>
+    <color>
+      <step b="1.0" g="1.0" offset="0.0" r="1.0"/>
+      <step b="1.0" g="1.0" offset="1.0" r="1.0"/>
+    </color>
+  </emitter>
+  <emitter imageName="fireball.tga" name="Intense Fireball" renderType="inherit" useAdditive="false" useOriented="true">
+    <spawnInterval enabled="true" max="3000.0" min="3000.0"/>
+    <spawnCount enabled="true" max="20.0" min="20.0"/>
+    <initialLife enabled="true" max="2500.0" min="2500.0"/>
+    <initialSize enabled="true" max="100.0" min="100.0"/>
+    <xOffset enabled="true" max="0.0" min="0.0"/>
+    <yOffset enabled="true" max="0.0" min="0.0"/>
+    <initialDistance enabled="true" max="0.0" min="0.0"/>
+    <speed enabled="true" max="1.0" min="1.0"/>
+    <length enabled="true" max="3000.0" min="3000.0"/>
+    <emitCount enabled="false" max="1000.0" min="1000.0"/>
+    <spread type="random" value="360.0"/>
+    <angularOffset type="simple" value="0.0"/>
+    <growthFactor type="simple" value="0.0"/>
+    <gravityFactor type="simple" value="-5.0"/>
+    <windFactor type="simple" value="14.0"/>
+    <startAlpha type="simple" value="255.0"/>
+    <endAlpha type="simple" value="255.0"/>
+    <alpha active="true" max="255" min="0" type="linear">
+      <point x="0.0" y="126.05113"/>
+      <point x="0.20325203" y="126.05113"/>
+      <point x="0.38821137" y="0.0"/>
+      <point x="1.0" y="0.0"/>
+    </alpha>
+    <size active="true" max="100" min="0" type="linear">
+      <point x="0.0" y="0.0"/>
+      <point x="0.0060975607" y="0.0"/>
+      <point x="0.07113821" y="65.34091"/>
+      <point x="0.1199187" y="84.65909"/>
+      <point x="0.2296748" y="100.0"/>
+      <point x="1.0" y="100.0"/>
+    </size>
+    <velocity active="true" max="1" min="0" type="linear">
+      <point x="0.0" y="0.0"/>
+      <point x="0.002955665" y="0.0"/>
+      <point x="0.0056577087" y="0.1826087"/>
+      <point x="0.04039409" y="0.02952756"/>
+      <point x="0.3270936" y="0.02952756"/>
+      <point x="1.0" y="0.015748031"/>
+    </velocity>
+    <scaleY active="true" max="1" min="0" type="linear">
+      <point x="0.0" y="0.0"/>
+      <point x="0.002955665" y="0.0"/>
+      <point x="0.06009852" y="0.78149605"/>
+      <point x="0.45615762" y="1.0"/>
+      <point x="0.8039409" y="0.7401575"/>
+      <point x="1.0" y="0.0"/>
+    </scaleY>
+    <color>
+      <step b="1.0" g="1.0" offset="0.0" r="1.0"/>
+      <step b="1.0" g="1.0" offset="1.0" r="1.0"/>
+    </color>
+  </emitter>
+  <emitter imageName="smoke.tga" name="Smoke" renderType="inherit" useAdditive="false" useOriented="true">
+    <spawnInterval enabled="true" max="3000.0" min="3000.0"/>
+    <spawnCount enabled="true" max="20.0" min="20.0"/>
+    <initialLife enabled="true" max="2000.0" min="1111.0"/>
+    <initialSize enabled="true" max="80.0" min="80.0"/>
+    <xOffset enabled="true" max="0.0" min="0.0"/>
+    <yOffset enabled="true" max="0.0" min="0.0"/>
+    <initialDistance enabled="true" max="10.0" min="0.0"/>
+    <speed enabled="true" max="1.0" min="1.0"/>
+    <length enabled="true" max="3000.0" min="3000.0"/>
+    <emitCount enabled="false" max="1000.0" min="1000.0"/>
+    <spread type="random" value="360.0"/>
+    <angularOffset type="simple" value="168.0"/>
+    <growthFactor type="simple" value="0.0"/>
+    <gravityFactor type="simple" value="-21.0"/>
+    <windFactor type="simple" value="24.0"/>
+    <startAlpha type="simple" value="255.0"/>
+    <endAlpha type="simple" value="255.0"/>
+    <alpha active="true" max="255" min="0" type="linear">
+      <point x="0.0" y="0.0"/>
+      <point x="0.2398374" y="0.0"/>
+      <point x="0.34146342" y="162.27272"/>
+      <point x="0.46544716" y="168.06818"/>
+      <point x="0.5813008" y="255.0"/>
+      <point x="0.7479675" y="0.0"/>
+      <point x="1.0" y="0.0"/>
+    </alpha>
+    <size active="true" max="100" min="0" type="linear">
+      <point x="0.0" y="0.0"/>
+      <point x="0.09552845" y="0.0"/>
+      <point x="0.11585366" y="38.636364"/>
+      <point x="0.19512194" y="63.636364"/>
+      <point x="0.36382115" y="75.0"/>
+      <point x="1.0" y="75.0"/>
+    </size>
+    <velocity active="true" max="1" min="0" type="linear">
+      <point x="0.0" y="0.0"/>
+      <point x="0.038617887" y="0.0"/>
+      <point x="0.067073174" y="0.11931818"/>
+      <point x="0.101626016" y="0.11931818"/>
+      <point x="0.15243903" y="0.028409092"/>
+      <point x="1.0" y="0.011363637"/>
+    </velocity>
+    <scaleY active="true" max="1" min="0" type="linear">
+      <point x="0.0" y="0.0"/>
+      <point x="0.036585364" y="0.0"/>
+      <point x="0.05691057" y="0.52840906"/>
+      <point x="0.103658535" y="0.84090906"/>
+      <point x="0.20934959" y="1.0"/>
+      <point x="1.0" y="1.0"/>
+    </scaleY>
+    <color>
+      <step b="1.0" g="1.0" offset="0.0" r="1.0"/>
+      <step b="1.0" g="1.0" offset="1.0" r="1.0"/>
+    </color>
+  </emitter>
+</system>

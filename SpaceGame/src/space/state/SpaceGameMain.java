@@ -16,11 +16,11 @@ import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.opengl.InternalTextureLoader;
 import org.newdawn.slick.opengl.pbuffer.GraphicsFactory;
+import org.newdawn.slick.opengl.shader.ShaderProgram;
 import org.newdawn.slick.state.StateBasedGame;
 
 import space.GameContext;
 import space.engine.FBO;
-import space.engine.ShaderProgram;
 import space.engine.SpriteBatch;
 import space.util.GameText;
 import space.util.Resources;
@@ -133,18 +133,22 @@ public class SpaceGameMain extends StateBasedGame implements GameContext {
 		c.setShowFPS(false);
 		c.getGraphics().setBackground(Color.black);
 		
-		sceneEffectsEnabled = getDetailLevel() != GameContext.DETAIL_LOWEST;
 		if (!meetsSystemRequirements())
 			c.exit();
-		shockShader = ShaderProgram.loadProgram("res/vert2.shader", "res/frag2.shader");
-		sceneEffectsEnabled = shockShader.valid();
-		if (sceneEffectsEnabled) {
-			sceneFBO = new FBO(c.getWidth(), c.getHeight());
-			sceneTex = new Image(sceneFBO.getTexture());
-			sceneFBO.setPushAttrib(FBO.NO_BITS); //don't bother pushing bits...
-		} else {
-			System.out.println(shockShader.getLog());
+		sceneEffectsEnabled = true;
+		try {
+			shockShader = ShaderProgram.loadProgram("res/vert2.shader", "res/frag2.shader");
+			if (sceneEffectsEnabled) {
+				sceneFBO = new FBO(c.getWidth(), c.getHeight());
+				sceneTex = new Image(sceneFBO.getTexture());
+				sceneFBO.setPushAttrib(FBO.NO_BITS); //don't bother pushing bits...
+			} else {
+				System.out.println("Shader Log "+shockShader.getLog());
+			}
+		} catch (SlickException e) {
+			sceneEffectsEnabled = false;
 		}
+			
 		
 		//DO LOADING HERE... generally we would move this into a separate state
 		//i.e. with a progress bar
