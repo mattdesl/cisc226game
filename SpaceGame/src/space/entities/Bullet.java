@@ -28,13 +28,15 @@ public class Bullet extends AbstractEntity {
 		this.dirY = dirY;
 		this.angle = angle;
 		this.damage = damage;
-		image = Resources.getSprite("playerbullet");
+		
 		setBody(createBody(playerBullet));
 		setPosition(x, y);
 		if (playerBullet){
+			image = Resources.getSprite("playerbullet");
 			addForce(dirX * Constants.PLAYER_BLASTER_SPEED, dirY * Constants.PLAYER_BLASTER_SPEED);
 		} else {
 			// an enemy bullet
+			image = Resources.getSprite("enemybullet");
 			addForce(dirX * Constants.ENEMY_BLASTER_SPEED, dirY * Constants.ENEMY_BLASTER_SPEED);
 		}
 	}
