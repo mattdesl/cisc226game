@@ -58,7 +58,7 @@ public class Ship extends AbstractEntity {
 	private int afterImageTime = afterImageDuration;
 	private ArrayList<Position> oldPos;
 	
-	private HealthBarWidget healthBar, shieldBar;
+	private HealthBarWidget healthBar, shieldBar, boostBar;
 
 	public Ship(float radius) {// create a body with the size of the image divided by 2
 		this.radius = radius;
@@ -145,8 +145,10 @@ public class Ship extends AbstractEntity {
 		Image bar = Resources.getSprite("healthbar");
 		Image red = Resources.getSprite("healthbar.red");
 		Image blue = Resources.getSprite("healthbar.blue");
+		Image yellow = Resources.getSprite("healthbar.yellow");
 		healthBar = new HealthBarWidget(bar, red, Resources.HEALTH_BAR_X_OFF, Resources.HEALTH_BAR_Y_OFF);
 		shieldBar = new HealthBarWidget(bar, blue, Resources.HEALTH_BAR_X_OFF, Resources.HEALTH_BAR_Y_OFF);
+		boostBar = new HealthBarWidget(bar, yellow, Resources.HEALTH_BAR_X_OFF, Resources.HEALTH_BAR_Y_OFF);
 	}
 
 	/** Draw the ship at its current location. */
@@ -187,11 +189,14 @@ public class Ship extends AbstractEntity {
 		float y = getY() + currentImage.getHeight()/2f + 1;
 		shieldBar.setPosition(x,  y);
 		healthBar.setPosition(x, y+healthBar.getHeight() - 3);
+		boostBar.setPosition(x, (getY() - currentImage.getHeight()+5));
 		
 		shieldBar.setValue((float)shields/(float)shieldMax);
 		healthBar.setValue(structure/(float)structureMax);
+		boostBar.setValue((float)boostTime/(float)boostCooldown);
 		shieldBar.draw(batch, g);
 		healthBar.draw(batch, g);
+		boostBar.draw(batch, g);
 	}
 
 
@@ -213,7 +218,12 @@ public class Ship extends AbstractEntity {
 		//increment time
 		shootingTime += delta;
 		hitTime += delta; // time since we were last hit.
-		boostTime += delta;
+		if (boostTime < boostCooldown){
+			boostTime += delta;
+		}
+		else{
+			boostTime = boostCooldown;
+		}
 		afterImageTime += delta;
 
 

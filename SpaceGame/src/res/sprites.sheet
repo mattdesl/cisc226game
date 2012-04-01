@@ -24,3 +24,4 @@ arrow = 314,123,3,5
 healthbar = 321,123,55,15
 healthbar.red = 321,142,45,5
 healthbar.blue = 321,151,45,5
+healthbar.yellow = 321,160,45,5
