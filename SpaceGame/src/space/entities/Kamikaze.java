@@ -8,17 +8,27 @@ import space.util.Resources;
 public class Kamikaze extends Enemy {
 	
 	// a Kamikaze enemy
-
+	private int maxHealth;
+	
 	public Kamikaze(int wave){
 		super(Resources.getSprite("kamikaze2"));
+<<<<<<< HEAD
 		setMaxHealth(140 + (wave*10)); // kamikazes are tough
 		setHealth(getMaxHealth());
+=======
+		maxHealth = 140 + (wave*10); // kamikazes are tough
+		setHealth(maxHealth);
+>>>>>>> branch 'master' of git@github.com:mattdesl/cisc226game.git
 		setWeaponDamage(0); // kamikazes don't deal weapon damage
-		setCollisionDamage(80 + (wave*20)); // quickly become very powerful
+		setCollisionDamage(5 + (wave*5)); // quickly become very powerful
 		setPointValue(100+(wave*100)); // desired: divide this value by #upgrades purchased.
 		setBody(createBody());		
 		body.setMaxVelocity(Constants.ENEMY_KAMIKAZE_SPEED, Constants.ENEMY_KAMIKAZE_SPEED);
 
+	}
+	
+	public int getMaxHealth() {
+		return maxHealth;
 	}
 
 	public void update(GameContext context, int delta){

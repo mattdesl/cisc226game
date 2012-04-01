@@ -9,6 +9,9 @@ import space.engine.SpriteFont;
 
 public class Resources {
 	
+	public static final int HEALTH_BAR_X_OFF = 5;
+	public static final int HEALTH_BAR_Y_OFF = 5;
+	
 	private static SimpleSpriteSheet sheet1; 
 	private static AngelCodeFont font1, font2, font3, font4;
 	

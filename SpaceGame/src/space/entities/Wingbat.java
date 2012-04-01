@@ -11,15 +11,21 @@ public class Wingbat extends Enemy {
 	private boolean left; // are we heading left?
 	private int shootingInterval; // how often the firebat fires
 	private int shootingTime;
+	private int maxHealth;
 	
 	public Wingbat(int wave) {
 		super(Resources.getSprite("wingbat"));
+<<<<<<< HEAD
 		setMaxHealth(40 + (wave*10));
 		setHealth(getMaxHealth());
+=======
+		maxHealth = 40 + (wave*10);
+		setHealth(maxHealth);
+>>>>>>> branch 'master' of git@github.com:mattdesl/cisc226game.git
 		setWeaponDamage(25 + (wave*10));
 		int adjustedInterval = Constants.ENEMY_WINGBAT_SHOOTING_COOLDOWN - (wave*50); // ships will shoot faster as waves go on. 
 		shootingInterval = (adjustedInterval > 300) ? adjustedInterval : 300; // can't shoot faster than 3x / second
-		setCollisionDamage(20); // no collision damage increase for wingbats
+		setCollisionDamage(5); // no collision damage increase for wingbats
 		setPointValue(50+(wave*50));
 		setBody(createBody());
 		body.setMaxVelocity(Constants.ENEMY_WINGBAT_SPEED, Constants.ENEMY_WINGBAT_SPEED);
@@ -34,7 +40,11 @@ public class Wingbat extends Enemy {
 			left = false;
 		}
 	}
-
+	
+	public int getMaxHealth() {
+		return maxHealth;
+	}
+	
 	public void update(GameContext context, int delta){
 		// move toward a player until we're within 400 or so units. then we start orbiting the player
 		// TODO: use player velocity to predict position, aim / orbit there instead
