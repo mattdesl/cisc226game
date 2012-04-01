@@ -17,7 +17,8 @@ shield4 = 635,3,54,67
 shield5 = 693,3,54,67
 kamikaze = 258,88,48,45
 wingbat = 258,199,45,50
-bullet = 276,0,19,23
+playerbullet = 276,0,19,23
+enemybullet = 295,0,19,23
 kamikaze2 = 258,141,45,49
 title = 314,74,367,45
 arrow = 314,123,3,5
@@ -25,3 +26,13 @@ healthbar = 321,123,55,15
 healthbar.red = 321,142,45,5
 healthbar.blue = 321,151,45,5
 healthbar.yellow = 321,160,45,5
+explosion1 = 390,125,72,62
+explosion2 = 462,125,72,62
+explosion3 = 534,125,72,62
+explosion4 = 606,125,72,62
+explosion5 = 678,125,72,62
+explosion6 = 750,125,72,62
+explosion7 = 822,125,72,62
+crosshairs = 313,179,17,17
+
+

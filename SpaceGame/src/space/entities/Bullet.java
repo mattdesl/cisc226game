@@ -28,7 +28,7 @@ public class Bullet extends AbstractEntity {
 		this.dirY = dirY;
 		this.angle = angle;
 		this.damage = damage;
-		image = Resources.getSprite("bullet");
+		image = Resources.getSprite("playerbullet");
 		setBody(createBody(playerBullet));
 		setPosition(x, y);
 		if (playerBullet){

@@ -3,6 +3,7 @@ package space.entities;
 import net.phys2d.raw.Body;
 import net.phys2d.raw.shapes.Circle;
 
+import org.newdawn.slick.Animation;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -20,13 +21,19 @@ public abstract class Enemy extends AbstractEntity {
 	protected int weaponDamage; 
 	protected int collisionDamage;
 	protected Image enemyImage;
+	protected Image explosion1, explosion2, explosion3, explosion4, explosion5, explosion6, explosion7;
+	protected Animation deathAnimation;
+	protected int explosionTime = 0;
+	protected int explosionLength = 280; // 280 ms
+	protected int explosionCounter;
 	protected int enemyWidth;
 	protected int enemyHeight;
 	protected Color tint = new Color (1f,1f,1f,1f);
 	protected double angle;
 	protected float dirX, dirY;
-	// private Image enemyThrust, enemyExplosion, enemyExplosion2
+	protected boolean dead;
 	protected int pointValue;
+	
 
 
 	private HealthBarWidget healthBar;
@@ -37,6 +44,23 @@ public abstract class Enemy extends AbstractEntity {
 		this.enemyImage = image;
 		enemyWidth = enemyImage.getWidth()/2;
 		enemyHeight = enemyImage.getHeight()/2;
+		explosion1 = Resources.getSprite("explosion1");
+		explosion2 = Resources.getSprite("explosion2");
+		explosion3 = Resources.getSprite("explosion3");
+		explosion4 = Resources.getSprite("explosion4");
+		explosion5 = Resources.getSprite("explosion5");
+		explosion6 = Resources.getSprite("explosion6");
+		explosion7 = Resources.getSprite("explosion7");
+		Image[] explArr = new Image[7];
+		explArr[0] = explosion1;
+		explArr[1] = explosion2;
+		explArr[2] = explosion3;
+		explArr[3] = explosion4;
+		explArr[4] = explosion5;
+		explArr[5] = explosion6;
+		explArr[6] = explosion7;
+		deathAnimation = new Animation(explArr, 40);
+		deathAnimation.setLooping(false);
 		Image bar = Resources.getSprite("healthbar");
 		Image red = Resources.getSprite("healthbar.red");
 		Image blue = Resources.getSprite("healthbar.blue");
@@ -145,22 +169,31 @@ public abstract class Enemy extends AbstractEntity {
 		float newY = getY() - enemyWidth;
 		
 		batch.setColor(tint);
-		batch.drawImage(enemyImage, newX, newY, getRotation());
 		
+		if (dead) {// if we're dead
+			body.setBitmask(Constants.BIT_UNCOLLIDABLE);
+			batch.drawImage(deathAnimation.getImage(explosionCounter), newX, newY, getRotation());
+			if (explosionCounter == 6){
+				kill(); // animation is over
+			}
+		}
+		else {
+			batch.drawImage(enemyImage, newX, newY, getRotation());
+			//draw shield + health bar
+			float x = getX() - (healthBar.getWidth()/2f);
+			float y = getY() + enemyImage.getHeight()/2f + 1;
+			healthBar.setPosition(x, y+healthBar.getHeight());
+			healthBar.setValue(health/(float)getMaxHealth());
+			healthBar.draw(batch, g);
+		}
 
-		//draw shield + health bar
-		float x = getX() - (healthBar.getWidth()/2f);
-		float y = getY() + enemyImage.getHeight()/2f + 1;
-		healthBar.setPosition(x, y+healthBar.getHeight());
-		healthBar.setValue(health/(float)getMaxHealth());
-		healthBar.draw(batch, g);
 	}
 	
 	public void takeDamage(int damage){
 		int newHealth = getHealth() - damage;
 		if (newHealth <= 0){ // dead
 			setHealth(0);
-			kill();
+			playDeath();
 			System.out.println("Enemy destroyed");
 		} else{
 			setHealth(newHealth);
@@ -178,6 +211,6 @@ public abstract class Enemy extends AbstractEntity {
 	
 	// we play the death animation
 	public void playDeath(){
-		kill(); 		
+		dead = true;
 	}
 }

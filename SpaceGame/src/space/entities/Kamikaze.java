@@ -28,11 +28,21 @@ public class Kamikaze extends Enemy {
 
 	public void update(GameContext context, int delta){
 		// move towards the player relentlessly
+		
 		// somehow give the enemies a reference to the player, or a reference to the InGameState
-		Ship player = context.getInGameState().getPlayer();
-		// kamikazes rotate to face the player
-		setHeading(player.getX(), player.getY());
-		thrust(delta, Constants.ENEMY_KAMIKAZE_SPEED);
+		if (!dead){
+			Ship player = context.getInGameState().getPlayer();
+			// 	kamikazes rotate to face the player
+			setHeading(player.getX(), player.getY());
+			thrust(delta, Constants.ENEMY_KAMIKAZE_SPEED);
+		} else {
+			explosionTime += delta;
+			if (explosionTime >= explosionLength/7){
+				explosionTime = 0;
+				explosionCounter++;				
+			}		
+		}
+			
 	}
 
 	public void collide(Entity other) {
