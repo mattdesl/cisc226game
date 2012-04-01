@@ -22,7 +22,7 @@ public class Ship extends AbstractEntity {
 	public boolean player = false;
 
 	private float radius;
-	private Image shipIdle, shipAfterImage, shipThrust;
+	private Image shipIdle, shipAfterImage, shipThrust, shipBurst;
 	// this is dirty. help me make it better
 	private Image shield1, shield2, shield3, shield4, shield5;
 	private int shieldCounter; 
@@ -93,6 +93,8 @@ public class Ship extends AbstractEntity {
 		body.addBit(Constants.BIT_PLAYER);
 		return body;		
 	}
+	
+	// class to keep track of old positions, so that we can do the trail effect
 
 	private class Position{
 		private float x,y;
@@ -122,6 +124,7 @@ public class Ship extends AbstractEntity {
 		shipIdle = Resources.getSprite("playeridle");
 		shipThrust = Resources.getSprite("playerthrust");
 		shipAfterImage = Resources.getSprite("playerafterimage");
+		shipBurst = Resources.getSprite("playerburst");
 		shield1 = Resources.getSprite("shield1");
 		shield2 = Resources.getSprite("shield2");
 		shield3 = Resources.getSprite("shield3");
@@ -150,23 +153,23 @@ public class Ship extends AbstractEntity {
 		}
 		//set new filter which will be used to draw the image
 		batch.flush();
-
+		batch.setColor(tint);
+		
 		if (shipBoosting){
 			for (Position p : oldPos){
 				batch.drawImage(shipAfterImage, p.getX(), p.getY(), getRotation());
 			}
+			batch.drawImage(shipBurst, newX, newY, getRotation());
+		} else {
+			batch.drawImage(currentImage, newX, newY, getRotation());
 		}
-
 		
-		batch.setColor(tint);
-		batch.drawImage(currentImage, newX, newY, getRotation());
-
 		if (takingDamage){
 			if (shields > 0){
 				batch.drawImage(shieldAnimation.getImage(shieldCounter), shieldX, shieldY, getRotation());
 			}
 			
-			if (shieldCounter == 4){
+			if (shieldCounter >= 4){
 				shieldCounter = 0;	
 				takingDamage = false;
 			}
@@ -401,7 +404,9 @@ public class Ship extends AbstractEntity {
 			System.out.println("Taking dmg - shield: "+shields+" struc: "+structure);
 		}
 	}
-
-
+	
+	public double getShieldPercentage(){
+		return shields / shieldMax;
+	}
 
 }

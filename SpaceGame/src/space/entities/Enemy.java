@@ -9,11 +9,13 @@ import org.newdawn.slick.Image;
 
 import space.GameContext;
 import space.engine.SpriteBatch;
+import space.util.Resources;
 
 public abstract class Enemy extends AbstractEntity {
 	// only thing unique to enemies is the behaviour of their movement (update) and the 
 	// graphic
 	protected int health;
+	protected int maxHealth;
 	protected int weaponDamage; 
 	protected int collisionDamage;
 	protected Image enemyImage;
@@ -22,12 +24,14 @@ public abstract class Enemy extends AbstractEntity {
 	protected Color tint = new Color (1f,1f,1f,1f);
 	protected double angle;
 	protected float dirX, dirY;
+	protected Image healthBar;
 	// private Image enemyThrust, enemyExplosion, enemyExplosion2
 	protected int pointValue;
 	
 	// enemy strength based upon wave
 	public Enemy(Image image) {
 		this.enemyImage = image;
+		this.healthBar = Resources.getSprite("healthbar");
 		enemyWidth = enemyImage.getWidth()/2;
 		enemyHeight = enemyImage.getHeight()/2;
 	}
@@ -144,6 +148,18 @@ public abstract class Enemy extends AbstractEntity {
 			setHealth(newHealth);
 			System.out.println("Enemy damaged: "+getHealth()+" remaining health");
 		}
+	}
+	
+	public float getHealthPercentage(){
+		return health / maxHealth;
+	}
+	
+	public void setMaxHealth(int maxHealth){
+		this.maxHealth = maxHealth;
+	}
+	
+	public int getMaxHealth(){
+		return this.maxHealth;
 	}
 	
 	// we play the death animation
