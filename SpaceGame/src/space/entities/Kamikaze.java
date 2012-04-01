@@ -12,13 +12,8 @@ public class Kamikaze extends Enemy {
 	
 	public Kamikaze(int wave){
 		super(Resources.getSprite("kamikaze2"));
-<<<<<<< HEAD
-		setMaxHealth(140 + (wave*10)); // kamikazes are tough
-		setHealth(getMaxHealth());
-=======
 		maxHealth = 140 + (wave*10); // kamikazes are tough
 		setHealth(maxHealth);
->>>>>>> branch 'master' of git@github.com:mattdesl/cisc226game.git
 		setWeaponDamage(0); // kamikazes don't deal weapon damage
 		setCollisionDamage(5 + (wave*5)); // quickly become very powerful
 		setPointValue(100+(wave*100)); // desired: divide this value by #upgrades purchased.

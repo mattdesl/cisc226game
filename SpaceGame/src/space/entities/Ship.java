@@ -23,7 +23,7 @@ public class Ship extends AbstractEntity {
 	public boolean player = false;
 
 	private float radius;
-	private Image shipIdle, shipAfterImage, shipThrust, shipBurst;
+	private Image shipIdle, shipAfterImage, shipThrust;
 	// this is dirty. help me make it better
 	private Image shield1, shield2, shield3, shield4, shield5;
 	private int shieldCounter; 
@@ -127,7 +127,6 @@ public class Ship extends AbstractEntity {
 		shipIdle = Resources.getSprite("playeridle");
 		shipThrust = Resources.getSprite("playerthrust");
 		shipAfterImage = Resources.getSprite("playerafterimage");
-		shipBurst = Resources.getSprite("playerburst");
 		shield1 = Resources.getSprite("shield1");
 		shield2 = Resources.getSprite("shield2");
 		shield3 = Resources.getSprite("shield3");
@@ -168,10 +167,9 @@ public class Ship extends AbstractEntity {
 			for (Position p : oldPos){
 				batch.drawImage(shipAfterImage, p.getX(), p.getY(), getRotation());
 			}
-			batch.drawImage(shipBurst, newX, newY, getRotation());
-		} else {
-			batch.drawImage(currentImage, newX, newY, getRotation());
-		}
+		} 
+		
+		batch.drawImage(currentImage, newX, newY, getRotation());
 		
 		if (takingDamage){
 			if (shields > 0){

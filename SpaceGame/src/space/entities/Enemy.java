@@ -9,10 +9,7 @@ import org.newdawn.slick.Image;
 
 import space.GameContext;
 import space.engine.SpriteBatch;
-<<<<<<< HEAD
-=======
 import space.ui.HealthBarWidget;
->>>>>>> branch 'master' of git@github.com:mattdesl/cisc226game.git
 import space.util.Resources;
 
 public abstract class Enemy extends AbstractEntity {
@@ -28,7 +25,6 @@ public abstract class Enemy extends AbstractEntity {
 	protected Color tint = new Color (1f,1f,1f,1f);
 	protected double angle;
 	protected float dirX, dirY;
-	protected Image healthBar;
 	// private Image enemyThrust, enemyExplosion, enemyExplosion2
 	protected int pointValue;
 
@@ -39,7 +35,6 @@ public abstract class Enemy extends AbstractEntity {
 	// enemy strength based upon wave
 	public Enemy(Image image) {
 		this.enemyImage = image;
-		this.healthBar = Resources.getSprite("healthbar");
 		enemyWidth = enemyImage.getWidth()/2;
 		enemyHeight = enemyImage.getHeight()/2;
 		Image bar = Resources.getSprite("healthbar");
@@ -179,10 +174,6 @@ public abstract class Enemy extends AbstractEntity {
 	
 	public void setMaxHealth(int maxHealth){
 		this.maxHealth = maxHealth;
-	}
-	
-	public int getMaxHealth(){
-		return this.maxHealth;
 	}
 	
 	// we play the death animation

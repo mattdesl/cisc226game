@@ -15,13 +15,8 @@ public class Wingbat extends Enemy {
 	
 	public Wingbat(int wave) {
 		super(Resources.getSprite("wingbat"));
-<<<<<<< HEAD
-		setMaxHealth(40 + (wave*10));
-		setHealth(getMaxHealth());
-=======
 		maxHealth = 40 + (wave*10);
 		setHealth(maxHealth);
->>>>>>> branch 'master' of git@github.com:mattdesl/cisc226game.git
 		setWeaponDamage(25 + (wave*10));
 		int adjustedInterval = Constants.ENEMY_WINGBAT_SHOOTING_COOLDOWN - (wave*50); // ships will shoot faster as waves go on. 
 		shootingInterval = (adjustedInterval > 300) ? adjustedInterval : 300; // can't shoot faster than 3x / second

@@ -10,7 +10,6 @@ player = 258,39,48,45
 playerafterimage = 409,7,45,57
 playeridle = 362,7,45,57
 playerthrust = 315,7,45,57
-playerburst = 755,7,45,57
 shield1 = 461,3,54,67
 shield2 = 519,3,54,67
 shield3 = 577,3,54,67
