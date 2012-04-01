@@ -24,7 +24,7 @@ public abstract class Enemy extends AbstractEntity {
 	protected Image explosion1, explosion2, explosion3, explosion4, explosion5, explosion6, explosion7;
 	protected Animation deathAnimation;
 	protected int explosionTime = 0;
-	protected int explosionLength = 280; // 280 ms
+	protected int explosionLength = 400; // 280 ms
 	protected int explosionCounter;
 	protected int enemyWidth;
 	protected int enemyHeight;

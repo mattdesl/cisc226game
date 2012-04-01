@@ -57,7 +57,7 @@ public class Ship extends AbstractEntity {
 	private int afterImageDuration = 30; // ms for polling the afterimage
 	private int afterImageTime = afterImageDuration;
 	private ArrayList<Position> oldPos;
-	
+
 	private HealthBarWidget healthBar, shieldBar, boostBar;
 
 	public Ship(float radius) {// create a body with the size of the image divided by 2
@@ -96,7 +96,7 @@ public class Ship extends AbstractEntity {
 		body.addBit(Constants.BIT_PLAYER);
 		return body;		
 	}
-	
+
 	// class to keep track of old positions, so that we can do the trail effect
 
 	private class Position{
@@ -141,7 +141,7 @@ public class Ship extends AbstractEntity {
 		shieldAnimation = new Animation(shieldArr, 50);
 		this.oldPos = new ArrayList<Position>(3);
 		currentImage = shipIdle;
-		
+
 		Image bar = Resources.getSprite("healthbar");
 		Image red = Resources.getSprite("healthbar.red");
 		Image blue = Resources.getSprite("healthbar.blue");
@@ -164,33 +164,36 @@ public class Ship extends AbstractEntity {
 		//set new filter which will be used to draw the image
 		batch.flush();
 		batch.setColor(tint);
-		
+
 		if (shipBoosting){
 			for (Position p : oldPos){
 				batch.drawImage(shipAfterImage, p.getX(), p.getY(), getRotation());
 			}
 		} 
-		
+
 		batch.drawImage(currentImage, newX, newY, getRotation());
-		
+
 		if (takingDamage){
 			if (shields > 0){
+				if (shieldCounter >= 4){
+					shieldCounter = 4; // do this to avoid aobe
+				}
 				batch.drawImage(shieldAnimation.getImage(shieldCounter), shieldX, shieldY, getRotation());
 			}
-			
 			if (shieldCounter >= 4){
 				shieldCounter = 0;	
 				takingDamage = false;
 			}
+
 		}
-		
+
 		//draw shield + health bar
 		float x = getX() - (healthBar.getWidth()/2f);
 		float y = getY() + currentImage.getHeight()/2f + 1;
 		shieldBar.setPosition(x,  y);
 		healthBar.setPosition(x, y+healthBar.getHeight() - 3);
 		boostBar.setPosition(x, (getY() - currentImage.getHeight()+5));
-		
+
 		shieldBar.setValue((float)shields/(float)shieldMax);
 		healthBar.setValue(structure/(float)structureMax);
 		boostBar.setValue((float)boostTime/(float)boostCooldown);
@@ -418,7 +421,7 @@ public class Ship extends AbstractEntity {
 			System.out.println("Taking dmg - shield: "+shields+" struc: "+structure);
 		}
 	}
-	
+
 	public double getShieldPercentage(){
 		return shields / shieldMax;
 	}
