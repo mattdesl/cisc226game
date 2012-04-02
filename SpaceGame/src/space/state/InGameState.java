@@ -205,7 +205,9 @@ public class InGameState extends AbstractState implements CollisionListener {
 			}
 			shakeFade.update(delta);
 			if (shakeFade.finished())
-				shake = false;
+				// end the game here, because we only have this shaking effect if we're dead. for now just go to menu lol
+				//context.enterMenu();
+			shake = false;
 		}
 		
 		//use a "double buffered" list so that we are only updating entities that are active
@@ -255,9 +257,10 @@ public class InGameState extends AbstractState implements CollisionListener {
 		}
 		
 		waveFadeFX.update(delta);
-	
-		player.update(context, delta);
-		
+		if (!player.isDead()){
+			player.update(context, delta);	
+		}
+				
 		//step the world so that the physics are updated
 		counter += delta;
 		while (counter > worldUpdateInterval) {
@@ -274,6 +277,7 @@ public class InGameState extends AbstractState implements CollisionListener {
 		if (sys!=null) {
 			sys.reset();
 		}
+
 		shake = true;
 	}
 	
@@ -288,6 +292,10 @@ public class InGameState extends AbstractState implements CollisionListener {
 
 	public int getScore(){
 		return score;
+	}
+	
+	public void adjustScore(int amount){
+		score-=amount;
 	}
 	
 	public SpawnController getSpawner(){
