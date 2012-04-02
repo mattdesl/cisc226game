@@ -44,7 +44,6 @@ public class Ship extends AbstractEntity {
 	private double shields = shieldMax; // the current amound of shields
 	private final int structureMax = 330; // the amount of damage the ship can take when shields are 0.
 	private int structure = structureMax;
-	private int upgradesPurchased;
 	private double angle; // angle in radians to the mouse pointer
 	private int shootingInterval = Constants.PLAYER_SHOOTING_COOLDOWN; //ms
 	private int shootingTime = shootingInterval;
@@ -60,6 +59,7 @@ public class Ship extends AbstractEntity {
 	private int shieldUpgradesPurchased = 0;
 	private ArrayList<Position> oldPos;
 	private int upgradesAvailable = 0; // initial amount of upgrades player is able to purchase
+	public boolean dead = false; // initially, we're alive!
 
 	private HealthBarWidget healthBar, shieldBar, boostBar;
 
@@ -187,7 +187,10 @@ public class Ship extends AbstractEntity {
 				shieldCounter = 0;	
 				takingDamage = false;
 			}
-
+		}
+		
+		if (dead){
+			context.createShockwave((int)getX(), (int)getY());
 		}
 
 		//draw shield + health bar
@@ -196,7 +199,6 @@ public class Ship extends AbstractEntity {
 		shieldBar.setPosition(x,  y);
 		healthBar.setPosition(x, y+healthBar.getHeight() - 3);
 		boostBar.setPosition(x, (getY() - currentImage.getHeight()+5));
-
 		shieldBar.setValue(getShieldPercentage());
 		healthBar.setValue(structure/(float)structureMax);
 		boostBar.setValue((float)boostTime/(float)boostCooldown);
@@ -317,9 +319,11 @@ public class Ship extends AbstractEntity {
 			if (input.isKeyPressed(Input.KEY_E)){
 				upgradeShields(context.getInGameState().getSpawner().getWave());
 				upgradesAvailable--;
-			} else if (input.isKeyDown(Input.KEY_Q)){
+				context.getInGameState().adjustScore((getTotalUpgradesPurchased()*500));
+			} else if (input.isKeyPressed(Input.KEY_Q)){
 				upgradeWeapon(context.getInGameState().getSpawner().getWave());
 				upgradesAvailable--;
+				context.getInGameState().adjustScore((getTotalUpgradesPurchased()*500));
 			}
 		}
 	}
@@ -431,8 +435,7 @@ public class Ship extends AbstractEntity {
 		// after these calcs, we check if we're alive
 		if (this.structure <= 0){ // we're dead
 			this.structure = 0;
-			kill();
-			System.out.println("Dead.");
+			this.dead = true;
 		} else {
 			System.out.println("Taking dmg - shield: "+shields+" struc: "+structure);
 		}
@@ -464,5 +467,9 @@ public class Ship extends AbstractEntity {
 
 	public void addUpgrade(){
 		this.upgradesAvailable++;
+	}
+	
+	public boolean isDead(){
+		return dead;
 	}
 }
