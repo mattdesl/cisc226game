@@ -1,7 +1,9 @@
 package space.engine.test;
 
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL14;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+
 import org.lwjgl.opengl.GLContext;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.BasicGame;
@@ -11,10 +13,9 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.opengl.renderer.SGL;
 import org.newdawn.slick.util.Log;
+import org.newdawn.slick.util.ResourceLoader;
 
-import space.engine.FBO;
 import space.engine.Shader;
 import space.engine.ShaderProgram;
 
@@ -42,19 +43,61 @@ public class SimpleShaderTest extends BasicGame {
 	
 	private GameContainer container;
 	
-	private FBO fbo;
 	private Image fboImg;
 	private float rot;
+	
+	private Graphics offG;
+	
+
+	public static final String readFile(String file) throws IOException {
+	   BufferedInputStream in = new BufferedInputStream(ResourceLoader.getResourceAsStream(file));
+	   ByteBuffer2 buffer = new ByteBuffer2();
+	   byte[] buf = new byte[1024];
+	   int len;
+	   while ((len = in.read(buf)) != -1) {
+	      buffer.put(buf, len);
+	   }
+	   in.close();
+	   return new String(buffer.buffer, 0, buffer.write);
+	}
+
+	static class ByteBuffer2 {
+
+	   public byte[] buffer = new byte[256];
+
+	   public int write;
+
+	   public void put(byte[] buf, int len) {
+	      ensure(len);
+	      System.arraycopy(buf, 0, buffer, write, len);
+	      write += len;
+	   }
+
+	   private void ensure(int amt) {
+	      int req = write + amt;
+	      if (buffer.length <= req) {
+	         byte[] temp = new byte[req * 2];
+	         System.arraycopy(buffer, 0, temp, 0, write);
+	         buffer = temp;
+	      }
+	   }
+
+	}
 	
 	@Override
 	public void init(GameContainer container) throws SlickException {
 		this.container = container;
+		container.setClearEachFrame(false);
 		logo = new Image("res/logo.png");
+		
+		long m = System.currentTimeMillis();
 		tex0 = new Image("res/tex0.jpg");
+		System.out.println("Loading tex "+(System.currentTimeMillis()-m));
 		
 		//try to load the program
 		try {
 			ShaderProgram.setStrictMode(false);
+			
 			program = new ShaderProgram();
 			reload(0);
 		} catch (SlickException ex) {
@@ -63,41 +106,68 @@ public class SimpleShaderTest extends BasicGame {
 			Log.error(ex.getMessage());
 		}
 		
-		fbo = new FBO(256, 256);
-		fboImg = new Image(fbo.getTexture()).getFlippedCopy(false, true);
+		fboImg = Image.createOffscreenImage(256, 256).getFlippedCopy(false, true);
+		offG = fboImg.getGraphics();
 	}
+	
+	public boolean closeRequested() {
+		program.release();
+		return true;
+	}
+	
+	
 	
 	public void reload(int type) {
 		if (program==null) //if the program wasn't created
 			return;
 		log = "";
-		
+		System.out.println(GLContext.getCapabilities().GL_ARB_get_program_binary);
+		long m2 = 0;
 		Shader vert=null, frag=null;
 		try {
 			//an exception here means we have a compiler error
+
+//			String str = ShaderProgram.loadSource("res/frag.shader");
+//			System.out.println(str.length());
+			m2 = System.currentTimeMillis();
+			long m = System.currentTimeMillis();
 			
+			
+			
+			String src1 = ShaderProgram.loadSource(VERT_FILE);
+			System.out.println("Vert read "+(System.currentTimeMillis()-m));
+			m = System.currentTimeMillis();
+			String src2 = readFile(FRAG_FILE);
+			System.out.println("Frag read "+(System.currentTimeMillis()-m));
+			
+			m = System.currentTimeMillis();
 			//load the vertex shader...
 			if (type==Shader.VERTEX_SHADER || type==0) {
 				if (program.getVertexShader()!=null)
 					program.getVertexShader().release();
-				vert = new Shader(Shader.VERTEX_SHADER, ShaderProgram.loadSource(VERT_FILE));
+				vert = new Shader(Shader.VERTEX_SHADER, src1);
 				program.setVertexShader(vert);
 			} 
-
+			System.out.println("Shader vert "+(System.currentTimeMillis()-m));
+			m = System.currentTimeMillis();
 			if (type==Shader.FRAGMENT_SHADER || type==0) {
 				if (program.getFragmentShader()!=null)
 					program.getFragmentShader().release();
-				frag = new Shader(Shader.FRAGMENT_SHADER, ShaderProgram.loadSource(FRAG_FILE));
+				frag = new Shader(Shader.FRAGMENT_SHADER, src2);
 				program.setFragmentShader(frag);
 			}
+			System.out.println("Shader frag "+(System.currentTimeMillis()-m));
+			m = System.currentTimeMillis();
 			
 			//an exception here means we have a link error
 			program.link();
+			System.out.println("Shader link "+(System.currentTimeMillis()-m));
+			m = System.currentTimeMillis();
 			
 			log = program.getLog();
 			
 			shaderWorks = true;
-		} catch (SlickException ex) {
+		} catch (Exception ex) {
 			shaderWorks = false;
 			
 			//incase we reach an error at any point, release everything that may have been created
@@ -109,15 +179,17 @@ public class SimpleShaderTest extends BasicGame {
 			log = ex.getMessage();
 			Log.error(log);
 		}
-		
+		System.out.println("Full load: "+(System.currentTimeMillis()-m2));
 		if (shaderWorks) {
 			//set up our uniforms...
 			program.bind();
 			//strict mode is disabled, so these will work regardless of whether the uniform is active / exists
 			program.setUniform1i("tex0", 0); //texture 0
-			program.setUniform2f("resolution", 256, 256);
+			program.setUniform2f("resolution", 800, 600);
+			program.setUniform2f("surfacePosition", 0.0f, 0.0f);
+			program.setUniform2f("surfaceSize", 0.1f, 0.1f);
 			program.setUniform1f("time", elapsed);
-			
+			program.setUniform2f("mouse", 0f, 0f);
 			program.unbind();
 		}
 		
@@ -127,8 +199,9 @@ public class SimpleShaderTest extends BasicGame {
 	}
 	
 	//@Override
-	public void render(GameContainer container, Graphics g) throws SlickException {		
-		fbo.bind();
+	public void render(GameContainer container, Graphics g) throws SlickException {	
+		g.clear();
+		
 		if (shaderWorks && useShader) {
 			program.bind();
 			float mx = Math.min(1f, (container.getInput().getMouseX()-x)/(float)tex0.getTextureWidth());
@@ -139,36 +212,11 @@ public class SimpleShaderTest extends BasicGame {
 			tex0.bind();
 		}
 		
+		//draw the shader stuff
 		tex0.draw(0, 0, container.getWidth(), container.getHeight());
 		
 		if (shaderWorks && useShader)
 			program.unbind();
-		
-		g.scale(1f, -1f);
-		g.translate(0, -fbo.getHeight());
-		g.setColor(Color.black);
-		
-		
-		if (GLContext.getCapabilities().OpenGL14) {
-			GL11.glEnable(GL14.GL_COLOR_SUM);
-			Color col = Color.red;
-			GL14.glSecondaryColor3f(col.r, col.g, col.b);
-			GL11.glTexEnvi(SGL.GL_TEXTURE_ENV, SGL.GL_TEXTURE_ENV_MODE, SGL.GL_MODULATE);
-		}
-		
-		//... draw image ...
-		
-		if (GLContext.getCapabilities().OpenGL14) {
-			GL11.glDisable(GL14.GL_COLOR_SUM);
-		}
-		
-		g.drawString("Some slick text...", 0, 0);
-		g.resetTransform();
-		
-		fbo.unbind();
-		
-		fboImg.setRotation(rot);
-		fboImg.draw(100, 100);
 		
 		g.setColor(Color.white);
 		if (shaderWorks)

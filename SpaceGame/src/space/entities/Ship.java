@@ -178,10 +178,10 @@ public class Ship extends AbstractEntity {
 
 		if (takingDamage){
 			if (shields > 0){
-				if (shieldCounter >= 4){
-					shieldCounter = 4; // do this to avoid aobe
+				// TODO: WARNING: got a bug here because shieldCounter was > expected size!!
+				if (shieldCounter < shieldAnimation.getFrameCount()) {
+					batch.drawImage(shieldAnimation.getImage(shieldCounter), shieldX, shieldY, getRotation());
 				}
-				batch.drawImage(shieldAnimation.getImage(shieldCounter), shieldX, shieldY, getRotation());
 			}
 			if (shieldCounter >= 4){
 				shieldCounter = 0;	
