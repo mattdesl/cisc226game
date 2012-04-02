@@ -56,7 +56,10 @@ public class Ship extends AbstractEntity {
 	private int boostDurationTime = boostDuration;
 	private int afterImageDuration = 30; // ms for polling the afterimage
 	private int afterImageTime = afterImageDuration;
+	private int weaponUpgradesPurchased = 0;
+	private int shieldUpgradesPurchased = 0;
 	private ArrayList<Position> oldPos;
+	private int upgradesAvailable = 0; // initial amount of upgrades player is able to purchase
 
 	private HealthBarWidget healthBar, shieldBar, boostBar;
 
@@ -194,7 +197,7 @@ public class Ship extends AbstractEntity {
 		healthBar.setPosition(x, y+healthBar.getHeight() - 3);
 		boostBar.setPosition(x, (getY() - currentImage.getHeight()+5));
 
-		shieldBar.setValue((float)shields/(float)shieldMax);
+		shieldBar.setValue(getShieldPercentage());
 		healthBar.setValue(structure/(float)structureMax);
 		boostBar.setValue((float)boostTime/(float)boostCooldown);
 		shieldBar.draw(batch, g);
@@ -307,6 +310,18 @@ public class Ship extends AbstractEntity {
 			}
 		}
 
+		// upgrades
+
+		// upgrade shields
+		if (upgradesAvailable > 0){
+			if (input.isKeyPressed(Input.KEY_E)){
+				upgradeShields(context.getInGameState().getSpawner().getWave());
+				upgradesAvailable--;
+			} else if (input.isKeyDown(Input.KEY_Q)){
+				upgradeWeapon(context.getInGameState().getSpawner().getWave());
+				upgradesAvailable--;
+			}
+		}
 	}
 
 	// rename for clarity	
@@ -389,15 +404,16 @@ public class Ship extends AbstractEntity {
 
 	// upgrades the blaster's damage by an amount relevant to the wave the user is on.
 	// and how many upgrades are already purchased
-	public void upgradeBlaster(int wave){
-		int upgradeAmount = 20 + (wave * 10);
-		this.blasterDamage+=upgradeAmount;
+	public void upgradeWeapon(int wave){
+		this.blasterDamage+=getWeaponUpgradeValue(wave);
+		
+		this.weaponUpgradesPurchased++;
 	}
 
 	// upgrades shields based upon the wave
 	public void upgradeShields(int wave){
-		int upgradeAmount = 40 + (wave * 10);
-		this.shieldMax+=upgradeAmount;
+		this.shieldMax+=getShieldUpgradeValue(wave);
+		this.shieldUpgradesPurchased++;	
 	}
 
 	// deals damage to the player
@@ -422,8 +438,31 @@ public class Ship extends AbstractEntity {
 		}
 	}
 
-	public double getShieldPercentage(){
-		return shields / shieldMax;
+	public float getShieldPercentage(){
+		return (float)shields / (float)shieldMax;
 	}
 
+	public int getWeaponPurchased(){
+		return this.weaponUpgradesPurchased;
+	}
+
+	public int getShieldPurchased(){
+		return this.shieldUpgradesPurchased;
+	}
+
+	public int getTotalUpgradesPurchased(){
+		return getWeaponPurchased() + getShieldPurchased();
+	}
+
+	public int getWeaponUpgradeValue(int wave){
+		return 10 + (wave * 5);		
+	}
+
+	public int getShieldUpgradeValue(int wave){
+		return 40 + (wave * 10);
+	}
+
+	public void addUpgrade(){
+		this.upgradesAvailable++;
+	}
 }
