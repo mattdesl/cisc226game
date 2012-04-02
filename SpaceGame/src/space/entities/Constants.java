@@ -29,5 +29,5 @@ public class Constants {
 	public static final int ENEMY_WINGBAT_SHOOTING_COOLDOWN = 1550; // initial wingbat shooting speed
 	public static final float ENEMY_BLASTER_SPEED = 1200f;
 	
-	public static final int WAVE_REST_TIME = 2500; // the amount of time in ms before the next wave spawns
+	public static final int WAVE_REST_TIME = 2000; // the amount of time in ms before the next wave spawns
 }

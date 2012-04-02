@@ -96,6 +96,8 @@ public class Ship extends AbstractEntity {
 		body.addBit(Constants.BIT_PLAYER);
 		return body;		
 	}
+	
+	// class to keep track of old positions, so that we can do the trail effect
 
 	private class Position{
 		private float x,y;
@@ -159,17 +161,16 @@ public class Ship extends AbstractEntity {
 		}
 		//set new filter which will be used to draw the image
 		batch.flush();
-
+		batch.setColor(tint);
+		
 		if (shipBoosting){
 			for (Position p : oldPos){
 				batch.drawImage(shipAfterImage, p.getX(), p.getY(), getRotation());
 			}
-		}
-
+		} 
 		
-		batch.setColor(tint);
 		batch.drawImage(currentImage, newX, newY, getRotation());
-
+		
 		if (takingDamage){
 			if (shields > 0){
 				// TODO: WARNING: got a bug here because shieldCounter was > expected size!!
@@ -178,7 +179,7 @@ public class Ship extends AbstractEntity {
 				}
 			}
 			
-			if (shieldCounter == 4){
+			if (shieldCounter >= 4){
 				shieldCounter = 0;	
 				takingDamage = false;
 			}
@@ -410,7 +411,9 @@ public class Ship extends AbstractEntity {
 			System.out.println("Taking dmg - shield: "+shields+" struc: "+structure);
 		}
 	}
-
-
+	
+	public double getShieldPercentage(){
+		return shields / shieldMax;
+	}
 
 }

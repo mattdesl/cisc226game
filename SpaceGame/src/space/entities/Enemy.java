@@ -16,6 +16,7 @@ public abstract class Enemy extends AbstractEntity {
 	// only thing unique to enemies is the behaviour of their movement (update) and the 
 	// graphic
 	protected int health;
+	protected int maxHealth;
 	protected int weaponDamage; 
 	protected int collisionDamage;
 	protected Image enemyImage;
@@ -165,6 +166,14 @@ public abstract class Enemy extends AbstractEntity {
 			setHealth(newHealth);
 			System.out.println("Enemy damaged: "+getHealth()+" remaining health");
 		}
+	}
+	
+	public float getHealthPercentage(){
+		return health / maxHealth;
+	}
+	
+	public void setMaxHealth(int maxHealth){
+		this.maxHealth = maxHealth;
 	}
 	
 	// we play the death animation
