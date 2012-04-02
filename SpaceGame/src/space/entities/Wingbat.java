@@ -28,10 +28,8 @@ public class Wingbat extends Enemy {
 		// to add some variety
 		int random = Utils.rnd(0,2);
 		if (random == 0){
-			System.out.println("left = true");
 			left = true;
 		} else{
-			System.out.println("left = false");
 			left = false;
 		}
 	}

@@ -63,6 +63,9 @@ public class SpawnController {
 		enemy.setPosition(xPos, yPos);				
 	}
 	
+	public int getWave(){
+		return this.wave;
+	}
 
 
 }

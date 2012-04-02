@@ -115,7 +115,10 @@ public class InGameState extends AbstractState implements CollisionListener {
 		starfield.drawStars(context, batch, g);
 		
 		batch.setColor(Color.white);
-		batch.drawTextMultiLine(Resources.getMonospacedFont(), "Score: "+score, context.getContainer().getWidth()-100, 5);
+		batch.drawTextMultiLine(Resources.getMonospacedFont(), "Wave: " + spawner.getWave() + "  Score: "+score, context.getContainer().getWidth()-150, 5);
+		// is there a better way?
+		batch.drawTextMultiLine(Resources.getMonospacedFont(), "Upgrades purchased | Shields: " + player.getShieldPurchased() + " | Weapons: " + player.getWeaponPurchased(), context.getContainer().getWidth()-270, context.getContainer().getHeight() - 20);
+		batch.drawTextMultiLine(Resources.getMonospacedFont(), "Upgrade values | Shields: " + player.getShieldUpgradeValue(spawner.getWave()) + " | Weapons: " + player.getWeaponUpgradeValue(spawner.getWave()), 5, context.getContainer().getHeight() -20); 
 		batch.flush(); // is this necessary?
 		for (Entity e : entities) {
 			e.draw(context, batch, g);
@@ -125,7 +128,6 @@ public class InGameState extends AbstractState implements CollisionListener {
 			player.draw(context, batch, g);
 	}
 	
-
 	public void collisionOccured(CollisionEvent evt) {
 		Object obj1 = evt.getBodyA().getUserData();
 		Object obj2 = evt.getBodyB().getUserData();
@@ -204,6 +206,7 @@ public class InGameState extends AbstractState implements CollisionListener {
 			spawnCounter += delta;
 			if (spawnCounter >= Constants.WAVE_REST_TIME){
 				spawner.spawnWave(context);
+				player.addUpgrade();
 				spawnCounter = 0;
 			}
 			
@@ -235,6 +238,10 @@ public class InGameState extends AbstractState implements CollisionListener {
 
 	public int getScore(){
 		return score;
+	}
+	
+	public SpawnController getSpawner(){
+		return spawner;
 	}
 	
 }
