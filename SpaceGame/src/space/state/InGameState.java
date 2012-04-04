@@ -86,24 +86,7 @@ public class InGameState extends AbstractState implements CollisionListener {
 		
 		//context.getContainer().setMouseGrabbed(true);
 	}
-	
-	// resets the game back to initial values
-	public void reset(){
-		world.remove(player.getBody());
-		player = new Ship(10f);
-		player.setPosition(context.getWidth()/2f, context.getHeight()/2f);
-		player.player = true;
-		world.add(player.getBody());
-		//clear all enemies
-		entities.clear();
-		entitiesBuffer.clear();
-		this.score = 0;
-		this.waveLevel = 0;
-		this.enemies = 0;
-		this.spawner.reset();
-		System.out.println("game reset");
-	}
-	
+		
 	private Body createWall(float x, float y, float width, float height) {
 		Body walltop = new StaticBody(new Box(width, height));
 		walltop.setRestitution(0.5f);
@@ -123,7 +106,10 @@ public class InGameState extends AbstractState implements CollisionListener {
 		
 		spawner = new SpawnController();
 		
-		spawner = new SpawnController();
+		entities.clear();
+		entitiesBuffer.clear();
+		this.enemies = 0;
+		waveLevel = 0;
 		
 		final int WALL_SIZE = 10;
 		world.add(createWall(0, -WALL_SIZE*2, context.getWidth(), WALL_SIZE));
