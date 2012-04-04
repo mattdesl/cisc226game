@@ -61,12 +61,10 @@ public class InGameState extends AbstractState implements CollisionListener {
 	private Color waveLevelColor = new Color(1f,1f,1f,0f);
 	private boolean showWaveLevel = false;
 	private float boomX, boomY;
-	
+	private boolean playerDeadDirty = true;
 	
 	public void keyPressed(int k, char c) {
-		if (k==Input.KEY_RETURN){
-			context.createShockwave((int)player.getX(), (int)player.getY());
-		} else if (k==Input.KEY_ESCAPE) {
+		if (k==Input.KEY_ESCAPE) {
 			context.enterMenu();
 		}
 	}
@@ -79,23 +77,13 @@ public class InGameState extends AbstractState implements CollisionListener {
 		world = new World(new Vector2f(0,0), 10);
 		world.addListener(this);
 		
-		player = new Ship(10f);
-		player.setPosition(context.getWidth()/2f, context.getHeight()/2f);
-		world.add(player.getBody());
-		player.player = true;
 		
-		spawner = new SpawnController();
+		restart();
 		
 /*		enemy = new Wingbat(1);
 		enemy.setPosition(0, 0);*/
 	//	addEntity(enemy);
 		
-		final int WALL_SIZE = 10;
-		world.add(createWall(0, -WALL_SIZE*2, context.getWidth(), WALL_SIZE));
-		world.add(createWall(0, context.getHeight(), context.getWidth(), WALL_SIZE));
-		world.add(createWall(-WALL_SIZE*2, 0, WALL_SIZE, context.getHeight()));
-		world.add(createWall(context.getWidth(), 0, WALL_SIZE, context.getHeight()));
-		System.out.println("initting");
 		//context.getContainer().setMouseGrabbed(true);
 	}
 	
@@ -105,6 +93,26 @@ public class InGameState extends AbstractState implements CollisionListener {
 		walltop.setPosition(x+width/2f, y+height/2f);
 		walltop.setBitmask(Constants.BITMASK_WALL);
 		return walltop;
+	}
+	
+	public void restart() {
+		playerDeadDirty = true;
+		world.clear();
+		
+		player = new Ship(10f);
+		player.setPosition(context.getWidth()/2f, context.getHeight()/2f);
+		world.add(player.getBody());
+		player.player = true;
+		
+		spawner = new SpawnController();
+		
+		spawner = new SpawnController();
+		
+		final int WALL_SIZE = 10;
+		world.add(createWall(0, -WALL_SIZE*2, context.getWidth(), WALL_SIZE));
+		world.add(createWall(0, context.getHeight(), context.getWidth(), WALL_SIZE));
+		world.add(createWall(-WALL_SIZE*2, 0, WALL_SIZE, context.getHeight()));
+		world.add(createWall(context.getWidth(), 0, WALL_SIZE, context.getHeight()));
 	}
 	
 	@Override
@@ -133,9 +141,16 @@ public class InGameState extends AbstractState implements CollisionListener {
 			e.draw(context, batch, g);
 		}
 		
-		if (!shake)
+		//check to see if the player died since last frame
+		if (player.isDead() && playerDeadDirty) {
+			playerDeadDirty = false; // we don't want explosion more than once...
+			context.createShockwave((int)player.getX(), (int)player.getY());
+		}
+			
+		
+		if (!player.isDead())
 			player.draw(context, batch, g);
-		else {
+		else if (shake) {
 			ParticleSystem sys = Resources.getBoomParticle();
 			if (sys!=null) {
 				batch.flush();
@@ -160,7 +175,6 @@ public class InGameState extends AbstractState implements CollisionListener {
 		if (obj1 instanceof Entity && obj2 instanceof Entity) {
 			Entity e1 = (Entity)obj1;
 			Entity e2 = (Entity)obj2;
-			System.out.println("Collision event "+e1+" "+e2);
 			e1.collide(e2);
 			e2.collide(e1);
 		}
@@ -176,14 +190,21 @@ public class InGameState extends AbstractState implements CollisionListener {
 		}
 	}
 	
-	private void handleEntityDeath(Entity e) {
-		if (e.getBody()!=null)
+	public void handleEntityDeath(Entity e) {
+		if (e.getBody()!=null) {
 			if (e instanceof Enemy){
 				Enemy enemy = (Enemy) e;
 				score += enemy.getPointValue();
 				enemies--;
 			}
 			world.remove(e.getBody());
+		}
+	}
+	
+	public void killPlayer() {
+		context.createShockwave((int)player.getX(), (int)player.getY());
+		handleEntityDeath(player);
+		System.out.println("DEAD!");
 	}
 	
 	@Override
@@ -239,7 +260,6 @@ public class InGameState extends AbstractState implements CollisionListener {
 				waveFadeFX.setEnd(1f);
 				waveFadeFX.restart();
 				waveFadeFX.setEasing(Easing.EXPO_OUT);
-				System.out.println("fade in");
 			}
 			showWaveLevel = true;
 			spawnCounter += delta;
@@ -249,7 +269,6 @@ public class InGameState extends AbstractState implements CollisionListener {
 				waveFadeFX.setEnd(0f);
 				waveFadeFX.restart();
 				waveFadeFX.setEasing(Easing.EXPO_IN);
-				System.out.println("fade out");
 				spawner.spawnWave(context);
 				player.addUpgrade();
 				spawnCounter = 0;
@@ -269,15 +288,18 @@ public class InGameState extends AbstractState implements CollisionListener {
 		}
 	}
 	
-	public void shakeCamera(GameContext context) {
+	public boolean isPlayerAlive(){ 
+		return !player.isDead();
+	}
+	
+	public void shakeCamera(GameContext context, int x, int y) {
 		shakeFade.restart();
 		ParticleSystem sys = Resources.getBoomParticle();
-		boomX = player.getX();
-		boomY = player.getY();
+		boomX = x;
+		boomY = y;
 		if (sys!=null) {
 			sys.reset();
 		}
-
 		shake = true;
 	}
 	

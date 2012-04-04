@@ -41,7 +41,9 @@ public class Wingbat extends Enemy {
 	public void update(GameContext context, int delta){
 		// move toward a player until we're within 400 or so units. then we start orbiting the player
 		// TODO: use player velocity to predict position, aim / orbit there instead
-		if (!dead){
+		if (!context.getInGameState().isPlayerAlive()) {
+			//do nothing
+	} else if (!dead){
 			Ship player = context.getInGameState().getPlayer();
 			setHeading(player.getX(), player.getY());
 			double px = player.getX();

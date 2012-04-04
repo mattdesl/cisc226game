@@ -215,10 +215,12 @@ public class SpaceGameMain extends StateBasedGame implements GameContext {
 		cx = x;
 		cy = y;
 		elapsed = 0;
-		gameState.shakeCamera(this);
+		gameState.shakeCamera(this, x, y);
 	}
 	
 	public void preRenderState(GameContainer c, Graphics g) throws SlickException {
+		g.clear();
+		
 		if (doSceneEffect()) {
 			sceneFBO.bind();
 			g.clear();
@@ -244,7 +246,7 @@ public class SpaceGameMain extends StateBasedGame implements GameContext {
 			shockShader.setUniform3f("shockParams", 10, 0.7f, .1f);
 			
         	//TextureImpl.unbind();
-        	GL13.glActiveTexture(GL13.GL_TEXTURE0);
+        	//GL13.glActiveTexture(GL13.GL_TEXTURE0);
         	sceneTex.bind();
         	spriteBatch.drawImage(sceneTex);
         	spriteBatch.flush();

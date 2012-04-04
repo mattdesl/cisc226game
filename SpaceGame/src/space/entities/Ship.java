@@ -60,7 +60,8 @@ public class Ship extends AbstractEntity {
 	private ArrayList<Position> oldPos;
 	private int upgradesAvailable = 0; // initial amount of upgrades player is able to purchase
 	public boolean dead = false; // initially, we're alive!
-
+	
+	
 	private HealthBarWidget healthBar, shieldBar, boostBar;
 
 	public Ship(float radius) {// create a body with the size of the image divided by 2
@@ -188,10 +189,6 @@ public class Ship extends AbstractEntity {
 				takingDamage = false;
 			}
 		}
-		
-		if (dead){
-			context.createShockwave((int)getX(), (int)getY());
-		}
 
 		//draw shield + health bar
 		float x = getX() - (healthBar.getWidth()/2f);
@@ -206,8 +203,6 @@ public class Ship extends AbstractEntity {
 		healthBar.draw(batch, g);
 		boostBar.draw(batch, g);
 	}
-
-
 
 	public void update(GameContext context, int delta) {
 		if (!player)
@@ -436,6 +431,7 @@ public class Ship extends AbstractEntity {
 		if (this.structure <= 0){ // we're dead
 			this.structure = 0;
 			this.dead = true;
+			
 		} else {
 			System.out.println("Taking dmg - shield: "+shields+" struc: "+structure);
 		}
