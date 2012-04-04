@@ -27,7 +27,6 @@ public class MainMenuState extends AbstractState implements WidgetListener {
 	private Widget title;
 	private Label start, help, options, quit;
 	private List<Label> MENU_LIST = new ArrayList<Label>(5);
-	private Widget panel;
 	private Root root;
 	
 	private float lastY = 0;
@@ -145,6 +144,7 @@ public class MainMenuState extends AbstractState implements WidgetListener {
 	
 	private void handleActivate() {
 		if (active == start) {
+			context.getInGameState().reset();
 			context.enterGame();
 		} else if (active == help) {
 			
