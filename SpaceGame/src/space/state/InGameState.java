@@ -87,6 +87,23 @@ public class InGameState extends AbstractState implements CollisionListener {
 		//context.getContainer().setMouseGrabbed(true);
 	}
 	
+	// resets the game back to initial values
+	public void reset(){
+		world.remove(player.getBody());
+		player = new Ship(10f);
+		player.setPosition(context.getWidth()/2f, context.getHeight()/2f);
+		player.player = true;
+		world.add(player.getBody());
+		//clear all enemies
+		entities.clear();
+		entitiesBuffer.clear();
+		this.score = 0;
+		this.waveLevel = 0;
+		this.enemies = 0;
+		this.spawner.reset();
+		System.out.println("game reset");
+	}
+	
 	private Body createWall(float x, float y, float width, float height) {
 		Body walltop = new StaticBody(new Box(width, height));
 		walltop.setRestitution(0.5f);
@@ -225,10 +242,13 @@ public class InGameState extends AbstractState implements CollisionListener {
 				shakeDelay -= shakeDelayMax;
 			}
 			shakeFade.update(delta);
-			if (shakeFade.finished())
+			if (shakeFade.finished()){
 				// end the game here, because we only have this shaking effect if we're dead. for now just go to menu lol
 				//context.enterMenu();
-			shake = false;
+				shake = false;
+				context.enterGameOver();
+			}
+			
 		}
 		
 		//use a "double buffered" list so that we are only updating entities that are active
@@ -322,6 +342,10 @@ public class InGameState extends AbstractState implements CollisionListener {
 	
 	public SpawnController getSpawner(){
 		return spawner;
+	}
+	
+	public int getWaveLevel(){
+		return this.waveLevel;
 	}
 	
 }
