@@ -144,7 +144,7 @@ public class MainMenuState extends AbstractState implements WidgetListener {
 	
 	private void handleActivate() {
 		if (active == start) {
-			context.getInGameState().reset();
+			context.getInGameState().restart();
 			context.enterGame();
 		} else if (active == help) {
 			
