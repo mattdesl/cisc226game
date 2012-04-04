@@ -145,7 +145,7 @@ public class GameOverState extends AbstractState implements WidgetListener{
 	
 	private void handleActivate() {
 		if (active == playAgain) {
-			context.getInGameState().reset();
+			context.getInGameState().restart();
 			context.enterGame();
 		} else if (active == mainMenu) {
 			context.enterMenu(); // this doesn't work for some reason :O 
