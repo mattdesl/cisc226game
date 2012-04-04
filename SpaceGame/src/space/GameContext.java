@@ -36,5 +36,6 @@ public interface GameContext {
 	public InGameState getInGameState();
 
 	public void enterGame();
-	public void enterMenu(); //TODO
+	public void enterMenu(); 
+	public void enterGameOver();
 }
