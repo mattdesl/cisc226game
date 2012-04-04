@@ -42,6 +42,7 @@ public class SpaceGameMain extends StateBasedGame implements GameContext {
 	private AbstractState currentState;
 	private InGameState gameState;
 	private MainMenuState menuState;
+	private GameOverState gameOver;
 	private SpriteBatch spriteBatch;
 	private AngelCodeFont defaultFont;
 	private boolean showDebug = true;
@@ -97,6 +98,10 @@ public class SpaceGameMain extends StateBasedGame implements GameContext {
 	
 	public void enterMenu() {
 		enterState(menuState);
+	}
+	
+	public void enterGameOver(){
+		enterState(gameOver);
 	}
 	
 	boolean doSceneEffect() {
@@ -159,7 +164,9 @@ public class SpaceGameMain extends StateBasedGame implements GameContext {
 
 		addState(menuState = new MainMenuState(this));
 		addState(gameState = new InGameState(this));
+		addState(gameOver = new GameOverState(this));
 		//currentState = gameState;
+		
 		//enterGame();
 		enterMenu();
 	}
