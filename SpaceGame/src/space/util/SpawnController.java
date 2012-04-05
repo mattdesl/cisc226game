@@ -66,6 +66,10 @@ public class SpawnController {
 	public int getWave(){
 		return this.wave;
 	}
+	
+	public void reset(){
+		this.wave = 0;
+	}
 
 
 }
