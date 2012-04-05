@@ -70,8 +70,12 @@ public class Ship extends AbstractEntity {
 	private Audio death;
 	private Audio upgrade;
 	private Audio shieldHit;
-	
-	
+	private Audio shieldStartRegen;
+	private Audio shieldLastHit;
+	private boolean playShieldLastHit;
+	private boolean shieldRegenning;
+
+
 	private HealthBarWidget healthBar, shieldBar, boostBar;
 
 	public Ship(float radius) {// create a body with the size of the image divided by 2
@@ -167,7 +171,9 @@ public class Ship extends AbstractEntity {
 			gunshot = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/sounds/playerGunshot.wav"));
 			death = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/sounds/playerDeath.wav"));
 			upgrade = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/sounds/playerUpgrade.wav"));
-			shieldHit = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/sounds/playerShieldHit.wav"));			
+			shieldHit = AudioLoader.getAudio("OGG", ResourceLoader.getResourceAsStream("res/sounds/playerShieldHit.ogg"));
+			shieldLastHit = AudioLoader.getAudio("OGG", ResourceLoader.getResourceAsStream("res/sounds/playerShieldLastHit.ogg"));
+			shieldStartRegen = AudioLoader.getAudio("OGG", ResourceLoader.getResourceAsStream("res/sounds/playerShieldStartRegen.ogg"));
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -260,8 +266,13 @@ public class Ship extends AbstractEntity {
 			}			
 		}
 
+
 		// decide if we can regenerate shields (it's been more than 1.5 seconds since we were last hit)
 		if (hitTime > shieldRegenInterval){ // if it's been 1500 ms since we were hit
+			if (!shieldRegenning){
+				shieldStartRegen.playAsSoundEffect(1f, 1f, false);
+				shieldRegenning = true;
+			}
 			if (shields < shieldMax){ // if our shields are below maximum
 				shields+=(delta*(shieldMax/Constants.PLAYER_SHIELD_REGEN_SPEED)); // increase shields by .04 * delta (.04 shields / ms)
 				if (shields > shieldMax) 
@@ -344,7 +355,7 @@ public class Ship extends AbstractEntity {
 				upgrade.playAsSoundEffect(1f,1f,false);
 				context.getInGameState().adjustScore((getTotalUpgradesPurchased()*500));
 			}
-			
+
 		}
 	}
 
@@ -430,7 +441,7 @@ public class Ship extends AbstractEntity {
 	// and how many upgrades are already purchased
 	public void upgradeWeapon(int wave){
 		this.blasterDamage+=getWeaponUpgradeValue(wave);
-		
+
 		this.weaponUpgradesPurchased++;
 	}
 
@@ -443,14 +454,20 @@ public class Ship extends AbstractEntity {
 	// deals damage to the player
 	public void takeDamage(int damage){
 		takingDamage = true;
+		shieldRegenning = false;
 		double newShields = this.shields - damage;
-		if (newShields >= 0) { // our shields took all of the damage.
-			shieldHit.playAsSoundEffect((getShieldPercentage()+1), 1f, false);
-			this.shields = newShields;
-		} 
-		else { // we're taking structure damage
-			this.shields = 0;
-			this.structure+=newShields; // structure takes damage = amount through shields (will be negative, hence +=)
+		if (this.shields > 0){
+			if (newShields >= 0){ // we still have shields
+				shieldHit.playAsSoundEffect((getShieldPercentage()+1), 1f, false);
+				this.shields = newShields;
+			} else {// some damage transfered to structure. also, our shields are gone
+				shieldLastHit.playAsSoundEffect(1f, 1f, false);
+				this.shields = 0;
+				this.structure+=newShields;
+
+			}
+		} else { // no shields
+			this.structure+=newShields;
 		}
 
 		// after these calcs, we check if we're alive
@@ -458,7 +475,7 @@ public class Ship extends AbstractEntity {
 			this.structure = 0;
 			death.playAsSoundEffect(1f, 1f, false);
 			this.dead = true;
-			
+
 		} else {
 			System.out.println("Taking dmg - shield: "+shields+" struc: "+structure);
 		}
@@ -491,7 +508,7 @@ public class Ship extends AbstractEntity {
 	public void addUpgrade(){
 		this.upgradesAvailable++;
 	}
-	
+
 	public boolean isDead(){
 		return dead;
 	}
