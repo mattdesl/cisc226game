@@ -76,7 +76,7 @@ public class Wingbat extends Enemy {
 
 			if (shootingTime > shootingInterval){
 				shootingTime = 0;
-				gunshot.playAsSoundEffect(1f,.7f,false);
+				gunshot.playAsSoundEffect(1f,.4f,false);
 				context.getInGameState().addEntity(new Bullet(getX(), getY(), dirX, dirY, getRotation(), getWeaponDamage(), false));
 			}
 		} else { // we're dead; keep all forces the same, no shooting, no new forces, just updating the explosion frame counter
