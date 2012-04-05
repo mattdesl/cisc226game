@@ -1,5 +1,8 @@
 package space.entities;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import net.phys2d.raw.Body;
@@ -11,6 +14,8 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
+import org.newdawn.slick.openal.Audio;
+import org.newdawn.slick.openal.AudioLoader;
 
 import space.GameContext;
 import space.engine.SpriteBatch;
@@ -60,6 +65,8 @@ public class Ship extends AbstractEntity {
 	private ArrayList<Position> oldPos;
 	private int upgradesAvailable = 0; // initial amount of upgrades player is able to purchase
 	public boolean dead = false; // initially, we're alive!
+	private Audio gunshot;
+	private Audio death;
 	
 	
 	private HealthBarWidget healthBar, shieldBar, boostBar;
@@ -153,6 +160,16 @@ public class Ship extends AbstractEntity {
 		healthBar = new HealthBarWidget(bar, red, Resources.HEALTH_BAR_X_OFF, Resources.HEALTH_BAR_Y_OFF);
 		shieldBar = new HealthBarWidget(bar, blue, Resources.HEALTH_BAR_X_OFF, Resources.HEALTH_BAR_Y_OFF);
 		boostBar = new HealthBarWidget(bar, yellow, Resources.HEALTH_BAR_X_OFF, Resources.HEALTH_BAR_Y_OFF);
+		try {
+			gunshot = AudioLoader.getAudio("WAV", new FileInputStream("SpaceGame/src/res/sounds/laser3.wav"));
+			death = AudioLoader.getAudio("WAV", new FileInputStream("SpaceGame/src/res/sounds/explosion.wav"));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/** Draw the ship at its current location. */
@@ -276,6 +293,7 @@ public class Ship extends AbstractEntity {
 				shootingTime = 0;
 				float x = getX();
 				float y = getY();
+				gunshot.playAsSoundEffect(1, 1, false);
 				context.getInGameState().addEntity(new Bullet(x, y, dirX, dirY, getRotation(), blasterDamage, true));
 			}
 		}
@@ -430,6 +448,7 @@ public class Ship extends AbstractEntity {
 		// after these calcs, we check if we're alive
 		if (this.structure <= 0){ // we're dead
 			this.structure = 0;
+			death.playAsSoundEffect(1f, 1f, false);
 			this.dead = true;
 			
 		} else {
