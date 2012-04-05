@@ -37,4 +37,5 @@ public interface GameContext {
 
 	public void enterGame();
 	public void enterMenu(); //TODO
+	public void enterGameOver();
 }
