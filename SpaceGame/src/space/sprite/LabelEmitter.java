@@ -19,7 +19,7 @@ public class LabelEmitter implements Sprite {
 	private float originX, originY;
 	private float stepOffset;
 	
-	private int addDelay = 250;
+	private int addDelay = 10;
 	private int timer = addDelay;
 	
 	private ArrayList<LabelParticle> particles = new ArrayList<LabelParticle>();

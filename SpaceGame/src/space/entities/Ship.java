@@ -493,6 +493,7 @@ public class Ship extends AbstractEntity {
 				this.shields = newShields;
 			} else {// some damage transfered to structure. also, our shields are gone
 				shieldLastHit.playAsSoundEffect(1f, 1f, false);
+				labels.append("Shields down!", Color.cyan);
 				shieldColor = false;
 				this.shields = 0;
 				this.structure+=newShields;
