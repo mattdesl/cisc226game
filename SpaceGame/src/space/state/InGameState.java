@@ -268,7 +268,9 @@ public class InGameState extends AbstractState implements CollisionListener {
 				waveFadeFX.restart();
 				waveFadeFX.setEasing(Easing.EXPO_IN);
 				spawner.spawnWave(context);
-				player.addUpgrade();
+				if (waveLevel!=1 && waveLevel != 0){
+					player.addUpgrade();
+				}
 				spawnCounter = 0;
 			}
 		}
