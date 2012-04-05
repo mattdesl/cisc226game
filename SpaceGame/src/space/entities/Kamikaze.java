@@ -1,6 +1,11 @@
 package space.entities;
 
+import java.io.IOException;
+
 import org.newdawn.slick.Image;
+import org.newdawn.slick.openal.Audio;
+import org.newdawn.slick.openal.AudioLoader;
+import org.newdawn.slick.util.ResourceLoader;
 
 import space.GameContext;
 import space.util.Resources;
@@ -9,6 +14,7 @@ public class Kamikaze extends Enemy {
 	
 	// a Kamikaze enemy
 	private int maxHealth;
+	
 	
 	public Kamikaze(int wave){
 		super(Resources.getSprite("kamikaze2"));
@@ -19,7 +25,6 @@ public class Kamikaze extends Enemy {
 		setPointValue(100+(wave*100)); // desired: divide this value by #upgrades purchased.
 		setBody(createBody());		
 		body.setMaxVelocity(Constants.ENEMY_KAMIKAZE_SPEED, Constants.ENEMY_KAMIKAZE_SPEED);
-
 	}
 	
 	public int getMaxHealth() {
@@ -28,7 +33,6 @@ public class Kamikaze extends Enemy {
 
 	public void update(GameContext context, int delta){
 		// move towards the player relentlessly
-		
 		// somehow give the enemies a reference to the player, or a reference to the InGameState
 		if (!dead){
 			Ship player = context.getInGameState().getPlayer();

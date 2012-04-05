@@ -1,6 +1,11 @@
 package space.entities;
 
+import java.io.IOException;
+
 import org.newdawn.slick.Image;
+import org.newdawn.slick.openal.Audio;
+import org.newdawn.slick.openal.AudioLoader;
+import org.newdawn.slick.util.ResourceLoader;
 
 import space.GameContext;
 import space.util.Resources;
@@ -10,8 +15,9 @@ public class Wingbat extends Enemy {
 
 	private boolean left; // are we heading left?
 	private int shootingInterval; // how often the firebat fires
-	private int shootingTime;
+	private int shootingTime = 0;
 	private int maxHealth;
+	private Audio gunshot;
 
 	public Wingbat(int wave) {
 		super(Resources.getSprite("wingbat"));
@@ -32,6 +38,16 @@ public class Wingbat extends Enemy {
 		} else{
 			left = false;
 		}
+		try {
+			gunshot = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/sounds/wingbatGunshot.wav"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		// gunshot delay
+		
+		random = Utils.rnd(50, 400);
+		shootingTime-=random;
 	}
 
 	public int getMaxHealth() {
@@ -59,6 +75,7 @@ public class Wingbat extends Enemy {
 
 			if (shootingTime > shootingInterval){
 				shootingTime = 0;
+				gunshot.playAsSoundEffect(1f,.7f,false);
 				context.getInGameState().addEntity(new Bullet(getX(), getY(), dirX, dirY, getRotation(), getWeaponDamage(), false));
 			}
 		} else { // we're dead; keep all forces the same, no shooting, no new forces, just updating the explosion frame counter

@@ -162,8 +162,8 @@ public class Ship extends AbstractEntity {
 		shieldBar = new HealthBarWidget(bar, blue, Resources.HEALTH_BAR_X_OFF, Resources.HEALTH_BAR_Y_OFF);
 		boostBar = new HealthBarWidget(bar, yellow, Resources.HEALTH_BAR_X_OFF, Resources.HEALTH_BAR_Y_OFF);
 		try {
-			gunshot = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/sounds/laser3.wav"));
-			death = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/sounds/explosion.wav"));
+			gunshot = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/sounds/playerGunshot.wav"));
+			death = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/sounds/playerDeath.wav"));
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -294,7 +294,7 @@ public class Ship extends AbstractEntity {
 				shootingTime = 0;
 				float x = getX();
 				float y = getY();
-				gunshot.playAsSoundEffect(1, 1, false);
+				gunshot.playAsSoundEffect(1f, .7f, false);
 				context.getInGameState().addEntity(new Bullet(x, y, dirX, dirY, getRotation(), blasterDamage, true));
 			}
 		}
