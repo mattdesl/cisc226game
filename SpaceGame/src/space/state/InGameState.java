@@ -94,6 +94,7 @@ public class InGameState extends AbstractState implements CollisionListener {
 		player = new Ship(10f);
 		player.setPosition(context.getWidth()/2f, context.getHeight()/2f);
 		world.add(player.getBody());
+		this.score = 0;
 		player.player = true;
 
 		spawner = new SpawnController();
