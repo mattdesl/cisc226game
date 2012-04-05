@@ -26,7 +26,7 @@ public class GameOverState extends AbstractState implements WidgetListener{
 	
 	private Widget gameOver;
 	private Label playAgain, mainMenu;
-	private List<Label> MENU_LIST = new ArrayList<Label>(2);
+	private final List<Label> BUTTON_LIST = new ArrayList<Label>(2);
 	private Root root;
 	
 	private float lastY = 0;
@@ -62,25 +62,26 @@ public class GameOverState extends AbstractState implements WidgetListener{
 		root.add(gameOver);
 		
 		lastY = context.getHeight()/2f;
-		Label l1 =  nextMenuItem(root, font2, "You made it to wave: " + context.getInGameState().getWaveLevel(), context);
-		Label l2 = nextMenuItem(root, font2, "Your score was: " +context.getInGameState().getScore(), context);
-		Label l3 = nextMenuItem(root, font2, "You purchased " + context.getInGameState().getPlayer().getShieldPurchased() + " shield upgrades", context);
-		Label l4 = nextMenuItem(root, font2, "You purchased " + context.getInGameState().getPlayer().getWeaponPurchased() + " weapon upgrades", context);
-		playAgain = nextMenuItem(root, font, "PLAY AGAIN", context);
-		mainMenu = nextMenuItem(root, font, "MAIN MENU", context);
+		Label l1 =  nextMenuItem(root, font2, "You made it to wave: " + context.getInGameState().getWaveLevel(), context, false,0);
+		Label l2 = nextMenuItem(root, font2, "Your score was: " +context.getInGameState().getScore(), context, false,0);
+		Label l3 = nextMenuItem(root, font2, "You purchased " + context.getInGameState().getPlayer().getShieldPurchased() + " shield upgrades", context, false,0);
+		Label l4 = nextMenuItem(root, font2, "You purchased " + context.getInGameState().getPlayer().getWeaponPurchased() + " weapon upgrades", context, false,0);
+		playAgain = nextMenuItem(root, font, "PLAY AGAIN", context, true,10);
+		mainMenu = nextMenuItem(root, font, "MAIN MENU", context, true, 5);
 		
 		setActive(playAgain);
 	}
 	
-	private Label nextMenuItem(Widget parent, AngelCodeFont font, String text, GameContext ctx){
+	private Label nextMenuItem(Widget parent, AngelCodeFont font, String text, GameContext ctx, boolean button, int yoff){
 		Label l = new Label(font, text, HPAD, VPAD);
 		l.setTextOffset(2f,1f);
 		l.setAlign(Label.ALIGN_CENTER, Label.ALIGN_CENTER);
 		l.setForeground(normalTint);
 		l.setPosition(ctx.getWidth()/2f-l.getWidth()/2f, lastY);
-		lastY += l.getHeight() + LINE_SPACE;
+		lastY += l.getHeight() + LINE_SPACE + yoff;
 		parent.add(l);
-		MENU_LIST.add(l);
+		if (button)
+			BUTTON_LIST.add(l);
 		return l;
 	}
 	
@@ -115,21 +116,21 @@ public class GameOverState extends AbstractState implements WidgetListener{
 	
 	public void keyPressed(int key, char c) {
 		int n = 0;
-		int i = MENU_LIST.indexOf(active);
+		int i = BUTTON_LIST.indexOf(active);
 		if (i >= 0)
 			n = i;
 		if (key == Input.KEY_UP || key==Input.KEY_W) {
 			if (n == 0)
-				n = MENU_LIST.size() - 1;
+				n = BUTTON_LIST.size() - 1;
 			else
 				n--;
-			setActive(MENU_LIST.get(n));
+			setActive(BUTTON_LIST.get(n));
 		} else if (key == Input.KEY_DOWN || key==Input.KEY_S) {
-			if (n == MENU_LIST.size() - 1)
+			if (n == BUTTON_LIST.size() - 1)
 				n = 0;
 			else
 				n++;
-			setActive(MENU_LIST.get(n));
+			setActive(BUTTON_LIST.get(n));
 		} else if (key == Input.KEY_SPACE || key == Input.KEY_ENTER) {
 			handleActivate();
 		}
@@ -154,17 +155,17 @@ public class GameOverState extends AbstractState implements WidgetListener{
 	
 	
 	public void onEnter(Widget widget) {
-		if (widget!=root && widget!=gameOver)
+		if (BUTTON_LIST.contains(widget) && widget!=root && widget!=gameOver)
 			setActive(widget);
 	}
 	
 	public void onExit(Widget widget) {
-		if (widget!=active)
+		if (BUTTON_LIST.contains(widget) && widget!=active)
 			widget.setForeground(normalTint);
 	}
 	
 	public boolean onMouseClick(Widget widget, int button, int x, int y, int clickCount) {
-		if (widget!=root && widget!=gameOver) {
+		if (BUTTON_LIST.contains(widget) && widget!=root && widget!=gameOver) {
 			setActive(widget);
 			handleActivate();
 		}
@@ -180,7 +181,7 @@ public class GameOverState extends AbstractState implements WidgetListener{
 	}
 	
 	public void onMouseMove(Widget widget, int oldx, int oldy, int newx, int newy) {
-		if (widget!=root && widget!=gameOver && widget!=active)
+		if (BUTTON_LIST.contains(widget) && widget!=root && widget!=gameOver && widget!=active)
 			setActive(widget);
 	}
 }

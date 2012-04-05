@@ -16,6 +16,7 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.openal.Audio;
 import org.newdawn.slick.openal.AudioLoader;
+import org.newdawn.slick.util.ResourceLoader;
 
 import space.GameContext;
 import space.engine.SpriteBatch;
@@ -161,8 +162,8 @@ public class Ship extends AbstractEntity {
 		shieldBar = new HealthBarWidget(bar, blue, Resources.HEALTH_BAR_X_OFF, Resources.HEALTH_BAR_Y_OFF);
 		boostBar = new HealthBarWidget(bar, yellow, Resources.HEALTH_BAR_X_OFF, Resources.HEALTH_BAR_Y_OFF);
 		try {
-			gunshot = AudioLoader.getAudio("WAV", new FileInputStream("SpaceGame/src/res/sounds/laser3.wav"));
-			death = AudioLoader.getAudio("WAV", new FileInputStream("SpaceGame/src/res/sounds/explosion.wav"));
+			gunshot = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/sounds/laser3.wav"));
+			death = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/sounds/explosion.wav"));
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

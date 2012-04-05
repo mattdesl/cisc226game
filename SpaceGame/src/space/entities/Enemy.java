@@ -172,7 +172,7 @@ public abstract class Enemy extends AbstractEntity {
 		
 		if (dead) {// if we're dead
 			body.setBitmask(Constants.BIT_UNCOLLIDABLE);
-			batch.drawImage(deathAnimation.getImage(explosionCounter), newX, newY, getRotation());
+			batch.drawImage(deathAnimation.getImage(Math.min(deathAnimation.getFrameCount()-1, explosionCounter)), newX, newY, getRotation());
 			if (explosionCounter == 6){
 				kill(); // animation is over
 			}
