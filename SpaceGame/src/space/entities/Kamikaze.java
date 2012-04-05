@@ -42,7 +42,7 @@ public class Kamikaze extends Enemy {
 				explosionCounter++;				
 			}		
 		}
-			
+		super.update(context, delta);
 	}
 
 	public void collide(Entity other) {

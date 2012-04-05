@@ -1,6 +1,5 @@
 package space.entities;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,6 +19,7 @@ import org.newdawn.slick.util.ResourceLoader;
 
 import space.GameContext;
 import space.engine.SpriteBatch;
+import space.sprite.LabelEmitter;
 import space.ui.HealthBarWidget;
 import space.util.Resources;
 
@@ -74,8 +74,8 @@ public class Ship extends AbstractEntity {
 	private Audio shieldLastHit;
 	private boolean playShieldLastHit;
 	private boolean shieldRegenning;
-
-
+	private LabelEmitter labels;
+	
 	private HealthBarWidget healthBar, shieldBar, boostBar;
 
 	public Ship(float radius) {// create a body with the size of the image divided by 2
@@ -84,6 +84,7 @@ public class Ship extends AbstractEntity {
 		setBody(createBody());
 		this.shipMoving = false; //we aren't moving if we were just created
 		this.shipBoosting = false;
+		labels = new LabelEmitter(Resources.getMonospacedFont(), shipIdle.getWidth());
 		setRotation(0);
 	}
 
@@ -230,6 +231,8 @@ public class Ship extends AbstractEntity {
 		shieldBar.draw(batch, g);
 		healthBar.draw(batch, g);
 		boostBar.draw(batch, g);
+
+		labels.draw(batch, g);
 	}
 
 	public void update(GameContext context, int delta) {
@@ -308,7 +311,7 @@ public class Ship extends AbstractEntity {
 				shootingTime = 0;
 				float x = getX();
 				float y = getY();
-				gunshot.playAsSoundEffect(1f, .7f, false);
+				gunshot.playAsSoundEffect(1f,0.4f, false);
 				context.getInGameState().addEntity(new Bullet(x, y, dirX, dirY, getRotation(), blasterDamage, true));
 			}
 		}
@@ -357,6 +360,9 @@ public class Ship extends AbstractEntity {
 			}
 
 		}
+		
+		labels.setPosition(getX(), getY()-shipIdle.getHeight()/2f);
+		labels.update(delta);
 	}
 
 	// rename for clarity	
@@ -440,15 +446,18 @@ public class Ship extends AbstractEntity {
 	// upgrades the blaster's damage by an amount relevant to the wave the user is on.
 	// and how many upgrades are already purchased
 	public void upgradeWeapon(int wave){
-		this.blasterDamage+=getWeaponUpgradeValue(wave);
-
+		int dmg = getWeaponUpgradeValue(wave);
+		this.blasterDamage+=dmg;
 		this.weaponUpgradesPurchased++;
+		labels.append("Weapon Upgraded: "+dmg+" pts");
 	}
 
 	// upgrades shields based upon the wave
 	public void upgradeShields(int wave){
-		this.shieldMax+=getShieldUpgradeValue(wave);
-		this.shieldUpgradesPurchased++;	
+		int shd = getShieldUpgradeValue(wave);
+		this.shieldMax+=shd;
+		this.shieldUpgradesPurchased++;
+		labels.append("Shield Upgraded: "+shd+" pts");
 	}
 
 	// deals damage to the player
@@ -456,18 +465,21 @@ public class Ship extends AbstractEntity {
 		takingDamage = true;
 		shieldRegenning = false;
 		double newShields = this.shields - damage;
+		boolean shieldColor = true;
 		if (this.shields > 0){
 			if (newShields >= 0){ // we still have shields
 				shieldHit.playAsSoundEffect((getShieldPercentage()+1), 1f, false);
 				this.shields = newShields;
 			} else {// some damage transfered to structure. also, our shields are gone
 				shieldLastHit.playAsSoundEffect(1f, 1f, false);
+				shieldColor = false;
 				this.shields = 0;
 				this.structure+=newShields;
 
 			}
 		} else { // no shields
-			this.structure+=newShields;
+		    shieldColor = false;
+		 	this.structure+=newShields;
 		}
 
 		// after these calcs, we check if we're alive
@@ -477,7 +489,7 @@ public class Ship extends AbstractEntity {
 			this.dead = true;
 
 		} else {
-			System.out.println("Taking dmg - shield: "+shields+" struc: "+structure);
+			labels.append("-"+damage, shieldColor ? Color.cyan : Color.red);
 		}
 	}
 

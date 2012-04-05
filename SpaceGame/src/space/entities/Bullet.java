@@ -82,6 +82,7 @@ public class Bullet extends AbstractEntity {
 	}
 	
 	public void draw(GameContext context, SpriteBatch batch, Graphics g) {
+		batch.setColor(Color.white);
 		batch.drawImage(image, getX()-image.getWidth()/2f, getY()-image.getHeight()/2f, angle);
 		//batch.flush();
 		//g.setColor(Color.red);

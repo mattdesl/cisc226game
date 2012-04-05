@@ -20,7 +20,7 @@ import space.util.Utils;
  * 
  * @author Matt
  */
-public class StarfieldSprite extends Sprite {
+public class StarfieldSprite implements Sprite {
 
 	static class Star {
 		float tilex, tiley;

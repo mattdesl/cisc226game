@@ -16,6 +16,7 @@ import org.newdawn.slick.util.ResourceLoader;
 
 import space.GameContext;
 import space.engine.SpriteBatch;
+import space.sprite.LabelEmitter;
 import space.ui.HealthBarWidget;
 import space.util.Resources;
 import space.util.Utils;
@@ -46,8 +47,8 @@ public abstract class Enemy extends AbstractEntity {
 	private boolean soundPlaying;
 
 	private HealthBarWidget healthBar;
-
-
+	private LabelEmitter labels;
+	
 	// enemy strength based upon wave
 	public Enemy(Image image) {
 		this.enemyImage = image;
@@ -92,6 +93,7 @@ public abstract class Enemy extends AbstractEntity {
 				}
 			death = death2;
 		}
+		labels = new LabelEmitter(Resources.getMonospacedFont(), enemyImage.getWidth());
 
 	}
 
@@ -219,9 +221,16 @@ public abstract class Enemy extends AbstractEntity {
 			healthBar.setValue(health/(float)getMaxHealth());
 			healthBar.draw(batch, g);
 		}
-
+		
+		labels.draw(batch, g);
+		batch.setColor(Color.white);
 	}
 
+	public void update(GameContext context, int delta) {
+		labels.setPosition(getX(), getY()-enemyImage.getHeight()/2f);
+		labels.update(delta);
+	}
+	
 	public void takeDamage(int damage){
 		int newHealth = getHealth() - damage;
 		if (newHealth <= 0){ // dead
@@ -230,6 +239,7 @@ public abstract class Enemy extends AbstractEntity {
 		} else{
 			setHealth(newHealth);
 		}
+		labels.append("-"+damage, Color.red);
 	}
 
 	public float getHealthPercentage(){
