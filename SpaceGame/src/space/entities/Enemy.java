@@ -201,7 +201,6 @@ public abstract class Enemy extends AbstractEntity {
 		batch.setColor(tint);
 
 		if (dead) {// if we're dead
-			body.setBitmask(Constants.BIT_UNCOLLIDABLE);
 			if (!soundPlaying){
 				death.playAsSoundEffect(1f,.7f,false);
 				soundPlaying = true;
