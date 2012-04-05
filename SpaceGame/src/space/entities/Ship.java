@@ -70,8 +70,6 @@ public class Ship extends AbstractEntity {
 	private Audio death;
 	private Audio upgrade;
 	private Audio shieldHit;
-	private Audio burst;
-	private Audio thrust;
 	
 	
 	private HealthBarWidget healthBar, shieldBar, boostBar;
@@ -168,11 +166,8 @@ public class Ship extends AbstractEntity {
 		try {
 			gunshot = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/sounds/playerGunshot.wav"));
 			death = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/sounds/playerDeath.wav"));
-			upgrade = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/sounds/playerDeath.wav"));
-			shieldHit = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/sounds/playerDeath.wav"));
-			burst = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/sounds/playerDeath.wav"));
-			thrust = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/sounds/playerDeath.wav"));
-			
+			upgrade = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/sounds/playerUpgrade.wav"));
+			shieldHit = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/sounds/playerShieldHit.wav"));			
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -265,7 +260,6 @@ public class Ship extends AbstractEntity {
 			}			
 		}
 
-
 		// decide if we can regenerate shields (it's been more than 1.5 seconds since we were last hit)
 		if (hitTime > shieldRegenInterval){ // if it's been 1500 ms since we were hit
 			if (shields < shieldMax){ // if our shields are below maximum
@@ -342,12 +336,15 @@ public class Ship extends AbstractEntity {
 			if (input.isKeyPressed(Input.KEY_E)){
 				upgradeShields(context.getInGameState().getSpawner().getWave());
 				upgradesAvailable--;
+				upgrade.playAsSoundEffect(1f,1f,false);
 				context.getInGameState().adjustScore((getTotalUpgradesPurchased()*500));
 			} else if (input.isKeyPressed(Input.KEY_Q)){
 				upgradeWeapon(context.getInGameState().getSpawner().getWave());
 				upgradesAvailable--;
+				upgrade.playAsSoundEffect(1f,1f,false);
 				context.getInGameState().adjustScore((getTotalUpgradesPurchased()*500));
 			}
+			
 		}
 	}
 
@@ -448,6 +445,7 @@ public class Ship extends AbstractEntity {
 		takingDamage = true;
 		double newShields = this.shields - damage;
 		if (newShields >= 0) { // our shields took all of the damage.
+			shieldHit.playAsSoundEffect((getShieldPercentage()+1), 1f, false);
 			this.shields = newShields;
 		} 
 		else { // we're taking structure damage
