@@ -68,6 +68,10 @@ public class Ship extends AbstractEntity {
 	public boolean dead = false; // initially, we're alive!
 	private Audio gunshot;
 	private Audio death;
+	private Audio upgrade;
+	private Audio shieldHit;
+	private Audio burst;
+	private Audio thrust;
 	
 	
 	private HealthBarWidget healthBar, shieldBar, boostBar;
@@ -164,6 +168,11 @@ public class Ship extends AbstractEntity {
 		try {
 			gunshot = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/sounds/playerGunshot.wav"));
 			death = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/sounds/playerDeath.wav"));
+			upgrade = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/sounds/playerDeath.wav"));
+			shieldHit = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/sounds/playerDeath.wav"));
+			burst = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/sounds/playerDeath.wav"));
+			thrust = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/sounds/playerDeath.wav"));
+			
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
