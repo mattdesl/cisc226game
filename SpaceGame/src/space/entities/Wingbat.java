@@ -17,7 +17,7 @@ public class Wingbat extends Enemy {
 	private int shootingInterval; // how often the firebat fires
 	private int shootingTime = 0;
 	private int maxHealth;
-	private Audio gunshot;
+	private static Audio gunshot;
 
 	public Wingbat(int wave) {
 		super(Resources.getSprite("wingbat"));
@@ -38,14 +38,15 @@ public class Wingbat extends Enemy {
 		} else{
 			left = false;
 		}
-		try {
-			gunshot = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/sounds/wingbatGunshot.wav"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if (gunshot == null){
+			try {
+				gunshot = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/sounds/wingbatGunshot.wav"));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		// gunshot delay
-		
+
 		random = Utils.rnd(50, 400);
 		shootingTime-=random;
 	}
@@ -59,7 +60,7 @@ public class Wingbat extends Enemy {
 		// TODO: use player velocity to predict position, aim / orbit there instead
 		if (!context.getInGameState().isPlayerAlive()) {
 			//do nothing
-	} else if (!dead){
+		} else if (!dead){
 			Ship player = context.getInGameState().getPlayer();
 			setHeading(player.getX(), player.getY());
 			double px = player.getX();
@@ -85,7 +86,7 @@ public class Wingbat extends Enemy {
 				explosionCounter++;
 			}
 		}
-		
+
 	}
 
 	public void collide(Entity other) {

@@ -42,7 +42,7 @@ public class InGameState extends AbstractState implements CollisionListener {
 	private int worldUpdateInterval = 5;
 	private int counter = 0;
 	private int score = 0;
-	
+
 	private Ship player;
 	private StarfieldSprite starfield;
 	private SimpleFX shakeFade = new SimpleFX(1f, 0f, 1000, Easing.QUAD_OUT);
@@ -51,42 +51,34 @@ public class InGameState extends AbstractState implements CollisionListener {
 	private int shakeDelay = 0, shakeDelayMax = 30;
 	private SpawnController spawner;
 	private int spawnCounter = 0;
-		
+
 	private List<Entity> entities = new ArrayList<Entity>(1000);
 	private List<Entity> entitiesBuffer = new ArrayList<Entity>(1000);
 	private int enemies = 0;
-	
+
 	private int waveLevel = 0;
 	private SimpleFX waveFadeFX = new SimpleFX(1f, 0f, Constants.WAVE_REST_TIME/2f, Easing.QUAD_OUT);
 	private Color waveLevelColor = new Color(1f,1f,1f,0f);
 	private boolean showWaveLevel = false;
 	private float boomX, boomY;
 	private boolean playerDeadDirty = true;
-	
+
 	public void keyPressed(int k, char c) {
 		if (k==Input.KEY_ESCAPE) {
 			context.enterMenu();
 		}
 	}
-	
+
 	@Override
 	public void init(GameContext context) throws SlickException {
-//		context.getContainer().setMouseGrabbed(true);
 		starfield = new StarfieldSprite();
 		starfield.randomize(context);
 		world = new World(new Vector2f(0,0), 10);
 		world.addListener(this);
-		
-		
+
 		restart();
-		
-/*		enemy = new Wingbat(1);
-		enemy.setPosition(0, 0);*/
-	//	addEntity(enemy);
-		
-		//context.getContainer().setMouseGrabbed(true);
 	}
-		
+
 	private Body createWall(float x, float y, float width, float height) {
 		Body walltop = new StaticBody(new Box(width, height));
 		walltop.setRestitution(0.5f);
@@ -94,46 +86,46 @@ public class InGameState extends AbstractState implements CollisionListener {
 		walltop.setBitmask(Constants.BITMASK_WALL);
 		return walltop;
 	}
-	
+
 	public void restart() {
 		playerDeadDirty = true;
 		world.clear();
-		
+
 		player = new Ship(10f);
 		player.setPosition(context.getWidth()/2f, context.getHeight()/2f);
 		world.add(player.getBody());
 		player.player = true;
-		
+
 		spawner = new SpawnController();
-		
+
 		entities.clear();
 		entitiesBuffer.clear();
 		this.enemies = 0;
 		waveLevel = 0;
-		
+
 		final int WALL_SIZE = 10;
 		world.add(createWall(0, -WALL_SIZE*2, context.getWidth(), WALL_SIZE));
 		world.add(createWall(0, context.getHeight(), context.getWidth(), WALL_SIZE));
 		world.add(createWall(-WALL_SIZE*2, 0, WALL_SIZE, context.getHeight()));
 		world.add(createWall(context.getWidth(), 0, WALL_SIZE, context.getHeight()));
 	}
-	
+
 	@Override
 	public void render(GameContext context, SpriteBatch batch, Graphics g)
 			throws SlickException {		
 		//apply the background which is clamped to the screen size
 		starfield.drawBackground(context, batch, g);
-		
+
 		//apply a translation based on screen shake
 		if (shake) {
 			if (shakeXAmt!=0 && shakeYAmt!=0)
 				batch.translate(shakeXAmt * shakeFade.getValue(), shakeYAmt * shakeFade.getValue());
 		}
-		
-		
+
+
 		//render our foreground elements that don't need to be clamped to the screen size
 		starfield.drawStars(context, batch, g);
-		
+
 		batch.setColor(Color.white);
 		batch.drawTextMultiLine(Resources.getMonospacedFont(), "Wave: " + spawner.getWave() + "  Score: "+score, context.getContainer().getWidth()-150, 5);
 		// is there a better way?
@@ -143,14 +135,14 @@ public class InGameState extends AbstractState implements CollisionListener {
 		for (Entity e : entities) {
 			e.draw(context, batch, g);
 		}
-		
+
 		//check to see if the player died since last frame
 		if (player.isDead() && playerDeadDirty) {
 			playerDeadDirty = false; // we don't want explosion more than once...
 			context.createShockwave((int)player.getX(), (int)player.getY());
 		}
-			
-		
+
+
 		if (!player.isDead())
 			player.draw(context, batch, g);
 		else if (shake) {
@@ -160,7 +152,7 @@ public class InGameState extends AbstractState implements CollisionListener {
 				sys.render(boomX, boomY);
 			}
 		}
-		
+
 		if (showWaveLevel || waveFadeFX.getValue()>0f) {
 			AngelCodeFont f = Resources.getSmallFont();
 			String str = "Wave "+waveLevel;
@@ -170,8 +162,8 @@ public class InGameState extends AbstractState implements CollisionListener {
 			batch.drawText(f, str, context.getWidth()/2f-w/2f, context.getHeight()/4f);
 		}
 	}
-	
-	
+
+
 	public void collisionOccured(CollisionEvent evt) {
 		Object obj1 = evt.getBodyA().getUserData();
 		Object obj2 = evt.getBodyB().getUserData();
@@ -182,7 +174,7 @@ public class InGameState extends AbstractState implements CollisionListener {
 			e2.collide(e1);
 		}
 	}
-	
+
 	public void addEntity(Entity e) {
 		entities.add(e);
 		if (e.getBody()!=null) {
@@ -192,7 +184,7 @@ public class InGameState extends AbstractState implements CollisionListener {
 			enemies++;
 		}
 	}
-	
+
 	public void handleEntityDeath(Entity e) {
 		if (e.getBody()!=null) {
 			if (e instanceof Enemy){
@@ -203,13 +195,13 @@ public class InGameState extends AbstractState implements CollisionListener {
 			world.remove(e.getBody());
 		}
 	}
-	
+
 	public void killPlayer() {
 		context.createShockwave((int)player.getX(), (int)player.getY());
 		handleEntityDeath(player);
 		System.out.println("DEAD!");
 	}
-	
+
 	@Override
 	public void update(GameContext context, int delta) throws SlickException {
 		//occasionally delta might be really huge, to be safe let's just cap it to 10 ms
@@ -234,9 +226,9 @@ public class InGameState extends AbstractState implements CollisionListener {
 				shake = false;
 				context.enterGameOver();
 			}
-			
+
 		}
-		
+
 		//use a "double buffered" list so that we are only updating entities that are active
 		for (int i=0; i<entities.size(); i++) {
 			Entity e = entities.get(i);
@@ -251,14 +243,14 @@ public class InGameState extends AbstractState implements CollisionListener {
 				handleEntityDeath(e);
 			}
 		}
-		
+
 		//flip the buffer
 		List<Entity> temp = entities;
 		entities = entitiesBuffer;
 		entitiesBuffer = temp;
 		entitiesBuffer.clear();
-		
-		
+
+
 		if (enemies==0){
 			if (!showWaveLevel) {
 				waveLevel++;
@@ -280,12 +272,12 @@ public class InGameState extends AbstractState implements CollisionListener {
 				spawnCounter = 0;
 			}
 		}
-		
+
 		waveFadeFX.update(delta);
 		if (!player.isDead()){
 			player.update(context, delta);	
 		}
-				
+
 		//step the world so that the physics are updated
 		counter += delta;
 		while (counter > worldUpdateInterval) {
@@ -293,11 +285,11 @@ public class InGameState extends AbstractState implements CollisionListener {
 			counter -= worldUpdateInterval;
 		}
 	}
-	
+
 	public boolean isPlayerAlive(){ 
 		return !player.isDead();
 	}
-	
+
 	public void shakeCamera(GameContext context, int x, int y) {
 		shakeFade.restart();
 		ParticleSystem sys = Resources.getBoomParticle();
@@ -308,12 +300,12 @@ public class InGameState extends AbstractState implements CollisionListener {
 		}
 		shake = true;
 	}
-	
+
 	public String getDebugText() {
 		return "Entities: "+entities.size()+"\nEnemies: "+enemies;
-		
+
 	}
-	
+
 	public Ship getPlayer(){
 		return player;
 	}
@@ -321,17 +313,17 @@ public class InGameState extends AbstractState implements CollisionListener {
 	public int getScore(){
 		return score;
 	}
-	
+
 	public void adjustScore(int amount){
 		score-=amount;
 	}
-	
+
 	public SpawnController getSpawner(){
 		return spawner;
 	}
-	
+
 	public int getWaveLevel(){
 		return this.waveLevel;
 	}
-	
+
 }

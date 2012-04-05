@@ -40,8 +40,9 @@ public abstract class Enemy extends AbstractEntity {
 	protected float dirX, dirY;
 	protected boolean dead;
 	protected int pointValue;
-	
+
 	private Audio death;
+	private Audio death1, death2;
 	private boolean soundPlaying;
 
 	private HealthBarWidget healthBar;
@@ -73,17 +74,25 @@ public abstract class Enemy extends AbstractEntity {
 		Image red = Resources.getSprite("healthbar.red");
 		Image blue = Resources.getSprite("healthbar.blue");
 		healthBar = new HealthBarWidget(bar, red, Resources.HEALTH_BAR_X_OFF, Resources.HEALTH_BAR_Y_OFF);
-		try {
-			int choice = Utils.rnd(0,2);
-			if (choice == 0){
-				death = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/sounds/enemyDeath1.wav"));
-			} else{
-				death = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/sounds/enemyDeath2.wav"));
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		int choice = Utils.rnd(0,2);
+		if (choice == 0){
+			if (death1==null)
+				try {
+					death1 = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/sounds/enemyDeath1.wav"));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			death = death1;
+		} else {
+			if (death2==null)
+				try {
+					death2 = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/sounds/enemyDeath2.wav"));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			death = death2;
 		}
+
 	}
 
 	public abstract int getMaxHealth();
