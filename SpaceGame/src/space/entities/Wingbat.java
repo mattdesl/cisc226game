@@ -87,6 +87,7 @@ public class Wingbat extends Enemy {
 			}
 		}
 
+		super.update(context, delta);
 	}
 
 	public void collide(Entity other) {
