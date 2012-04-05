@@ -66,7 +66,7 @@ public class MainMenuState extends AbstractState implements WidgetListener {
 		
 		start = nextMenuItem(root, font, "PLAY", context);
 		help = nextMenuItem(root, font, "HELP", context);
-		options = nextMenuItem(root, font, "OPTIONS", context);
+//		options = nextMenuItem(root, font, "OPTIONS", context);
 		quit = nextMenuItem(root, font, "QUIT", context);
 		
 		setActive(start);
@@ -152,7 +152,7 @@ public class MainMenuState extends AbstractState implements WidgetListener {
 			context.getInGameState().restart();
 			context.enterGame();
 		} else if (active == help) {
-			
+			context.enterHelp();
 		} else if (active == quit) {
 			context.getContainer().exit();
 		}

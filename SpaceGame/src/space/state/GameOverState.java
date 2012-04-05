@@ -10,6 +10,10 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.geom.Rectangle;
+import org.newdawn.slick.gui.AbstractComponent;
+import org.newdawn.slick.gui.ComponentListener;
+import org.newdawn.slick.gui.TextField;
 
 import space.GameContext;
 import space.engine.SpriteBatch;
@@ -19,6 +23,7 @@ import space.ui.Label;
 import space.ui.Root;
 import space.ui.Widget;
 import space.ui.WidgetListener;
+import space.util.HighScores;
 import space.util.Resources;
 
 public class GameOverState extends AbstractState implements WidgetListener{
@@ -47,9 +52,10 @@ public class GameOverState extends AbstractState implements WidgetListener{
 	private final String SHIELD = "You purchased {0} shield upgrades";
 	private final String WEAPON = "You purchased {0} weapon upgrades";
 	
-	private Label wave, score, shield, weapon;
+	private Label wave, score, shield, weapon, name;
 	
-	
+	private TextField tf;
+	private boolean tfVisible = true;
 	
 	public GameOverState(GameContext context){
 		super(context,3);
@@ -57,14 +63,19 @@ public class GameOverState extends AbstractState implements WidgetListener{
 	
 	public void entering() {
 		updateText();
+		tf.setText("");
 		setActive(playAgain);
+		playAgain.setVisible(false);
+		mainMenu.setVisible(false);
+		tfVisible = true;
+		name.setVisible(true);
 	}
 	
 	public Root getRootUI() {
 		return root;
 	}
 	
-	public void init(GameContext context) throws SlickException {
+	public void init(final GameContext context) throws SlickException {
 		root = new Root(context,this);
 		
 		AngelCodeFont font = Resources.getSmallFont();
@@ -74,13 +85,13 @@ public class GameOverState extends AbstractState implements WidgetListener{
 		background = Resources.getSprite("background");
 		Image titleImg = Resources.getSprite("title");
 		gameOver = new Widget(titleImg);
+		lastY = context.getHeight()*.25f;
 		float goX, goY;
 		goX = context.getWidth()/2f - gameOver.getWidth()/2f;
-		goY = context.getHeight()/2f-gameOver.getHeight()*1.5f;
+		goY = lastY-gameOver.getHeight()*1.5f;
 		gameOver.setPosition(goX, goY);
 		root.add(gameOver);
 		
-		lastY = context.getHeight()/2f;
 		wave =  nextMenuItem(root, font2, "", context, false,0);
 		score = nextMenuItem(root, font2, "", context, false,0);
 		shield = nextMenuItem(root, font2, "", context, false,0);
@@ -89,15 +100,57 @@ public class GameOverState extends AbstractState implements WidgetListener{
 		mainMenu = nextMenuItem(root, font, "MAIN MENU", context, true, 5);
 		updateText();
 		
+		name = new Label(font, "Enter your name:", HPAD, VPAD);
+		name.setForeground(Color.white);
+		name.setPosition(context.getWidth()/2f - name.getWidth()/2f, playAgain.getY());
+		root.add(name);
+		
+		playAgain.setVisible(false);
+		mainMenu.setVisible(false);
+		
+		HighScores.load();
+		
+		tf = new TextField(context.getContainer(), font2, (int)name.getX(), (int)(name.getY()+name.getHeight()),
+					(int)name.getWidth(), font2.getLineHeight(), new ComponentListener() {
+						
+			
+			public void componentActivated(AbstractComponent source) {
+				
+				if (tfVisible && tf.getText()!=null && tf.getText().trim().length()!=0) {
+					InGameState g = context.getInGameState();
+					addHighscore(tf.getText().trim(), g.getWaveLevel(), g.getScore(), 
+							g.getPlayer().getShieldPurchased()+g.getPlayer().getWeaponPurchased());
+					name.setVisible(false);
+					tfVisible = false;
+					playAgain.setVisible(true);
+					mainMenu.setVisible(true);
+					HighScores.store();
+					tf.setFocus(false);
+				}
+			}
+		}) {
+			
+			public void mouseReleased(int button, int x, int y) {
+				if (tfVisible)
+					super.mouseReleased(button, x, y);
+			}
+		};
+		tf.setBorderColor(null);
+		tf.setFocus(true);
+		tf.setTextColor(Color.white);
+		tf.setBackgroundColor(null);
+		
+		
+		
 		setActive(playAgain);
 	}
 	
-	
+	private void addHighscore(String name, int wave, int score, int upgrades) {
+		HighScores.place(name, wave, score, upgrades);
+	}
 	
 	public void updateText() {
 		InGameState g = context.getInGameState();
-		wave.setText(MessageFormat.format(WAVE, g.getWaveLevel()));
-		
 		centerText(wave, WAVE, g.getWaveLevel());
 		centerText(score, SCORE, g.getScore());
 		centerText(shield, SHIELD, g.getPlayer().getShieldPurchased());
@@ -147,9 +200,34 @@ public class GameOverState extends AbstractState implements WidgetListener{
 		float acy = active.getHeight()/2f-arrow.getHeight()/2f;
 		
 		float amt = ARROWPAD + arrowMotion.getValue();
+		if (active.isVisible()) {
+			batch.drawImage(arrow, ax-amt, ay+acy);
+			batch.drawImage(arrowFlip, ax+active.getWidth()+arrow.getWidth()+amt, ay+acy);
+		}
 		
-		batch.drawImage(arrow, ax-amt, ay+acy);
-		batch.drawImage(arrowFlip, ax+active.getWidth()+arrow.getWidth()+amt, ay+acy);
+		if (tfVisible) {
+			batch.flush();
+			g.setColor(normalTint);
+			g.drawRect(tf.getX(), tf.getY(), tf.getWidth(), tf.getHeight());
+			g.setColor(Color.white);
+			tf.render(context.getContainer(), g);
+		}
+
+		AngelCodeFont font2 = Resources.getSmallFont();
+		AngelCodeFont font = Resources.getNiceFont();
+		
+		String str = HighScores.list();
+		float w = font.getWidth(str);
+		
+		float x = context.getWidth()/2f-w/2f;
+		float y = mainMenu.getY()+mainMenu.getHeight()+55;
+		batch.setColor(Color.white);
+		batch.drawText(font2, "SCORES", x, y);
+		
+		batch.setColor(normalTint);
+		batch.drawTextMultiLine(font, str, x, y+font.getLineHeight());
+		
+		
 	}
 	
 	public void keyPressed(int key, char c) {
@@ -183,12 +261,13 @@ public class GameOverState extends AbstractState implements WidgetListener{
 	}
 	
 	private void handleActivate() {
+		if (tfVisible)
+			return;
 		if (active == playAgain) {
-			System.out.println("blah");
 			context.getInGameState().restart();
 			context.enterGame();
 		} else if (active == mainMenu) {
-			context.enterMenu(); // this doesn't work for some reason :O 
+			context.enterMenu();
 		}
 	}
 	

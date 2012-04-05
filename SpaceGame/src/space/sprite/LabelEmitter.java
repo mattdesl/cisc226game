@@ -76,7 +76,7 @@ public class LabelEmitter implements Sprite {
 	
 	private class LabelParticle {
 		
-		private final float TIME = 2000f;
+		private final float TIME = 2500f;
 		private final float OFFSET = 100f;
 		private boolean alive = true;
 		private String text;

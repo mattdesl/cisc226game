@@ -159,6 +159,7 @@ public class InGameState extends AbstractState implements CollisionListener {
 			String str = "Wave "+waveLevel;
 			float w = f.getWidth(str);
 			waveLevelColor.a = waveFadeFX.getValue();
+			
 			batch.setColor(waveLevelColor);
 			batch.drawText(f, str, context.getWidth()/2f-w/2f, context.getHeight()/4f);
 		}

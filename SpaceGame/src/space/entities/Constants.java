@@ -18,9 +18,9 @@ public class Constants {
 
 	public static final int BIT_PLAYER = 2;
 	public static final int BIT_BULLET = 4;
-	public static final int BIT_ENEMY = 32;
+	public static final int BIT_ENEMY = 16;
 	
-	public static final int BITMASK_WALL = BIT_ENEMY | BIT_BULLET;
+	public static final int BITMASK_WALL = BIT_BULLET | BIT_ENEMY;
 	
 	// enemy constants
 	public static final float ENEMY_KAMIKAZE_SPEED = 30f; 

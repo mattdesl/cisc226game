@@ -1,5 +1,4 @@
 package space.state;
-import java.io.IOException;
 import java.util.prefs.Preferences;
 
 import org.lwjgl.opengl.ContextCapabilities;
@@ -23,7 +22,6 @@ import space.engine.FBO;
 import space.engine.SpriteBatch;
 import space.engine.easing.Easing;
 import space.engine.easing.SimpleFX;
-import space.util.GameText;
 import space.util.Resources;
 import space.util.Utils;
 
@@ -43,10 +41,11 @@ public class SpaceGameMain extends StateBasedGame implements GameContext {
 	private AbstractState currentState;
 	private InGameState gameState;
 	private MainMenuState menuState;
+	private HelpState helpState;
 	private GameOverState gameOver;
 	private SpriteBatch spriteBatch;
 	private AngelCodeFont defaultFont;
-	private boolean showDebug = true;
+	private boolean showDebug = false;
 	
 	private boolean sceneEffectsEnabled = true;
 	private Image sceneTex;
@@ -106,6 +105,10 @@ public class SpaceGameMain extends StateBasedGame implements GameContext {
 		enterState(menuState);
 	}
 	
+	public void enterHelp() {
+		enterState(helpState);
+	}
+	
 	public void enterGameOver(){
 		enterState(gameOver);
 	}
@@ -127,6 +130,10 @@ public class SpaceGameMain extends StateBasedGame implements GameContext {
 			fadeFX.setEnd(1f);
 			fadeFX.setEasing(Easing.QUAD_OUT);
 			fadeFX.restart();
+			if (currentState!=null) {
+				if (currentState.getRootUI()!=null)
+					getInput().removeListener(currentState.getRootUI());
+			}
 		} else {
 			handleStateSwitch(state);
 		}
@@ -198,11 +205,13 @@ public class SpaceGameMain extends StateBasedGame implements GameContext {
 		
 		spriteBatch = new SpriteBatch(4000);
 
+		addState(gameOver = new GameOverState(this));
 		addState(menuState = new MainMenuState(this));
 		addState(gameState = new InGameState(this));
-		addState(gameOver = new GameOverState(this));
+		addState(helpState = new HelpState(this));
 		
-		currentState = menuState;
+		
+		currentState = gameOver;
 		
 		//enterGame();
 //		enterMenu();
@@ -334,12 +343,7 @@ public class SpaceGameMain extends StateBasedGame implements GameContext {
 		//Renderer.setRenderer(Renderer.VERTEX_ARRAY_RENDERER);
 		
 		//load game text
-		try {
-			GameText.load();
-		} catch (IOException e) {
-			Utils.error("Game text file at '"+GameText.TEXT_PATH+"' could not be loaded", e);
-		}
-
+		
 		int width = 1024;
 		int height = 768;
 		boolean fullscreen = false;
@@ -381,9 +385,15 @@ public class SpaceGameMain extends StateBasedGame implements GameContext {
 //			Utils.error("Game text file at '"+GameText.TEXT_PATH+"' could not be loaded", e);
 //		}
 		
+//		System.out.println(Constants.BIT_PLAYER & (Constants.BIT_BULLET | Constants.BIT_ENEMY));
+//		System.out.println(Constants.BIT_PLAYER & (Constants.BIT_BULLET | Constants.BIT_PLAYER));
+//		System.out.println(Constants.BIT_BULLET & Constants.BIT_ENEMY);
+//		System.out.println(Constants.BIT_BULLET & Constants.BIT_BULLET);
+//		System.out.println(Constants.BIT_ENEMY & Constants.BIT_ENEMY);
+//		System.exit(0);
 		//create the display and start the game
 		try {
-			AppGameContainer container = new AppGameContainer(new SpaceGameMain(GameText.get("title", "")+" - "+width+"x"+height));
+			AppGameContainer container = new AppGameContainer(new SpaceGameMain("Space Game"+" - "+width+"x"+height));
 			container.setDisplayMode(width,height,fullscreen);
 			container.start();
 		} catch (SlickException e) {
