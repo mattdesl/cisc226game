@@ -49,6 +49,8 @@ public class GameOverState extends AbstractState implements WidgetListener{
 	
 	private Label wave, score, shield, weapon;
 	
+	
+	
 	public GameOverState(GameContext context){
 		super(context,3);
 	}
@@ -202,7 +204,6 @@ public class GameOverState extends AbstractState implements WidgetListener{
 	}
 	
 	public boolean onMouseClick(Widget widget, int button, int x, int y, int clickCount) {
-		System.out.println(widget+" "+button+" "+x);
 		if (BUTTON_LIST.contains(widget) && widget!=root && widget!=gameOver) {
 			setActive(widget);
 			handleActivate();

@@ -21,6 +21,8 @@ import org.newdawn.slick.state.StateBasedGame;
 import space.GameContext;
 import space.engine.FBO;
 import space.engine.SpriteBatch;
+import space.engine.easing.Easing;
+import space.engine.easing.SimpleFX;
 import space.util.GameText;
 import space.util.Resources;
 import space.util.Utils;
@@ -54,7 +56,12 @@ public class SpaceGameMain extends StateBasedGame implements GameContext {
 	private int elapsed, elapsed_max = 1000;
 	private ShaderProgram shockShader;
 	private float cx, cy;
-
+	
+	private boolean useFades = true;
+	private SimpleFX fadeFX = new SimpleFX(1, 0f, 500f, Easing.QUAD_OUT);
+	private AbstractState nextState = null;
+	private boolean fadeStart = false;
+	private Color fadeColor = new Color(Color.black);
 	
 	public static Preferences getPrefs() {
 		return prefs;
@@ -106,8 +113,26 @@ public class SpaceGameMain extends StateBasedGame implements GameContext {
 	boolean doSceneEffect() {
 		return sceneEffectsEnabled && boom && elapsed < elapsed_max;
 	}
+	
+	
 
 	public void enterState(AbstractState state) {
+		if (state==currentState)
+			return;
+		
+		if (useFades) {
+			nextState = state;
+			fadeStart = true;
+			fadeFX.setStart(0f);
+			fadeFX.setEnd(1f);
+			fadeFX.setEasing(Easing.QUAD_OUT);
+			fadeFX.restart();
+		} else {
+			handleStateSwitch(state);
+		}
+	}
+	
+	private void handleStateSwitch(AbstractState state) {
 		AbstractState old = currentState;
 		if (old!=null)
 			old.leaving();
@@ -126,6 +151,18 @@ public class SpaceGameMain extends StateBasedGame implements GameContext {
     public void preUpdateState(GameContainer c, int delta) throws SlickException {
 		//used by our shockwave shader
     	elapsed += delta;
+    }
+    
+    public void postUpdateState(GameContainer c, int delta) throws SlickException {
+    	fadeFX.update(delta);
+    	if (fadeFX.finished() && fadeStart) {
+    		fadeFX.setStart(1f);
+    		fadeFX.setEnd(0f);
+    		fadeFX.setEasing(Easing.QUAD_IN);
+    		fadeFX.restart();
+    		fadeStart = false;
+    		handleStateSwitch(nextState);
+    	}
     }
 	
 	/**
@@ -262,6 +299,12 @@ public class SpaceGameMain extends StateBasedGame implements GameContext {
         	shockShader.unbind();
 		} else if (boom) {
 			boom = false;
+		}
+		
+		fadeColor.a = fadeFX.getValue();
+		if (fadeColor.a > 0f) {
+			g.setColor(fadeColor);
+			g.fillRect(0f, 0f, c.getWidth(), c.getHeight());
 		}
 		
 		int r = spriteBatch.renderCalls;
