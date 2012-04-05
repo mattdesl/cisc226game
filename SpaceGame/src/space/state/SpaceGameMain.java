@@ -136,7 +136,7 @@ public class SpaceGameMain extends StateBasedGame implements GameContext {
 		c.setClearEachFrame(false);
 		c.setShowFPS(false);
 		c.getGraphics().setBackground(Color.black);
-		
+		c.setAlwaysRender(true);
 		if (!meetsSystemRequirements())
 			c.exit();
 		sceneEffectsEnabled = true;

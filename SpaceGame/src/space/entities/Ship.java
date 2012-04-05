@@ -22,6 +22,7 @@ import space.GameContext;
 import space.engine.SpriteBatch;
 import space.ui.HealthBarWidget;
 import space.util.Resources;
+import space.util.Utils;
 
 public class Ship extends AbstractEntity {
 
@@ -303,7 +304,7 @@ public class Ship extends AbstractEntity {
 				shootingTime = 0;
 				float x = getX();
 				float y = getY();
-				gunshot.playAsSoundEffect(1f, .7f, false);
+				gunshot.playAsSoundEffect(1f,0.4f, false);
 				context.getInGameState().addEntity(new Bullet(x, y, dirX, dirY, getRotation(), blasterDamage, true));
 			}
 		}

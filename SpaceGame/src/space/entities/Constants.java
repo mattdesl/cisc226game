@@ -17,9 +17,9 @@ public class Constants {
 
 
 	public static final int BIT_PLAYER = 2;
-	public static final int BIT_ENEMY = 4;
-	public static final int BIT_BULLET = 8;
-	public static final int BIT_UNCOLLIDABLE = 12;
+	public static final int BIT_BULLET = 4;
+	public static final int BIT_ENEMY = 16;
+	public static final int BIT_UNCOLLIDABLE = 32;
 	
 	public static final int BITMASK_WALL = BIT_ENEMY | BIT_BULLET;
 	
