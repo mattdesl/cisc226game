@@ -1,5 +1,6 @@
 package space.state;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +42,13 @@ public class GameOverState extends AbstractState implements WidgetListener{
 	private Image arrow, arrowFlip;
 	private SimpleFX arrowMotion = new SimpleFX(0f,7f,500,Easing.SINE_IN_OUT);
 	
+	private final String WAVE = "You made it to wave: {0}";
+	private final String SCORE = "Your score was: {0}";
+	private final String SHIELD = "You purchased {0} shield upgrades";
+	private final String WEAPON = "You purchased {0} weapon upgrades";
+	
+	private Label wave, score, shield, weapon;
+	
 	public GameOverState(GameContext context){
 		super(context,3);
 	}
@@ -62,14 +70,30 @@ public class GameOverState extends AbstractState implements WidgetListener{
 		root.add(gameOver);
 		
 		lastY = context.getHeight()/2f;
-		Label l1 =  nextMenuItem(root, font2, "You made it to wave: " + context.getInGameState().getWaveLevel(), context, false,0);
-		Label l2 = nextMenuItem(root, font2, "Your score was: " +context.getInGameState().getScore(), context, false,0);
-		Label l3 = nextMenuItem(root, font2, "You purchased " + context.getInGameState().getPlayer().getShieldPurchased() + " shield upgrades", context, false,0);
-		Label l4 = nextMenuItem(root, font2, "You purchased " + context.getInGameState().getPlayer().getWeaponPurchased() + " weapon upgrades", context, false,0);
-		playAgain = nextMenuItem(root, font, "PLAY AGAIN", context, true,10);
+		wave =  nextMenuItem(root, font2, "", context, false,0);
+		score = nextMenuItem(root, font2, "", context, false,0);
+		shield = nextMenuItem(root, font2, "", context, false,0);
+		weapon = nextMenuItem(root, font2, "", context, false,0);
+		playAgain = nextMenuItem(root, font, "PLAY AGAIN", context, true,30);
 		mainMenu = nextMenuItem(root, font, "MAIN MENU", context, true, 5);
+		updateText();
 		
 		setActive(playAgain);
+	}
+	
+	public void updateText() {
+		InGameState g = context.getInGameState();
+		wave.setText(MessageFormat.format(WAVE, g.getWaveLevel()));
+		
+		centerText(wave, WAVE, g.getWaveLevel());
+		centerText(score, SCORE, g.getScore());
+		centerText(shield, SHIELD, g.getPlayer().getShieldPurchased());
+		centerText(weapon, WEAPON, g.getPlayer().getWeaponPurchased());
+	}
+	
+	private void centerText(Label label, String text, int obj) {
+		label.setText(MessageFormat.format(text, obj));
+		label.setPosition(context.getWidth()/2f-label.getWidth()/2f, label.getY());
 	}
 	
 	private Label nextMenuItem(Widget parent, AngelCodeFont font, String text, GameContext ctx, boolean button, int yoff){
@@ -77,8 +101,9 @@ public class GameOverState extends AbstractState implements WidgetListener{
 		l.setTextOffset(2f,1f);
 		l.setAlign(Label.ALIGN_CENTER, Label.ALIGN_CENTER);
 		l.setForeground(normalTint);
+		lastY += yoff;
 		l.setPosition(ctx.getWidth()/2f-l.getWidth()/2f, lastY);
-		lastY += l.getHeight() + LINE_SPACE + yoff;
+		lastY += l.getHeight() + LINE_SPACE;
 		parent.add(l);
 		if (button)
 			BUTTON_LIST.add(l);

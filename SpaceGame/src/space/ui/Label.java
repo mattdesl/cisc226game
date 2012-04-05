@@ -53,13 +53,34 @@ public class Label extends Widget {
 		this.hpad = hpad;
 		this.vpad = vpad;
 		textWidth = font.getWidth(text);
-		textHeight = font.getHeight(text);
+		textHeight = font.getLineHeight();//font.getHeight(text);
 		setSize(textWidth+hpad*2, textHeight+vpad*2);
 		
 	}
 	
 	public Label(AngelCodeFont font, String text) {
 		this(font, text, 0, 0);
+	}
+	
+	public void setText(String text) {
+		setText(text, true);
+	}
+	
+	public float getTextWidth() {
+		return textWidth;
+	}
+	
+	public float getTextHeight() {
+		return textHeight;
+	}
+	
+	public void setText(String text, boolean resizeAfter) {
+		this.text = text;
+		this.textWidth = font.getWidth(text);
+		this.textHeight = font.getHeight(text);
+		if (resizeAfter) {
+			setSize(textWidth+hpad*2, textHeight+vpad*2);
+		}
 	}
 	
 	public void setTextOffset(float xoff, float yoff) {
