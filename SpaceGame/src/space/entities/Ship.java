@@ -1,6 +1,5 @@
 package space.entities;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,9 +19,9 @@ import org.newdawn.slick.util.ResourceLoader;
 
 import space.GameContext;
 import space.engine.SpriteBatch;
+import space.sprite.LabelEmitter;
 import space.ui.HealthBarWidget;
 import space.util.Resources;
-import space.util.Utils;
 
 public class Ship extends AbstractEntity {
 
@@ -73,7 +72,7 @@ public class Ship extends AbstractEntity {
 	private Audio shieldHit;
 	private Audio burst;
 	private Audio thrust;
-	
+	private LabelEmitter labels;
 	
 	private HealthBarWidget healthBar, shieldBar, boostBar;
 
@@ -83,6 +82,7 @@ public class Ship extends AbstractEntity {
 		setBody(createBody());
 		this.shipMoving = false; //we aren't moving if we were just created
 		this.shipBoosting = false;
+		labels = new LabelEmitter(Resources.getMonospacedFont(), shipIdle.getWidth());
 		setRotation(0);
 	}
 
@@ -230,6 +230,8 @@ public class Ship extends AbstractEntity {
 		shieldBar.draw(batch, g);
 		healthBar.draw(batch, g);
 		boostBar.draw(batch, g);
+
+		labels.draw(batch, g);
 	}
 
 	public void update(GameContext context, int delta) {
@@ -350,6 +352,9 @@ public class Ship extends AbstractEntity {
 				context.getInGameState().adjustScore((getTotalUpgradesPurchased()*500));
 			}
 		}
+		
+		labels.setPosition(getX(), getY()-shipIdle.getHeight()/2f);
+		labels.update(delta);
 	}
 
 	// rename for clarity	
@@ -433,25 +438,30 @@ public class Ship extends AbstractEntity {
 	// upgrades the blaster's damage by an amount relevant to the wave the user is on.
 	// and how many upgrades are already purchased
 	public void upgradeWeapon(int wave){
-		this.blasterDamage+=getWeaponUpgradeValue(wave);
-		
+		int dmg = getWeaponUpgradeValue(wave);
+		this.blasterDamage+=dmg;
 		this.weaponUpgradesPurchased++;
+		labels.append("Weapon Upgraded: "+dmg+" pts");
 	}
 
 	// upgrades shields based upon the wave
 	public void upgradeShields(int wave){
-		this.shieldMax+=getShieldUpgradeValue(wave);
-		this.shieldUpgradesPurchased++;	
+		int shd = getShieldUpgradeValue(wave);
+		this.shieldMax+=shd;
+		this.shieldUpgradesPurchased++;
+		labels.append("Shield Upgraded: "+shd+" pts");
 	}
 
 	// deals damage to the player
 	public void takeDamage(int damage){
 		takingDamage = true;
 		double newShields = this.shields - damage;
+		boolean shieldColor = true;
 		if (newShields >= 0) { // our shields took all of the damage.
 			this.shields = newShields;
 		} 
 		else { // we're taking structure damage
+			shieldColor = false;
 			this.shields = 0;
 			this.structure+=newShields; // structure takes damage = amount through shields (will be negative, hence +=)
 		}
@@ -461,9 +471,8 @@ public class Ship extends AbstractEntity {
 			this.structure = 0;
 			death.playAsSoundEffect(1f, 1f, false);
 			this.dead = true;
-			
 		} else {
-			System.out.println("Taking dmg - shield: "+shields+" struc: "+structure);
+			labels.append("-"+damage, shieldColor ? Color.cyan : Color.red);
 		}
 	}
 
