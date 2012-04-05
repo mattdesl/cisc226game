@@ -17,7 +17,6 @@ public class Root extends Widget implements InputListener {
 	
     public Root(GameContext context, WidgetListener listener) {
     	this.input = context.getInput();
-    	input.addListener(this);
     	this.width = context.getWidth();
         this.height = context.getHeight();
         this.listener = listener;

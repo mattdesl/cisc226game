@@ -44,7 +44,7 @@ public class SpriteTest extends BasicGame {
 	boolean vsync = false;
 	GameContainer container;
 	private boolean vbo = false;
-	
+	boolean clearing = true;
 	
 	public void init(GameContainer c) throws SlickException {
 		this.container = c;
@@ -68,7 +68,8 @@ public class SpriteTest extends BasicGame {
 	}
 	
 	public void render(GameContainer c, Graphics g) throws SlickException {
-		g.clear();
+		if (clearing)
+			g.clear();
 		batch.renderCalls = 0;
 		if (!batching && renderInUse)
 			image.startUse();
@@ -101,6 +102,7 @@ public class SpriteTest extends BasicGame {
 							? " (vbo)"
 							:""
 					)
+				+ (!clearing ? " (no-clear)":"")
 		);
 		
 	}
@@ -115,6 +117,7 @@ public class SpriteTest extends BasicGame {
 	public void keyPressed(int key, char c) {
 		switch (key) {
 			case Input.KEY_SPACE: batching = !batching; break;
+			case Input.KEY_C: clearing = !clearing; break;
         	case Input.KEY_1: numberOfBalls = 1; break;
         	case Input.KEY_2: numberOfBalls = 2; break;
         	case Input.KEY_3: numberOfBalls = 4; break;
