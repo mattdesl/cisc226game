@@ -72,7 +72,7 @@ public class Ship extends AbstractEntity {
 	private Audio shieldHit;
 	private Audio shieldStartRegen;
 	private Audio shieldLastHit;
-	private boolean playShieldLastHit;
+	private Audio playerBurst;
 	private boolean shieldRegenning;
 	private LabelEmitter labels;
 
@@ -175,6 +175,7 @@ public class Ship extends AbstractEntity {
 			shieldHit = AudioLoader.getAudio("OGG", ResourceLoader.getResourceAsStream("res/sounds/playerShieldHit.ogg"));
 			shieldLastHit = AudioLoader.getAudio("OGG", ResourceLoader.getResourceAsStream("res/sounds/playerShieldLastHit.ogg"));
 			shieldStartRegen = AudioLoader.getAudio("OGG", ResourceLoader.getResourceAsStream("res/sounds/playerShieldStartRegen.ogg"));
+			playerBurst = AudioLoader.getAudio("OGG", ResourceLoader.getResourceAsStream("res/sounds/playerBurst.ogg"));
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -317,12 +318,14 @@ public class Ship extends AbstractEntity {
 		}
 		// if our boost is off cooldown
 		if (boostTime >= boostCooldown){
+			// sound here for max charge
 			if (input.isKeyDown(Input.KEY_D)) {
 
 				shipBoosting = true;
 				boostTime = 0;
 				body.setMaxVelocity(10000f,10000f); // modify the max speed while we dodge
 				burstRight(delta);
+				playerBurst.playAsSoundEffect(.8f, 1f, false);
 				body.setMaxVelocity(Constants.PLAYER_MAX_SPEED, Constants.PLAYER_MAX_SPEED);
 			}
 
@@ -331,6 +334,7 @@ public class Ship extends AbstractEntity {
 				boostTime = 0;
 				body.setMaxVelocity(10000f,10000f); // modify the max speed while we dodge
 				burstLeft(delta);
+				playerBurst.playAsSoundEffect(.8f, 1f, false);
 				body.setMaxVelocity(Constants.PLAYER_MAX_SPEED, Constants.PLAYER_MAX_SPEED);				
 			}	
 
@@ -339,6 +343,7 @@ public class Ship extends AbstractEntity {
 				boostTime = 0;
 				body.setMaxVelocity(10000f, 10000f);
 				burstStraight(delta);
+				playerBurst.playAsSoundEffect(.8f, 1f, false);
 				body.setMaxVelocity(Constants.PLAYER_MAX_SPEED, Constants.PLAYER_MAX_SPEED);
 			}
 		}
@@ -346,28 +351,33 @@ public class Ship extends AbstractEntity {
 		// upgrades
 
 		// upgrade shields
-		if (upgradesAvailable > 0){
 
-			if (input.isKeyPressed(Input.KEY_E)){
-				if (context.getInGameState().getScore() >= getTotalUpgradesPurchased()*500){
-					upgradeShields(context.getInGameState().getSpawner().getWave());
-				} else{
-					labels.append("Need " + getTotalUpgradesPurchased()*500 + " points to purchase upgrade");
-				}
-				upgradesAvailable--;
-				upgrade.playAsSoundEffect(1f,1f,false);
-				context.getInGameState().adjustScore((getTotalUpgradesPurchased()*500));
-			} else if (input.isKeyPressed(Input.KEY_Q)){
-				if (context.getInGameState().getScore() >= getTotalUpgradesPurchased()*500){
-					upgradeWeapon(context.getInGameState().getSpawner().getWave());
-				} else{
-					labels.append("Need " + getTotalUpgradesPurchased()*500 + " points to purchase upgrade");
-				}
-				upgradesAvailable--;
-				upgrade.playAsSoundEffect(1f,1f,false);
-				context.getInGameState().adjustScore((getTotalUpgradesPurchased()*500));
+		if (input.isKeyPressed(Input.KEY_E)){
+			if(upgradesAvailable > 0){
+				if (context.getInGameState().getScore() >= (getTotalUpgradesPurchased()+1)*1500){
+					upgradeShields(context.getInGameState().getSpawner().getWave());	
+					upgradesAvailable--;
+					context.getInGameState().adjustScore(((getTotalUpgradesPurchased())*1500));
+				}  else{
+					labels.append("Need " + (getTotalUpgradesPurchased()+1)*1500 + " points to purchase upgrade");
+				}	
+			}else{
+				labels.append("No upgrade points available");
 			}
+		} else if (input.isKeyPressed(Input.KEY_Q)){
+			if (upgradesAvailable > 0){
+				if (context.getInGameState().getScore() >= (getTotalUpgradesPurchased()+1)*1500){
 
+					upgradeWeapon(context.getInGameState().getSpawner().getWave());		
+					upgradesAvailable--;
+					context.getInGameState().adjustScore(((getTotalUpgradesPurchased())*1500));
+
+				} else{
+					labels.append("Need " + (getTotalUpgradesPurchased()+1)*1500 + " points to purchase upgrade");
+				}
+			} else{
+				labels.append("No upgrade points available");
+			}
 		} 
 
 		labels.setPosition(getX(), getY()-shipIdle.getHeight()/2f);
@@ -455,6 +465,7 @@ public class Ship extends AbstractEntity {
 	// upgrades the blaster's damage by an amount relevant to the wave the user is on.
 	// and how many upgrades are already purchased
 	public void upgradeWeapon(int wave){
+		upgrade.playAsSoundEffect(1f,1f,false);
 		int dmg = getWeaponUpgradeValue(wave);
 		this.blasterDamage+=dmg;
 		this.weaponUpgradesPurchased++;
@@ -463,6 +474,7 @@ public class Ship extends AbstractEntity {
 
 	// upgrades shields based upon the wave
 	public void upgradeShields(int wave){
+		upgrade.playAsSoundEffect(1f,1f,false);
 		int shd = getShieldUpgradeValue(wave);
 		this.shieldMax+=shd;
 		this.shieldUpgradesPurchased++;
