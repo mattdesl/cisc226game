@@ -46,6 +46,10 @@ public class MainMenuState extends AbstractState implements WidgetListener {
 		super(context, 2);
 	}
 	
+	public Root getRootUI() {
+		return root;
+	}
+	
 	@Override
 	public void init(GameContext context) throws SlickException {
 		root = new Root(context, this);

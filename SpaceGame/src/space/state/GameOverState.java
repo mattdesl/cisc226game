@@ -53,6 +53,15 @@ public class GameOverState extends AbstractState implements WidgetListener{
 		super(context,3);
 	}
 	
+	public void entering() {
+		updateText();
+		setActive(playAgain);
+	}
+	
+	public Root getRootUI() {
+		return root;
+	}
+	
 	public void init(GameContext context) throws SlickException {
 		root = new Root(context,this);
 		
@@ -80,6 +89,8 @@ public class GameOverState extends AbstractState implements WidgetListener{
 		
 		setActive(playAgain);
 	}
+	
+	
 	
 	public void updateText() {
 		InGameState g = context.getInGameState();
@@ -171,6 +182,7 @@ public class GameOverState extends AbstractState implements WidgetListener{
 	
 	private void handleActivate() {
 		if (active == playAgain) {
+			System.out.println("blah");
 			context.getInGameState().restart();
 			context.enterGame();
 		} else if (active == mainMenu) {
@@ -190,6 +202,7 @@ public class GameOverState extends AbstractState implements WidgetListener{
 	}
 	
 	public boolean onMouseClick(Widget widget, int button, int x, int y, int clickCount) {
+		System.out.println(widget+" "+button+" "+x);
 		if (BUTTON_LIST.contains(widget) && widget!=root && widget!=gameOver) {
 			setActive(widget);
 			handleActivate();

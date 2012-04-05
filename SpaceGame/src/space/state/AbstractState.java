@@ -8,6 +8,7 @@ import org.newdawn.slick.state.StateBasedGame;
 
 import space.GameContext;
 import space.engine.SpriteBatch;
+import space.ui.Root;
 
 public abstract class AbstractState extends BasicGameState {
 	
@@ -40,6 +41,27 @@ public abstract class AbstractState extends BasicGameState {
 	
 	public GameContext getContext() {
 		return context;
+	}
+	
+	//null if the state has no GUI
+	public Root getRootUI() {
+		return null;
+	}
+	
+	
+	//legacy enter 
+	public void enter(GameContainer c, StateBasedGame g) {
+		if (getRootUI()!=null) {
+			System.out.println("entering "+this);
+			c.getInput().addListener(getRootUI());
+		}
+	}
+	
+	public void leave(GameContainer c, StateBasedGame g) {
+		if (getRootUI()!=null) {
+			System.out.println("leaving "+this);
+			c.getInput().removeListener(getRootUI());
+		}
 	}
 
 	/**
