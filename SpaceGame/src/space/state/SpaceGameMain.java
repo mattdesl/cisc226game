@@ -161,11 +161,11 @@ public class SpaceGameMain extends StateBasedGame implements GameContext {
 		
 		spriteBatch = new SpriteBatch(4000);
 
-		addState(gameOver = new GameOverState(this));
 		addState(menuState = new MainMenuState(this));
 		addState(gameState = new InGameState(this));
+		addState(gameOver = new GameOverState(this));
 		
-		currentState = gameOver;
+		currentState = menuState;
 		
 		//enterGame();
 //		enterMenu();
