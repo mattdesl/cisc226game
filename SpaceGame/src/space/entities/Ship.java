@@ -75,7 +75,7 @@ public class Ship extends AbstractEntity {
 	private boolean playShieldLastHit;
 	private boolean shieldRegenning;
 	private LabelEmitter labels;
-	
+
 	private HealthBarWidget healthBar, shieldBar, boostBar;
 
 	public Ship(float radius) {// create a body with the size of the image divided by 2
@@ -311,7 +311,7 @@ public class Ship extends AbstractEntity {
 				shootingTime = 0;
 				float x = getX();
 				float y = getY();
-				gunshot.playAsSoundEffect(1f,0.4f, false);
+				gunshot.playAsSoundEffect(1.5f,0.5f, false);
 				context.getInGameState().addEntity(new Bullet(x, y, dirX, dirY, getRotation(), blasterDamage, true));
 			}
 		}
@@ -347,20 +347,29 @@ public class Ship extends AbstractEntity {
 
 		// upgrade shields
 		if (upgradesAvailable > 0){
+
 			if (input.isKeyPressed(Input.KEY_E)){
-				upgradeShields(context.getInGameState().getSpawner().getWave());
+				if (context.getInGameState().getScore() >= getTotalUpgradesPurchased()*500){
+					upgradeShields(context.getInGameState().getSpawner().getWave());
+				} else{
+					labels.append("Need " + getTotalUpgradesPurchased()*500 + " points to purchase upgrade");
+				}
 				upgradesAvailable--;
 				upgrade.playAsSoundEffect(1f,1f,false);
 				context.getInGameState().adjustScore((getTotalUpgradesPurchased()*500));
 			} else if (input.isKeyPressed(Input.KEY_Q)){
-				upgradeWeapon(context.getInGameState().getSpawner().getWave());
+				if (context.getInGameState().getScore() >= getTotalUpgradesPurchased()*500){
+					upgradeWeapon(context.getInGameState().getSpawner().getWave());
+				} else{
+					labels.append("Need " + getTotalUpgradesPurchased()*500 + " points to purchase upgrade");
+				}
 				upgradesAvailable--;
 				upgrade.playAsSoundEffect(1f,1f,false);
 				context.getInGameState().adjustScore((getTotalUpgradesPurchased()*500));
 			}
 
-		}
-		
+		} 
+
 		labels.setPosition(getX(), getY()-shipIdle.getHeight()/2f);
 		labels.update(delta);
 	}
@@ -478,8 +487,8 @@ public class Ship extends AbstractEntity {
 
 			}
 		} else { // no shields
-		    shieldColor = false;
-		 	this.structure+=newShields;
+			shieldColor = false;
+			this.structure+=newShields;
 		}
 
 		// after these calcs, we check if we're alive
