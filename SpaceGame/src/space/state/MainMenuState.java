@@ -32,7 +32,7 @@ public class MainMenuState extends AbstractState implements WidgetListener {
 	
 	private float lastY = 0;
 	
-	private static final int HPAD = 0, VPAD = 0, LINE_SPACE = 5, ARROWPAD = 5;
+	private static final int LINE_SPACE = 5, ARROWPAD = 5;
 	
 	private Color hoverTint = new Color(1f, 1f, 1f, 1f);
 	private Color normalTint = new Color(1f, 1f, 1f, 0.75f);
@@ -66,14 +66,14 @@ public class MainMenuState extends AbstractState implements WidgetListener {
 		
 		start = nextMenuItem(root, font, "PLAY", context);
 		help = nextMenuItem(root, font, "HELP", context);
-//		options = nextMenuItem(root, font, "OPTIONS", context);
+		options = nextMenuItem(root, font, "OPTIONS", context);
 		quit = nextMenuItem(root, font, "QUIT", context);
 		
 		setActive(start);
 	}
 	
 	private Label nextMenuItem(Widget parent, AngelCodeFont font, String text, GameContext ctx) {
-		Label l = new Label(font, text, HPAD, VPAD);
+		Label l = new Label(font, text);
 		l.setTextOffset(2f, 1f);
 		l.setAlign(Label.ALIGN_CENTER, Label.ALIGN_CENTER);
 		l.setForeground(normalTint);
@@ -155,6 +155,8 @@ public class MainMenuState extends AbstractState implements WidgetListener {
 			context.enterHelp();
 		} else if (active == quit) {
 			context.getContainer().exit();
+		} else if (active == options) {
+			context.enterOptions();
 		}
 	}
 	

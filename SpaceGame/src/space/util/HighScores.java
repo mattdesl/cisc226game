@@ -8,8 +8,6 @@ import space.state.SpaceGameMain;
 
 public class HighScores {
 
-	static Preferences prefs = Preferences.userNodeForPackage(SpaceGameMain.class);
-	
 	private static ArrayList<Score> rank = new ArrayList<Score>();
 	private static String str = "no rankings";
 	
@@ -82,7 +80,7 @@ public class HighScores {
 	
 	public static void load() {
 		for (int i=0; i<10; i++) {
-			String line = prefs.get("highscore"+i, null);
+			String line = SpaceGameMain.prefs.get("highscore"+i, null);
 			if (line==null)
 				break;
 			Score s = unpack(line.trim());
@@ -92,7 +90,7 @@ public class HighScores {
 	
 	public static void store() {
 		for (int i=0; i<rank.size() && i<10; i++) {
-			prefs.put("highscore"+i, pack(rank.get(i)));
+			SpaceGameMain.prefs.put("highscore"+i, pack(rank.get(i)));
 		}
 	}
 	

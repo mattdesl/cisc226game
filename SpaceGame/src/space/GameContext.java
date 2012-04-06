@@ -39,4 +39,12 @@ public interface GameContext {
 	public void enterMenu(); //TODO
 	public void enterGameOver();
 	public void enterHelp();
+	public void enterOptions();
+	
+	public void setVSyncEnabled(boolean b);
+	public boolean isVSyncEnabled();
+	public void setShowDisplayPanel(boolean b);
+	public boolean isShowDisplayPanel();
+	public void setSoundOn(boolean b);
+	public boolean isSoundOn();
 }

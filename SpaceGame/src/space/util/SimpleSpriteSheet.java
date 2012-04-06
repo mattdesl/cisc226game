@@ -49,7 +49,7 @@ public class SimpleSpriteSheet {
 			int y = Integer.parseInt(s[1]);
 			int w = Integer.parseInt(s[2]);
 			int h = Integer.parseInt(s[3]);
-			return sheet.getSubImage(x, y, w, h);
+			return sheet.getSubImage(x, y, w+1, h+1);
 		} catch (NumberFormatException e) {
 			throw new SlickException("invalid int values for key "+key+" "+Arrays.toString(s));
 		}

@@ -19,7 +19,7 @@ public class Label extends Widget {
 	public static int ALIGN_CENTER = 4;
 	
 
-	private int hpad, vpad, hAlign=ALIGN_CENTER, vAlign=ALIGN_CENTER;
+	protected int padLeft, padRight, padTop, padBottom, hAlign=ALIGN_CENTER, vAlign=ALIGN_CENTER;
 	private float textWidth = 0, textHeight = 0; 
 	private float xoff, yoff;
 	
@@ -46,20 +46,14 @@ public class Label extends Widget {
 	 * @param font
 	 * @param text
 	 */
-	public Label(AngelCodeFont font, String text, int hpad, int vpad) {
+	public Label(AngelCodeFont font, String text) {
 		super();
 		this.font = font;
 		this.text = text;
-		this.hpad = hpad;
-		this.vpad = vpad;
 		textWidth = font.getWidth(text);
 		textHeight = font.getLineHeight();//font.getHeight(text);
-		setSize(textWidth+hpad*2, textHeight+vpad*2);
+		setSize(textWidth, textHeight);
 		
-	}
-	
-	public Label(AngelCodeFont font, String text) {
-		this(font, text, 0, 0);
 	}
 	
 	public void setText(String text) {
@@ -79,7 +73,7 @@ public class Label extends Widget {
 		this.textWidth = font.getWidth(text);
 		this.textHeight = font.getHeight(text);
 		if (resizeAfter) {
-			setSize(textWidth+hpad*2, textHeight+vpad*2);
+			setSize(textWidth+padLeft+padRight, textHeight+padTop+padBottom);
 		}
 	}
 	
@@ -106,15 +100,15 @@ public class Label extends Widget {
 			float x = screenX;
 			float y = screenY;
 			if (hAlign == ALIGN_LEFT)
-				x += hpad;
+				x += padLeft;
 			else if (hAlign == ALIGN_RIGHT)
-				x += getWidth()-textWidth-hpad;
+				x += getWidth()-textWidth-padRight;
 			else if (hAlign == ALIGN_CENTER)
 				x += getWidth()/2f - textWidth/2f;
 			if (vAlign == ALIGN_TOP)
-				y += vpad;
+				y += padTop;
 			else if (vAlign == ALIGN_BOTTOM)
-				y += getHeight()-textHeight-vpad;
+				y += getHeight()-textHeight-padBottom;
 			else if (vAlign == ALIGN_CENTER)
 				y += getHeight()/2f - textHeight/2f;
 			b.setColor(foreground);

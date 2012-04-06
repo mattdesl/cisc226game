@@ -100,7 +100,7 @@ public class GameOverState extends AbstractState implements WidgetListener{
 		mainMenu = nextMenuItem(root, font, "MAIN MENU", context, true, 5);
 		updateText();
 		
-		name = new Label(font, "Enter your name:", HPAD, VPAD);
+		name = new Label(font, "Enter your name:");
 		name.setForeground(Color.white);
 		name.setPosition(context.getWidth()/2f - name.getWidth()/2f, playAgain.getY());
 		root.add(name);
@@ -163,7 +163,7 @@ public class GameOverState extends AbstractState implements WidgetListener{
 	}
 	
 	private Label nextMenuItem(Widget parent, AngelCodeFont font, String text, GameContext ctx, boolean button, int yoff){
-		Label l = new Label(font, text, HPAD, VPAD);
+		Label l = new Label(font, text);
 		l.setTextOffset(2f,1f);
 		l.setAlign(Label.ALIGN_CENTER, Label.ALIGN_CENTER);
 		l.setForeground(normalTint);

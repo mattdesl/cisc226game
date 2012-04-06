@@ -62,13 +62,20 @@ public class InGameState extends AbstractState implements CollisionListener {
 	private boolean showWaveLevel = false;
 	private float boomX, boomY;
 	private boolean playerDeadDirty = true;
-
+	private boolean exiting = false;
+	
 	public void keyPressed(int k, char c) {
-		if (k==Input.KEY_ESCAPE) {
+		if (!exiting && k==Input.KEY_ESCAPE) {
+			exiting = true;
 			context.enterMenu();
 		}
 	}
 
+	public void entering() {
+		exiting = false;
+	}
+	
+	
 	@Override
 	public void init(GameContext context) throws SlickException {
 		starfield = new StarfieldSprite();
@@ -88,6 +95,7 @@ public class InGameState extends AbstractState implements CollisionListener {
 	}
 
 	public void restart() {
+		exiting = false;
 		playerDeadDirty = true;
 		world.clear();
 

@@ -35,3 +35,6 @@ explosion6 = 750,125,72,62
 explosion7 = 822,125,72,62
 crosshairs = 313,179,17,17
 help = 0,469,452,469
+checkbox = 331,209,13,13
+checkbox.selected = 313,209,13,13
+ 

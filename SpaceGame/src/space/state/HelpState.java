@@ -32,7 +32,7 @@ public class HelpState extends AbstractState implements WidgetListener{
 	
 	private float lastY = 0;
 	
-	private static final int HPAD = 0, VPAD = 0, LINE_SPACE = 5, ARROWPAD = 5;
+	private static final int LINE_SPACE = 5, ARROWPAD = 5;
 	
 	private Color hoverTint = new Color(1f,1f,1f,1f);
 	private Color normalTint = new Color(1f,1f,1f,.75f);
@@ -73,7 +73,7 @@ public class HelpState extends AbstractState implements WidgetListener{
 	}
 	
 	private Label nextMenuItem(Widget parent, AngelCodeFont font, String text, GameContext ctx, boolean button, int yoff){
-		Label l = new Label(font, text, HPAD, VPAD);
+		Label l = new Label(font, text);
 		l.setTextOffset(2f,1f);
 		l.setAlign(Label.ALIGN_CENTER, Label.ALIGN_CENTER);
 		l.setForeground(normalTint);

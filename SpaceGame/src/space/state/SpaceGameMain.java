@@ -1,7 +1,15 @@
 package space.state;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.prefs.Preferences;
 
+import javax.swing.JOptionPane;
+
+import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.ContextCapabilities;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLContext;
 import org.newdawn.slick.AngelCodeFont;
@@ -12,6 +20,7 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.openal.SoundStore;
 import org.newdawn.slick.opengl.InternalTextureLoader;
 import org.newdawn.slick.opengl.pbuffer.GraphicsFactory;
 import org.newdawn.slick.opengl.shader.ShaderProgram;
@@ -23,6 +32,7 @@ import space.engine.SpriteBatch;
 import space.engine.easing.Easing;
 import space.engine.easing.SimpleFX;
 import space.util.Resources;
+import space.util.Strings;
 import space.util.Utils;
 
 
@@ -34,7 +44,7 @@ public class SpaceGameMain extends StateBasedGame implements GameContext {
 	private GameContainer container;
 	
 	public static int detailLevel = DETAIL_HIGH;
-	private static Preferences prefs = Preferences.userNodeForPackage(SpaceGameMain.class);
+	public static Preferences prefs = Preferences.userNodeForPackage(SpaceGameMain.class);
 
 	private final static String[] DETAILS = new String[] { "lowest", "low", "medium", "highest" };
 	
@@ -44,6 +54,7 @@ public class SpaceGameMain extends StateBasedGame implements GameContext {
 	private HelpState helpState;
 	private GameOverState gameOver;
 	private SpriteBatch spriteBatch;
+	private OptionsState optionsState;
 	private AngelCodeFont defaultFont;
 	private boolean showDebug = false;
 	
@@ -61,6 +72,9 @@ public class SpaceGameMain extends StateBasedGame implements GameContext {
 	private AbstractState nextState = null;
 	private boolean fadeStart = false;
 	private Color fadeColor = new Color(Color.black);
+	
+	private static boolean vsync = false;
+	private boolean displayPanel = false;
 	
 	public static Preferences getPrefs() {
 		return prefs;
@@ -117,16 +131,46 @@ public class SpaceGameMain extends StateBasedGame implements GameContext {
 		return sceneEffectsEnabled && boom && elapsed < elapsed_max;
 	}
 	
+	public void enterOptions() {
+		enterState(optionsState);
+	}
 	
+
+	public void setVSyncEnabled(boolean b) {
+		vsync = b;
+		if (b) {
+			container.setVSync(b);
+			container.setTargetFrameRate(60);
+		} else {
+			container.setVSync(false);
+			container.setTargetFrameRate(-1);
+		}
+	}
+
+	public void setShowDisplayPanel(boolean b) { 
+		displayPanel = b;
+		prefs.putBoolean("displayPanel", b);
+	}
+	
+	public boolean isVSyncEnabled() { return vsync; }
+	public boolean isShowDisplayPanel() { return displayPanel; }
+	public boolean isSoundOn() { return container.isSoundOn(); }
+	
+	public void setSoundOn(boolean b) {
+		container.setSoundOn(b);
+		prefs.putBoolean("sound", b);
+	}
 
 	public void enterState(AbstractState state) {
 		if (state==currentState)
 			return;
 		
 		if (useFades) {
+			if (fadeStart && !fadeFX.finished())
+				return;
 			nextState = state;
 			fadeStart = true;
-			fadeFX.setStart(0f);
+			fadeFX.setStart(fadeFX.getValue());
 			fadeFX.setEnd(1f);
 			fadeFX.setEasing(Easing.QUAD_OUT);
 			fadeFX.restart();
@@ -163,7 +207,7 @@ public class SpaceGameMain extends StateBasedGame implements GameContext {
     public void postUpdateState(GameContainer c, int delta) throws SlickException {
     	fadeFX.update(delta);
     	if (fadeFX.finished() && fadeStart) {
-    		fadeFX.setStart(1f);
+    		fadeFX.setStart(fadeFX.getValue());
     		fadeFX.setEnd(0f);
     		fadeFX.setEasing(Easing.QUAD_IN);
     		fadeFX.restart();
@@ -177,10 +221,17 @@ public class SpaceGameMain extends StateBasedGame implements GameContext {
 	 */
 	public void initStatesList(GameContainer c) throws SlickException {
 		this.container = c;
+		SoundStore.get().init();
+		
 		c.setClearEachFrame(false);
 		c.setShowFPS(false);
 		c.getGraphics().setBackground(Color.black);
 		c.setAlwaysRender(true);
+		
+		setVSyncEnabled(vsync);
+		setShowDisplayPanel(prefs.getBoolean("displayPanel", false));
+		setSoundOn(prefs.getBoolean("sound", true));
+		
 		if (!meetsSystemRequirements())
 			c.exit();
 		sceneEffectsEnabled = true;
@@ -203,15 +254,16 @@ public class SpaceGameMain extends StateBasedGame implements GameContext {
 		Resources.create();
 		defaultFont = Resources.getMonospacedFont();
 		
-		spriteBatch = new SpriteBatch(4000);
+		spriteBatch = new SpriteBatch(1000);
 
-		addState(gameOver = new GameOverState(this));
 		addState(menuState = new MainMenuState(this));
 		addState(gameState = new InGameState(this));
 		addState(helpState = new HelpState(this));
+		addState(optionsState = new OptionsState(this));
+		addState(gameOver = new GameOverState(this));
 		
 		
-		currentState = gameOver;
+		currentState = menuState;
 		
 		//enterGame();
 //		enterMenu();
@@ -334,14 +386,22 @@ public class SpaceGameMain extends StateBasedGame implements GameContext {
 		return debug;
 	}
 	
+	private static void findMode() {
+		
+	}
+	
 	/**
 	 * Entry point to our test
 	 * 
 	 * @param argv The arguments to pass into the test
 	 */
 	public static void main(String[] argv) {
-		//Renderer.setRenderer(Renderer.VERTEX_ARRAY_RENDERER);
+		if (argv.length >= 1 && "vsync=".contains(argv[0]) && argv[0].length()>6) {
+			vsync = Boolean.parseBoolean(argv[0].substring(6));
+		}
 		
+		//Renderer.setRenderer(Renderer.VERTEX_ARRAY_RENDERER);
+
 		//load game text
 		
 		int width = 1024;
@@ -351,39 +411,43 @@ public class SpaceGameMain extends StateBasedGame implements GameContext {
 		detailLevel = prefs.getInt("spacegame.detail", GameContext.DETAIL_HIGH);
 //		System.out.println("Detail level: "+DETAILS[detailLevel]);
 //
-//		try {
-//			DisplayMode[] ds = Display.getAvailableDisplayModes();
-//			List<String> s = new ArrayList<String>(ds.length);
-//			for (DisplayMode d : ds) {
-//				String str = d.getWidth()+"x"+d.getHeight();
-//				String str2 = str+" (fullscreen)";  
-//				if (!s.contains(str2)) {
-//					s.add(str);
-//					s.add(str2);
-//				}
-//			}
-//			Collections.sort(s, Strings.getNaturalComparator());
-//			String[] a = s.toArray(new String[s.size()]);
-//			String best = a[a.length>2 ? a.length-2 : 0];
-//			best = prefs.get("spacegame.display", best);
-//			Object res = JOptionPane.showInputDialog(null, "Choose your display size:", "Display", 
-//					JOptionPane.INFORMATION_MESSAGE, 
-//					null, a, best);
-//			if (res==null)
-//				return;
-//			String display = res.toString();
-//			prefs.put("spacegame.display", display);
-//			String[] split = display.split("x");
-//			int i = split[1].indexOf(' ');
-//			if (i!=-1) {
-//				split[1] = split[1].substring(0, i);
-//				fullscreen = true;
-//			}
-//			width = Integer.parseInt(split[0]);
-//			height = Integer.parseInt(split[1]);
-//		} catch (LWJGLException e) {
-//			Utils.error("Game text file at '"+GameText.TEXT_PATH+"' could not be loaded", e);
-//		}
+		boolean b = prefs.getBoolean("displayPanel", false);
+		
+		if (b) {
+			try {
+				DisplayMode[] ds = Display.getAvailableDisplayModes();
+				List<String> s = new ArrayList<String>(ds.length);
+				for (DisplayMode d : ds) {
+					String str = d.getWidth()+"x"+d.getHeight();
+					String str2 = str+" (fullscreen)";  
+					if (!s.contains(str2)) {
+						s.add(str);
+						s.add(str2);
+					}
+				}
+				Collections.sort(s, Strings.getNaturalComparator());
+				String[] a = s.toArray(new String[s.size()]);
+				String best = a[a.length>2 ? a.length-2 : 0];
+				best = prefs.get("spacegame.display", best);
+				Object res = JOptionPane.showInputDialog(null, "Choose your display size:", "Display", 
+						JOptionPane.INFORMATION_MESSAGE, 
+						null, a, best);
+				if (res==null)
+					return;
+				String display = res.toString();
+				prefs.put("spacegame.display", display);
+				String[] split = display.split("x");
+				int i = split[1].indexOf(' ');
+				if (i!=-1) {
+					split[1] = split[1].substring(0, i);
+					fullscreen = true;
+				}
+				width = Integer.parseInt(split[0]);
+				height = Integer.parseInt(split[1]);
+			} catch (LWJGLException e) {
+				e.printStackTrace();
+			}
+		}
 		
 //		System.out.println(Constants.BIT_PLAYER & (Constants.BIT_BULLET | Constants.BIT_ENEMY));
 //		System.out.println(Constants.BIT_PLAYER & (Constants.BIT_BULLET | Constants.BIT_PLAYER));
@@ -392,8 +456,11 @@ public class SpaceGameMain extends StateBasedGame implements GameContext {
 //		System.out.println(Constants.BIT_ENEMY & Constants.BIT_ENEMY);
 //		System.exit(0);
 		//create the display and start the game
+		
 		try {
-			AppGameContainer container = new AppGameContainer(new SpaceGameMain("Space Game"+" - "+width+"x"+height));
+			SpaceGameMain g = new SpaceGameMain("Space Game"+" - "+width+"x"+height);
+			AppGameContainer container = new AppGameContainer(g);
+			//System.out.println(g.getTitle());
 			container.setDisplayMode(width,height,fullscreen);
 			container.start();
 		} catch (SlickException e) {
